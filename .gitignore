@@ -75,3 +75,6 @@ dmypy.json
 
 # Claude files
 CLAUDE.md
+
+#graphify
+graphify-out/
