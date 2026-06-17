@@ -24,20 +24,25 @@ audio_cache_dir = DATA_DIR / "audio_cache"
 
 
 def _replace_env_vars(config_str: str) -> str:
-    """Replace ${ENV_VAR} placeholders with environment values.
+    """Replace ${ENV_VAR} or ${ENV_VAR:-default} placeholders with environment values.
 
-    Raises RuntimeError for any unset variable to prevent silent misconfiguration.
+    ${VAR}        — raises RuntimeError when unset (required)
+    ${VAR:-}      — returns empty string when unset (optional)
+    ${VAR:-value} — returns 'value' when unset (optional with default)
     """
-    pattern = re.compile(r"\$\{(\w+)\}")
+    pattern = re.compile(r"\$\{(\w+)(?::-(.*?))?\}")
 
     def _lookup(match: re.Match) -> str:
         name = match.group(1)
-        try:
-            return os.environ[name]
-        except KeyError:
-            raise RuntimeError(
-                f"Environment variable '${{{name}}}' referenced in config but not set."
-            )
+        default = match.group(2)  # None when no :- present
+        value = os.environ.get(name)
+        if value is not None:
+            return value
+        if default is not None:
+            return default
+        raise RuntimeError(
+            f"Environment variable '${{{name}}}' referenced in config but not set."
+        )
 
     return pattern.sub(_lookup, config_str)
 
