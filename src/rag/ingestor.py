@@ -194,7 +194,7 @@ def ingest_corpus(
                     path, store, bm25, force=force, translate=translate
                 )
                 summary[path.name] = count
-                logger.info("[%s] %s — %d chunks", status.upper(), path.name, count)
+                logger.info("[%s] %s - %d chunks", status.upper(), path.name, count)
             except Exception:
                 logger.exception("Failed to ingest %s", path.name)
 
@@ -224,5 +224,5 @@ def ingest_file(
         with index_rwlock.write():
             store.save()
             bm25.save()
-    logger.info("[%s] %s — %d chunks", status.upper(), path.name, count)
+    logger.info("[%s] %s - %d chunks", status.upper(), path.name, count)
     return count

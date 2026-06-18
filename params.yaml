@@ -29,13 +29,13 @@ rag:
     use_reranker: true
     rerank_batch_size: 16
     # Gate thresholds for the no-reranker branch. RRF scores are normalised
-    # (top is always 1.0) so they need their own scale — the reranker
+    # (top is always 1.0) so they need their own scale - the reranker
     # thresholds above operate on absolute sigmoid scores instead.
     rrf_threshold: 0.5
     rrf_gap_threshold: 0.05
   chunking:
     strategy: "semantic"          # "semantic" | "paragraph"
     breakpoint_percentile: 90     # cosine-distance percentile that triggers a split
-    min_chunk_size: 300           # chars — smaller chunks get merged
-    max_chunk_size: 1500          # chars — bigger semantic groups are sub-split
+    min_chunk_size: 300           # chars - smaller chunks get merged
+    max_chunk_size: 1500          # chars - bigger semantic groups are sub-split
     overlap_sentences: 2          # trailing sentences prepended to next chunk

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 import faiss
 import numpy as np
@@ -92,7 +93,7 @@ class FAISSStore:
         chunk_ids_int: list[int],
         chunk_ids_hex: list[str],
         vectors: np.ndarray,
-        meta_rows: list[dict],
+        meta_rows: list[dict[str, Any]],
     ) -> None:
         """Add or replace vectors by ID. Existing IDs are removed first."""
         if not chunk_ids_int:
@@ -166,7 +167,7 @@ class FAISSStore:
 
     @property
     def total_chunks(self) -> int:
-        return self.index.ntotal
+        return int(self.index.ntotal)
 
 
 def _empty_meta() -> pd.DataFrame:

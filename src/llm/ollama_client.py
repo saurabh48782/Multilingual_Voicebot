@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import httpx
 
 from src.llm.base import LLMResponse
@@ -17,13 +19,13 @@ class OllamaLLM:
 
     def complete(
         self,
-        messages: list[dict],
+        messages: list[dict[str, str]],
         model: str | None = None,
         json_mode: bool = False,
         think: bool = False,
     ) -> LLMResponse:
         model = model or self._default_model
-        payload: dict = {
+        payload: dict[str, Any] = {
             "model": model,
             "messages": messages,
             "stream": False,

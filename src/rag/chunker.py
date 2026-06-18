@@ -76,7 +76,9 @@ def _split_sentences(text: str) -> list[str]:
         return []
     lang = _detect_lang(text)
     try:
-        from indicnlp.tokenize import sentence_tokenize  # type: ignore[import-untyped]
+        from indicnlp.tokenize import (  # type: ignore[import-untyped, unused-ignore]
+            sentence_tokenize,
+        )
 
         sents = sentence_tokenize.sentence_split(text, lang=lang)
     except Exception:

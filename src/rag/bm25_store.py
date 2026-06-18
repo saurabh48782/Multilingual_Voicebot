@@ -198,7 +198,7 @@ class BM25Store:
         return len(self._corpus)
 
 
-# Module-level singleton — loaded lazily, mirrors FAISSStore pattern
+# Module-level singleton - loaded lazily, mirrors FAISSStore pattern
 _store: BM25Store | None = None
 
 

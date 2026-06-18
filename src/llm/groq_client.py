@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from groq import Groq
 
 from src.llm.base import LLMResponse
@@ -26,19 +28,19 @@ class GroqLLM:
 
     def complete(
         self,
-        messages: list[dict],
+        messages: list[dict[str, str]],
         model: str | None = None,
         json_mode: bool = False,
         think: bool = False,  # Groq models have no thinking toggle; accepted for protocol parity.
     ) -> LLMResponse:
         model = model or cfg["llm"]["model"]
-        kwargs: dict = {}
+        kwargs: dict[str, Any] = {}
         if json_mode:
             kwargs["response_format"] = {"type": "json_object"}
 
         resp = _get_client().chat.completions.create(
             model=model,
-            messages=messages,  # type: ignore[arg-type]
+            messages=messages,  # type: ignore[arg-type, unused-ignore]
             **kwargs,
         )
         return LLMResponse(

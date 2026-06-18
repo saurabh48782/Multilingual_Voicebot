@@ -26,15 +26,15 @@ audio_cache_dir = DATA_DIR / "audio_cache"
 def _replace_env_vars(config_str: str) -> str:
     """Replace ${ENV_VAR} or ${ENV_VAR:-default} placeholders with environment values.
 
-    ${VAR}        — raises RuntimeError when unset (required)
-    ${VAR:-}      — returns empty string when unset (optional)
-    ${VAR:-value} — returns 'value' when unset (optional with default)
+    ${VAR}        - raises RuntimeError when unset (required)
+    ${VAR:-}      - returns empty string when unset (optional)
+    ${VAR:-value} - returns 'value' when unset (optional with default)
     """
     pattern = re.compile(r"\$\{(\w+)(?::-(.*?))?\}")
 
-    def _lookup(match: re.Match) -> str:
+    def _lookup(match: re.Match[str]) -> str:
         name = match.group(1)
-        default = match.group(2)  # None when no :- present
+        default: str | None = match.group(2)  # None when no :- present
         value = os.environ.get(name)
         if value is not None:
             return value
@@ -82,7 +82,7 @@ def validate_config() -> None:
             not isinstance(value, (int, float)) or not (0.0 < value <= 1.0)
         ):
             raise RuntimeError(
-                f"Invalid rag.{name}: {value!r} — must be a number in (0, 1]."
+                f"Invalid rag.{name}: {value!r} - must be a number in (0, 1]."
             )
 
 
