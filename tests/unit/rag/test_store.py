@@ -1,8 +1,10 @@
 """Unit tests for the FAISS vector store."""
 
 from pathlib import Path
+
 import numpy as np
 import pytest
+
 from src.rag.embedder import EMBEDDING_DIM
 from src.rag.store import FAISSStore
 
@@ -25,7 +27,7 @@ def _meta_row(
     *,
     chunk_index: int = 0,
     text: str = "text",
-) -> dict:
+) -> dict[str, object]:
     return {
         "chunk_id": cid_hex,
         "chunk_id_int": cid_int,

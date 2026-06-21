@@ -79,7 +79,7 @@ def validate_config() -> None:
     for name in ("retrieval_threshold", "retrieval_gap_threshold"):
         value = rag.get(name)
         if value is not None and (
-            not isinstance(value, (int, float)) or not (0.0 < value <= 1.0)
+            not isinstance(value, int | float) or not (0.0 < value <= 1.0)
         ):
             raise RuntimeError(
                 f"Invalid rag.{name}: {value!r} - must be a number in (0, 1]."

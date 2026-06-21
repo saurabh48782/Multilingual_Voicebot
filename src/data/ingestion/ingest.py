@@ -15,6 +15,9 @@ Usage:
 
     # Show index stats:
     uv run python -m src.data.ingestion.ingest --stats
+
+    # Clear all FAISS + BM25 artifacts and the manifest (wipe the index):
+    uv run python -m src.data.ingestion.ingest --clear
 """
 
 from __future__ import annotations
@@ -45,6 +48,18 @@ def get_stats() -> None:
         for doc in sorted(docs):
             n = len(store._meta[store._meta["doc_id"] == doc])
             print(f"{doc} has : {n} chunks")
+
+
+def clear() -> None:
+    from src.rag.ingestor import clear_index
+
+    removed = clear_index()
+    if removed:
+        print(f"Cleared {len(removed)} index artifact(s):")
+        for path in removed:
+            print(f"  removed {path}")
+    else:
+        print("Nothing to clear; index is already empty.")
 
 
 def ingest(args: argparse.Namespace) -> None:
@@ -90,9 +105,16 @@ def main() -> None:
     parser.add_argument(
         "--stats", action="store_true", help="Show index stats and exit"
     )
+    parser.add_argument(
+        "--clear",
+        action="store_true",
+        help="Delete all FAISS + BM25 artifacts and the manifest, then exit",
+    )
     args = parser.parse_args()
 
-    if args.stats:
+    if args.clear:
+        clear()
+    elif args.stats:
         get_stats()
     else:
         ingest(args)

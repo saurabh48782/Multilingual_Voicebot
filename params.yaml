@@ -6,15 +6,15 @@ api:
 
 llm:
   provider: "ollama"                   # primary ollama | groq
-  model: "gemma4:12b"                  # main generation, thinking enabled; set to "llama-3.3-70b-versatile" when provider=groq
-  aux_model: "gemma4:12b"              # groundedness/rewrite reuse the same resident model (no thinking); set to "llama-3.1-8b-instant" when provider=groq
+  model: "gemma4:26b"                  # main generation, thinking enabled; set to "llama-3.3-70b-versatile" when provider=groq
+  aux_model: "gemma4:26b"              # groundedness/rewrite reuse the same resident model (no thinking); set to "llama-3.1-8b-instant" when provider=groq
   ollama_base_url: "http://localhost:11434"
-  ollama_model: "gemma4:12b"
+  ollama_model: "gemma4:26b"
   think_on_generate: true
 
 translation:
   provider: "ollama"                   # primary: ollama | groq
-  ollama_model: "translategemma:4b"
+  ollama_model: "translategemma:27b"
 
 rag:
   embedding_model: "intfloat/multilingual-e5-large"

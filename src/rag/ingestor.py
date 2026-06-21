@@ -14,16 +14,25 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 import threading
 from pathlib import Path
 
+from src.rag import bm25_store as _bm25_mod
+from src.rag import store as _store_mod
 from src.rag.bm25_store import BM25Store, get_bm25_store
 from src.rag.chunker import chunk_file
 from src.rag.embedder import embed_passages
 from src.rag.locks import index_rwlock
 from src.rag.store import FAISSStore, get_store
+from src.utils.config import (
+    bm25_corpus_path,
+    bm25_index_dir,
+    faiss_index_path,
+    faiss_manifest_path,
+    faiss_metadata_path,
+)
 from src.utils.config import corpus_dir as _default_corpus_dir
-from src.utils.config import faiss_manifest_path
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -58,6 +67,40 @@ def _load_manifest() -> dict[str, str]:
 def _save_manifest(manifest: dict[str, str]) -> None:
     faiss_manifest_path.parent.mkdir(parents=True, exist_ok=True)
     faiss_manifest_path.write_text(json.dumps(manifest, indent=2))
+
+
+# ---------------------------------------------------------------------------
+# Index teardown
+# ---------------------------------------------------------------------------
+
+
+def clear_index() -> list[Path]:
+    """Delete every on-disk FAISS + BM25 artifact and the ingestion manifest.
+    Returns the artifact paths that existed and were removed.
+    """
+    artifacts = [
+        faiss_index_path,
+        faiss_metadata_path,
+        faiss_manifest_path,
+        bm25_corpus_path,
+        bm25_index_dir,
+    ]
+    removed: list[Path] = []
+    with _INGEST_LOCK, index_rwlock.write():
+        for path in artifacts:
+            if not path.exists():
+                continue
+            if path.is_dir():
+                shutil.rmtree(path)
+            else:
+                path.unlink()
+            removed.append(path)
+        # Drop cached singletons; the next get_store()/get_bm25_store() rebuilds
+        # an empty index from the now-missing files.
+        _store_mod._store = None
+        _bm25_mod._store = None
+    logger.info("Cleared index", artifacts_removed=len(removed))
+    return removed
 
 
 # ---------------------------------------------------------------------------
