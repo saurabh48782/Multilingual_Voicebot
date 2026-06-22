@@ -39,3 +39,8 @@ rag:
     min_chunk_size: 300           # chars - smaller chunks get merged
     max_chunk_size: 1500          # chars - bigger semantic groups are sub-split
     overlap_sentences: 2          # trailing sentences prepended to next chunk
+
+stt:
+  primary: "groq"
+  whisper_model: "whisper-large-v3"
+  faster_whisper_model: "large-v3"
