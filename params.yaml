@@ -41,6 +41,11 @@ rag:
     overlap_sentences: 2          # trailing sentences prepended to next chunk
 
 stt:
-  primary: "groq"
-  whisper_model: "whisper-large-v3"
-  faster_whisper_model: "large-v3"
+  provider: "indic_conformer"
+  decode_strategy: "rnnt"              # rnnt (accurate) | ctc (faster)
+  remote_url: "${STT_REMOTE_URL:-}"    # stt_conformer sidecar URL (required; compose sets http://stt:8002)
+
+tts:
+  provider: "indic_parler"
+  description: "A clear, calm voice speaks at a natural, moderate pace in a quiet environment. The recording is very high quality, with the voice sounding close-up and natural, with no background noise."
+  remote_url: "${TTS_REMOTE_URL:-}"   # tts_parler sidecar URL (required; compose sets http://tts:8001)

@@ -14,6 +14,8 @@ class TranslationProvider(StrEnum):
 
 
 class TTSProvider(StrEnum):
-    MMS = "mms"
-    INDICF5 = "indicf5"
-    GTTS = "gtts"
+    INDIC_PARLER = "indic_parler"
+
+
+class STTProvider(StrEnum):
+    INDIC_CONFORMER = "indic_conformer"

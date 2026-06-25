@@ -1,0 +1,13 @@
+# Inference is ONNX (onnxruntime is installed by the Dockerfile, GPU or CPU per
+# build arg); torch/torchaudio here only decode audio to a 16 kHz wav.
+torch==2.4.1
+torchaudio==2.4.1
+transformers>=4.46,<5
+onnx==1.20.1
+numpy>=1.26,<2
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+python-multipart>=0.0.12
+soundfile>=0.12.1
+sentencepiece>=0.2.0
+protobuf>=4.0.0
