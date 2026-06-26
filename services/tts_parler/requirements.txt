@@ -1,0 +1,11 @@
+# Isolated pinned env for the TTS sidecar; why a separate image: README.md,
+# build/GPU options: Dockerfile.
+torch==2.4.1
+transformers==4.46.1
+parler-tts @ git+https://github.com/huggingface/parler-tts.git
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+soundfile>=0.12.1
+numpy>=1.26
+sentencepiece>=0.2.0
+protobuf>=4.0.0

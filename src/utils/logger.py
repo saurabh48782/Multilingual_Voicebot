@@ -115,7 +115,7 @@ def setup_logging(
     root.addHandler(console)
 
     if enable_file_logging:
-        assert log_file is not None  # nosec B101 - type narrowing; guarded by enable_file_logging
+        assert log_file is not None
         # File formatter: JSON (one object per line)
         json_formatter = structlog.stdlib.ProcessorFormatter(
             processors=[

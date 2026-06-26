@@ -9,7 +9,7 @@ consistent with FAISS.
 
 from __future__ import annotations
 
-import pickle  # nosec B403 - corpus is app-generated and never user-supplied
+import pickle
 import re
 import threading
 from dataclasses import dataclass
@@ -104,9 +104,7 @@ class BM25Store:
     def load(self) -> None:
         if self.corpus_path.exists():
             with open(self.corpus_path, "rb") as f:
-                # nosec B301 - deserialising our own corpus file under data/index,
-                # written by this app's ingestion path; never untrusted input.
-                self._corpus = pickle.load(f)  # nosec B301
+                self._corpus = pickle.load(f)
         else:
             self._corpus = []
         # Index is rebuilt from corpus on demand (cheap, deterministic)
