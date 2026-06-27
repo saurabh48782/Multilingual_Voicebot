@@ -1,11 +1,11 @@
 """Unit tests for the translation layer.
 
 Covers:
-  - GroqTranslator routing, prompt construction, quote-stripping
+  - OllamaTranslator routing, prompt construction, quote-stripping
   - Round-trip semantic-preservation checks (5 sentences each in hi/bn)
     via a deterministic FakeLLM that emulates a translator
   - Empty-input + English-passthrough fast paths
-  - Factory selects provider based on settings.translation_provider
+  - Factory returns OllamaTranslator
 """
 
 from __future__ import annotations
@@ -16,11 +16,10 @@ from dataclasses import dataclass
 import pytest
 
 from src.llm.base import LLMResponse
-from src.translation import GroqTranslator, get_translator
+from src.translation import get_translator
 from src.translation.base import SUPPORTED_VERNACULARS
 from src.translation.base import TranslationProvider as TranslationProtocol
-from src.utils.config import cfg
-from src.utils.providers import TranslationProvider
+from src.translation.ollama_translator import OllamaTranslator
 
 # ---------- fixtures ----------------------------------------------------------
 
@@ -107,14 +106,14 @@ def fake_llm() -> FakeLLM:
 
 
 @pytest.fixture
-def translator(fake_llm: FakeLLM) -> GroqTranslator:
-    return GroqTranslator(llm=fake_llm)
+def translator(fake_llm: FakeLLM) -> OllamaTranslator:
+    return OllamaTranslator(llm=fake_llm)
 
 
 # ---------- protocol conformance ---------------------------------------------
 
 
-def test_groq_translator_satisfies_protocol(translator: GroqTranslator) -> None:
+def test_ollama_translator_satisfies_protocol(translator: OllamaTranslator) -> None:
     assert isinstance(translator, TranslationProtocol)
 
 
@@ -122,7 +121,9 @@ def test_groq_translator_satisfies_protocol(translator: GroqTranslator) -> None:
 
 
 @pytest.mark.parametrize("language", sorted(SUPPORTED_VERNACULARS))
-def test_roundtrip_preserves_meaning(language: str, translator: GroqTranslator) -> None:
+def test_roundtrip_preserves_meaning(
+    language: str, translator: OllamaTranslator
+) -> None:
     for vern, english in PAIRS[language]:
         en_result = translator.to_english(vern, source_language=language)
         assert en_result.text == english
@@ -139,7 +140,7 @@ def test_roundtrip_preserves_meaning(language: str, translator: GroqTranslator) 
 
 
 def test_english_input_is_passthrough(
-    translator: GroqTranslator, fake_llm: FakeLLM
+    translator: OllamaTranslator, fake_llm: FakeLLM
 ) -> None:
     result = translator.to_english("Hello world", source_language="en")
     assert result.text == "Hello world"
@@ -147,7 +148,7 @@ def test_english_input_is_passthrough(
 
 
 def test_empty_text_is_passthrough(
-    translator: GroqTranslator, fake_llm: FakeLLM
+    translator: OllamaTranslator, fake_llm: FakeLLM
 ) -> None:
     result = translator.to_vernacular("   ", target_language="hi")
     assert result.text == "   "
@@ -155,19 +156,19 @@ def test_empty_text_is_passthrough(
 
 
 def test_english_target_is_passthrough(
-    translator: GroqTranslator, fake_llm: FakeLLM
+    translator: OllamaTranslator, fake_llm: FakeLLM
 ) -> None:
     result = translator.to_vernacular("Hello", target_language="en")
     assert result.text == "Hello"
     assert fake_llm.calls == []
 
 
-def test_unsupported_source_raises(translator: GroqTranslator) -> None:
+def test_unsupported_source_raises(translator: OllamaTranslator) -> None:
     with pytest.raises(ValueError, match="Unsupported source language"):
         translator.to_english("bonjour", source_language="fr")
 
 
-def test_unsupported_target_raises(translator: GroqTranslator) -> None:
+def test_unsupported_target_raises(translator: OllamaTranslator) -> None:
     with pytest.raises(ValueError, match="Unsupported target language"):
         translator.to_vernacular("hello", target_language="fr")
 
@@ -176,7 +177,7 @@ def test_unsupported_target_raises(translator: GroqTranslator) -> None:
 
 
 def test_to_english_prompt_names_source_language(
-    translator: GroqTranslator, fake_llm: FakeLLM
+    translator: OllamaTranslator, fake_llm: FakeLLM
 ) -> None:
     translator.to_english("नमस्ते", source_language="hi")
     assert fake_llm.calls
@@ -196,7 +197,7 @@ def test_quoted_output_is_stripped(fake_llm: FakeLLM) -> None:
         ) -> LLMResponse:
             return LLMResponse(content='"Hello world"', model="x", usage={})
 
-    translator = GroqTranslator(llm=QuotingLLM({}))
+    translator = OllamaTranslator(llm=QuotingLLM({}))
     result = translator.to_english("नमस्ते दुनिया", source_language="hi")
     assert result.text == "Hello world"
 
@@ -204,9 +205,8 @@ def test_quoted_output_is_stripped(fake_llm: FakeLLM) -> None:
 # ---------- factory ----------------------------------------------------------
 
 
-def test_factory_default_returns_groq(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setitem(cfg["translation"], "provider", TranslationProvider.GROQ.value)
-    assert isinstance(get_translator(), GroqTranslator)
+def test_factory_default_returns_ollama() -> None:
+    assert isinstance(get_translator(), OllamaTranslator)
 
 
 # ---------- batch translation (corpus ingestion path) ------------------------
@@ -243,7 +243,7 @@ class _NumberedLLM:
 
 def test_to_english_batch_aligns_and_translates() -> None:
     llm = _NumberedLLM()
-    translator = GroqTranslator(llm=llm)
+    translator = OllamaTranslator(llm=llm)
     texts = ["नमस्ते", "Already English", "धन्यवाद"]
 
     out = translator.to_english_batch(texts)
@@ -254,7 +254,7 @@ def test_to_english_batch_aligns_and_translates() -> None:
 
 def test_to_english_batch_splits_into_batches_of_ten() -> None:
     llm = _NumberedLLM()
-    translator = GroqTranslator(llm=llm)
+    translator = OllamaTranslator(llm=llm)
     texts = [f"passage {i}" for i in range(23)]
 
     out = translator.to_english_batch(texts)

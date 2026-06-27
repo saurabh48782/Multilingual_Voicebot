@@ -4,7 +4,7 @@ Flow per file:
   1. Compute SHA-256 file hash; skip if manifest shows it's unchanged.
   2. Chunk into passages (PDF page-aware or plain-text).
   3. Translate non-English passages to English via the configured translation
-     provider (Ollama by default; Groq if translation.provider='groq').
+     provider (Ollama via translategemma).
   4. Embed with multilingual-e5-large (passage prefix, L2-normalised).
   5. Upsert into FAISS store with metadata.
   6. Persist index + parquet + manifest.

@@ -1,19 +1,17 @@
 api:
-  groq_api_key: "${GROQ_API_KEY:-}"    # optional - only required when llm/translation.provider=groq
   host: "${API_HOST:-0.0.0.0}"
   port: "${API_PORT:-8000}"
   debug: "${DEBUG:-false}"
 
 llm:
-  provider: "ollama"                   # primary ollama | groq
-  model: "gemma4:26b"                  # main generation, thinking enabled; set to "llama-3.3-70b-versatile" when provider=groq
-  aux_model: "gemma4:26b"              # groundedness/rewrite reuse the same resident model (no thinking); set to "llama-3.1-8b-instant" when provider=groq
+  provider: "ollama"
+  model: "gemma4:26b"
   ollama_base_url: "http://localhost:11434"
   ollama_model: "gemma4:26b"
   think_on_generate: true
 
 translation:
-  provider: "ollama"                   # primary: ollama | groq
+  provider: "ollama"
   ollama_model: "translategemma:27b"
 
 rag:

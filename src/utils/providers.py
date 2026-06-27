@@ -4,13 +4,11 @@ from enum import StrEnum
 
 
 class LLMProvider(StrEnum):
-    GROQ = "groq"
     OLLAMA = "ollama"
 
 
 class TranslationProvider(StrEnum):
     OLLAMA = "ollama"
-    GROQ = "groq"
 
 
 class TTSProvider(StrEnum):

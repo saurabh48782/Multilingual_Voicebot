@@ -1,8 +1,7 @@
 """Shared LLM-as-translator logic.
 
-``GroqTranslator`` and ``OllamaTranslator`` differ only in which LLM client and
-model they wire up; the routing, prompt construction, quote-stripping, and
-batch path are identical, so they live here and are inherited. Subclasses set
+``OllamaTranslator`` inherits routing, prompt construction, quote-stripping, and
+batch logic from here. Subclasses set
 ``self._llm`` and ``self._model`` in their ``__init__``.
 """
 
