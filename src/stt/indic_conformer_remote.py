@@ -22,10 +22,8 @@ class IndicConformerRemoteStt:
     def __init__(self, base_url: str) -> None:
         self._base_url = base_url.rstrip("/")
 
-    def transcribe(
-        self, audio: bytes, language: str | None = None
-    ) -> TranscriptionResult:
-        lang = (language or "hi").lower()
+    def transcribe(self, audio: bytes, language: str) -> TranscriptionResult:
+        lang = language.lower()
         strategy = (cfg.get("stt", {}).get("decode_strategy") or "rnnt").lower()
         resp = httpx.post(
             f"{self._base_url}/stt",

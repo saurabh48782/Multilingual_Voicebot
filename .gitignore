@@ -48,6 +48,7 @@ logs/
 # Data files
 *.csv
 *.xlsx
+*.png
 output/
 reports/
 /data/

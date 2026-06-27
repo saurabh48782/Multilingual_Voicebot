@@ -18,5 +18,5 @@ class STTProvider(Protocol):
     def transcribe(
         self,
         audio: bytes,
-        language: str | None = None,
+        language: str,
     ) -> TranscriptionResult: ...

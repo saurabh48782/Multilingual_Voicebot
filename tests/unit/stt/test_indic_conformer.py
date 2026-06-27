@@ -54,17 +54,17 @@ def test_remote_client_sends_multipart_and_parses_response(monkeypatch: Any) -> 
     assert "audio" in captured["files"]
 
 
-def test_remote_client_defaults_language_to_hindi(monkeypatch: Any) -> None:
+def test_remote_client_normalises_language_to_lowercase(monkeypatch: Any) -> None:
     captured: dict[str, Any] = {}
 
     def fake_post(url: str, **kwargs: Any) -> _FakeResponse:
         captured["data"] = kwargs.get("data")
-        return _FakeResponse({"text": "x", "language": "hi"})
+        return _FakeResponse({"text": "x", "language": "bn"})
 
     monkeypatch.setattr(remote_module.httpx, "post", fake_post)
 
-    IndicConformerRemoteStt("http://stt:8002").transcribe(b"a", language=None)
-    assert captured["data"]["language"] == "hi"
+    IndicConformerRemoteStt("http://stt:8002").transcribe(b"a", language="BN")
+    assert captured["data"]["language"] == "bn"
 
 
 def test_default_stt_routes_remote_when_url_set(monkeypatch: Any) -> None:
