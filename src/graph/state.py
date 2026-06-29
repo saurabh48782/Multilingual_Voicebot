@@ -24,7 +24,6 @@ class VoicebotState(TypedDict, total=False):
 
     # transcription / language
     transcript: str
-    transcript_scrubbed: str
     source_language: str  # "hi" | "bn" | "en"
 
     # translation / rewrite
@@ -52,3 +51,5 @@ class VoicebotState(TypedDict, total=False):
 
     # conversation memory
     messages: Annotated[list[BaseMessage], add_messages]
+    # rolling LLM summary of turns older than KEEP_RECENT
+    conversation_summary: str

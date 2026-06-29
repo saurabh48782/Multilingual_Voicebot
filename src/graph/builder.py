@@ -10,9 +10,13 @@ Flow:
     → retrieve
     → (confidence pass) → generate
                             → verify_groundedness
-                                → (grounded)   → translate_to_vernacular → synthesize → END
-                                → (ungrounded) → fallback                → synthesize → END
-    → (confidence fail) → fallback             → synthesize → END
+                                → (grounded)   → translate_to_vernacular → synthesize → [summarize?] → END
+                                → (ungrounded) → fallback                → synthesize → [summarize?] → END
+    → (confidence fail) → fallback             → synthesize → [summarize?] → END
+
+`summarize` fires after `synthesize` when accumulated messages >= SUMMARIZE_THRESHOLD (8).
+It compresses the oldest messages into `conversation_summary` and removes them from state,
+keeping the checkpoint bounded while giving `rewrite_query` full conversation context.
 
 `build_graph(checkpointer, deps)` returns a compiled `StateGraph`. A
 `checkpointer` is required — use `async_postgres_checkpointer()` for
@@ -32,6 +36,7 @@ from src.graph.nodes.generate import make_generate
 from src.graph.nodes.pii_scrub import pii_scrub
 from src.graph.nodes.retrieve import make_retrieve
 from src.graph.nodes.rewrite_query import make_rewrite_query
+from src.graph.nodes.summarize import make_summarize, should_summarize
 from src.graph.nodes.synthesize import make_synthesize
 from src.graph.nodes.transcribe import make_transcribe
 from src.graph.nodes.translate import make_to_english, make_to_vernacular
@@ -67,6 +72,7 @@ def build_graph(
     graph.add_node("translate_to_vernacular", make_to_vernacular(deps))
     graph.add_node("fallback", fallback)
     graph.add_node("synthesize", make_synthesize(deps))
+    graph.add_node("summarize", make_summarize(deps))
 
     graph.add_edge(START, "transcribe")
     graph.add_edge("transcribe", "pii_scrub")
@@ -90,6 +96,11 @@ def build_graph(
     )
     graph.add_edge("translate_to_vernacular", "synthesize")
     graph.add_edge("fallback", "synthesize")
-    graph.add_edge("synthesize", END)
+    graph.add_conditional_edges(
+        "synthesize",
+        should_summarize,
+        {"summarize": "summarize", "end": END},
+    )
+    graph.add_edge("summarize", END)
 
     return graph.compile(checkpointer=checkpointer)

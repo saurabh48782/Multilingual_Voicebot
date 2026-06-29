@@ -11,4 +11,4 @@ from src.utils.pii import scrub
 def pii_scrub(state: VoicebotState) -> dict[str, Any]:
     transcript = state.get("transcript", "")
     scrubbed = scrub(transcript)
-    return {"transcript_scrubbed": scrubbed, "transcript": scrubbed}
+    return {"transcript": scrubbed}
