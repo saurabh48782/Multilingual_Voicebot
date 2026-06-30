@@ -1,0 +1,84 @@
+"""Grounded answer generation against retrieved context."""
+
+from __future__ import annotations
+
+import re
+from collections.abc import Callable
+from typing import Any
+
+from src.graph.deps import Deps
+from src.graph.prompts import (
+    GENERATE_PROMPT,
+    GENERATE_SYSTEM,
+    INSUFFICIENT_CONTEXT,
+    sanitize_untrusted,
+)
+from src.graph.state import VoicebotState
+from src.rag.store import SearchResult
+from src.utils.config import cfg
+from src.utils.logger import get_logger
+
+logger = get_logger(__name__)
+
+
+def _build_context(docs: list[SearchResult]) -> str:
+    parts = [f"[{i}] {sanitize_untrusted(d.text_en)}" for i, d in enumerate(docs, 1)]
+    return "\n\n---\n\n".join(parts)
+
+
+# Native Ollama thinking returns reasoning in a separate field, but strip any
+# inline <think>/<|think|> blocks defensively so chain-of-thought never reaches
+# the translator/TTS as part of the answer.
+_THINK_TAGS = re.compile(r"<\|?think\|?>.*?</\|?think\|?>", re.DOTALL | re.IGNORECASE)
+
+
+def _strip_thinking(text: str) -> str:
+    return _THINK_TAGS.sub("", text).strip()
+
+
+def make_generate(deps: Deps) -> Callable[[VoicebotState], dict[str, Any]]:
+    def generate(state: VoicebotState) -> dict[str, Any]:
+        docs: list[SearchResult] = state.get("retrieved_docs") or []
+        if not docs:
+            # Never ask the LLM to answer from an empty context - it will invent.
+            return {
+                "english_response": "",
+                "fallback_triggered": True,
+                "fallback_reason": "no_context",
+            }
+
+        query = state.get("rewritten_query") or state.get("english_query", "")
+        context = _build_context(docs)
+
+        try:
+            resp = deps.llm.complete(
+                messages=[
+                    {"role": "system", "content": GENERATE_SYSTEM},
+                    {
+                        "role": "user",
+                        "content": GENERATE_PROMPT.format(context=context, query=query),
+                    },
+                ],
+                model=cfg["llm"]["model"],
+                think=bool(cfg["llm"].get("think_on_generate", False)),
+            )
+        except Exception:
+            logger.exception("Generation LLM failed - degrading to fallback")
+            return {
+                "english_response": "",
+                "fallback_triggered": True,
+                "fallback_reason": "llm_error",
+            }
+        answer = _strip_thinking(resp.content)
+
+        # Prefix match, not substring: context is sanitized so the sentinel can
+        # only come from the model itself, and instructed output starts with it.
+        if answer.startswith(INSUFFICIENT_CONTEXT):
+            return {
+                "english_response": "",
+                "fallback_triggered": True,
+                "fallback_reason": "insufficient_context",
+            }
+        return {"english_response": answer}
+
+    return generate
