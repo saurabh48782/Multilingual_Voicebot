@@ -7,18 +7,7 @@ import pytest
 from src.graph.nodes.retrieve import make_retrieve
 from src.rag.retriever import RetrievalResult
 from src.rag.store import SearchResult
-
-
-def _doc(text: str = "PM Kisan: ₹6000/year.", score: float = 0.9) -> SearchResult:
-    return SearchResult(
-        chunk_id="c1",
-        doc_id="doc1",
-        chunk_index=0,
-        text_en=text,
-        source="doc.pdf",
-        page_num=1,
-        score=score,
-    )
+from tests.unit.graph.nodes.conftest import make_doc
 
 
 def _node(retriever: MagicMock | None = None):
@@ -74,13 +63,13 @@ def test_blank_query_defaults_fallback_reason_to_empty_query() -> None:
 
 # query preference
 def test_prefers_rewritten_query_over_english_query() -> None:
-    retriever = _retriever_returning([_doc()])
+    retriever = _retriever_returning([make_doc()])
     _node(retriever)({"rewritten_query": "rewritten", "english_query": "original"})
     retriever.search.assert_called_once_with("rewritten")
 
 
 def test_falls_back_to_english_query_when_no_rewritten() -> None:
-    retriever = _retriever_returning([_doc()])
+    retriever = _retriever_returning([make_doc()])
     _node(retriever)({"english_query": "What is PM Kisan?"})
     retriever.search.assert_called_once_with("What is PM Kisan?")
 
@@ -97,7 +86,7 @@ def test_falls_back_to_english_query_when_no_rewritten() -> None:
 def test_successful_retrieval_returns_all_fields(
     passed: bool, top_score: float, gap: float
 ) -> None:
-    docs = [_doc(score=top_score)]
+    docs = [make_doc(score=top_score)]
     retriever = _retriever_returning(docs, passed=passed, top_score=top_score, gap=gap)
     result = _node(retriever)({"rewritten_query": "PM Kisan eligibility"})
     assert result["retrieved_docs"] == docs
