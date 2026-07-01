@@ -47,3 +47,8 @@ def make_retrieve(deps: Deps) -> Callable[[VoicebotState], dict[str, Any]]:
         }
 
     return retrieve
+
+
+def route_after_retrieve(state: VoicebotState) -> str:
+    """Return next node name based on the retrieval confidence gate."""
+    return "generate" if state.get("retrieval_passed") else "fallback"

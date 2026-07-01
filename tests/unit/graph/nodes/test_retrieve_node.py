@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from src.graph.nodes.retrieve import make_retrieve
+from src.graph.nodes.retrieve import make_retrieve, route_after_retrieve
 from src.rag.retriever import RetrievalResult
 from src.rag.store import SearchResult
 from tests.unit.graph.nodes.conftest import make_doc
@@ -112,3 +112,18 @@ def test_retriever_exception_returns_retrieval_error_fallback(exc: Exception) ->
         "retrieval_passed": False,
         "fallback_reason": "retrieval_error",
     }
+
+
+# confidence-gate router
+@pytest.mark.parametrize(
+    ("state", "expected"),
+    [
+        ({"retrieval_passed": True}, "generate"),
+        ({"retrieval_passed": False}, "fallback"),
+        ({}, "fallback"),
+        ({"retrieval_passed": None}, "fallback"),
+    ],
+    ids=["passed-true", "passed-false", "key-absent", "passed-none"],
+)
+def test_route_after_retrieve(state: dict, expected: str) -> None:
+    assert route_after_retrieve(state) == expected  # type: ignore[arg-type]

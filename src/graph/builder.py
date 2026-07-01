@@ -30,11 +30,10 @@ from typing import TYPE_CHECKING, Any
 from langgraph.graph import END, START, StateGraph
 
 from src.graph.deps import Deps
-from src.graph.nodes.confidence import route_after_retrieve
 from src.graph.nodes.fallback import fallback
 from src.graph.nodes.generate import make_generate
 from src.graph.nodes.pii_scrub import pii_scrub
-from src.graph.nodes.retrieve import make_retrieve
+from src.graph.nodes.retrieve import make_retrieve, route_after_retrieve
 from src.graph.nodes.rewrite_query import make_rewrite_query
 from src.graph.nodes.summarize import make_summarize, should_summarize
 from src.graph.nodes.synthesize import make_synthesize
