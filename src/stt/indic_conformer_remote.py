@@ -11,6 +11,7 @@ import httpx
 
 from src.stt.base import TranscriptionResult
 from src.utils.config import cfg
+from src.utils.observability import redact_audio_inputs, traceable
 
 # Transcription is fast once warm, but the first call also loads the model.
 _TIMEOUT = httpx.Timeout(connect=10.0, read=180.0, write=30.0, pool=10.0)
@@ -22,6 +23,8 @@ class IndicConformerRemoteStt:
     def __init__(self, base_url: str) -> None:
         self._base_url = base_url.rstrip("/")
 
+    # Traced as a tool span; raw audio bytes are redacted to a byte count.
+    @traceable(run_type="tool", name="stt_sidecar", process_inputs=redact_audio_inputs)
     def transcribe(self, audio: bytes, language: str) -> TranscriptionResult:
         lang = language.lower()
         strategy = (cfg.get("stt", {}).get("decode_strategy") or "rnnt").lower()

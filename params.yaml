@@ -3,6 +3,13 @@ api:
   port: "${API_PORT:-8000}"
   debug: "${DEBUG:-false}"
 
+observability:
+  langsmith:
+    enabled: "${LANGSMITH_TRACING:-false}"   # true → export every graph turn to LangSmith
+    api_key: "${LANGSMITH_API_KEY:-}"
+    project: "${LANGSMITH_PROJECT:-voicebot}"
+    endpoint: "${LANGSMITH_ENDPOINT:-https://api.smith.langchain.com}"
+
 llm:
   provider: "ollama"
   model: "gemma4:26b"

@@ -8,6 +8,7 @@ import httpx
 
 from src.llm.base import LLMResponse
 from src.utils.config import cfg
+from src.utils.observability import llm_run_outputs, strip_self, traceable
 
 
 class OllamaLLM:
@@ -17,6 +18,14 @@ class OllamaLLM:
         self._base_url = (base_url or cfg["llm"]["ollama_base_url"]).rstrip("/")
         self._default_model = model or cfg["llm"]["ollama_model"]
 
+    # LangGraph traces the node span; this makes the actual LLM call inside it
+    # a nested llm-type span with prompt/completion token usage.
+    @traceable(
+        run_type="llm",
+        name="ollama_chat",
+        process_inputs=strip_self,
+        process_outputs=llm_run_outputs,
+    )
     def complete(
         self,
         messages: list[dict[str, str]],
