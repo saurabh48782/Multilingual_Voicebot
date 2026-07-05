@@ -6,21 +6,19 @@ from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from typing import Any
 
-import asyncpg
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
 from src.api.audio_cache import AudioCache
 from src.api.routers import audio, chat, documents, evaluation, health, sessions, voice
 from src.api.security import ApiKeyMiddleware, RateLimitMiddleware, api_key_configured
 from src.api.templates import mount_frontend
+from src.db.db import checkpointer_lifespan, db_pool_lifespan
 from src.graph.builder import build_graph
 from src.graph.deps import Deps
 from src.rag.bm25_store import get_bm25_store
 from src.rag.store import get_store
-from src.utils.config import cfg
 from src.utils.logger import get_logger, setup_logging
 from src.utils.observability import configure_tracing
 
@@ -42,19 +40,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     app.state.bm25_store = get_bm25_store()
     app.state.audio_cache = AudioCache()
 
-    pool = await asyncpg.create_pool(cfg["memory"]["checkpoint_dsn"])
-    app.state.db_pool = pool
-    try:
-        async with AsyncPostgresSaver.from_conn_string(
-            cfg["memory"]["checkpoint_dsn"]
-        ) as checkpointer:
-            await checkpointer.setup()
-            app.state.checkpointer = checkpointer
-            app.state.graph = build_graph(checkpointer=checkpointer, deps=Deps())
-            logger.info("voicebot lifespan up - graph compiled, FAISS + BM25 loaded")
-            yield
-    finally:
-        await pool.close()
+    async with db_pool_lifespan(app), checkpointer_lifespan(app) as checkpointer:
+        app.state.graph = build_graph(checkpointer=checkpointer, deps=Deps())
+        logger.info("voicebot lifespan up - graph compiled, FAISS + BM25 loaded")
+        yield
 
 
 def create_app(bootstrap: Callable[[FastAPI], None] | None = None) -> FastAPI:

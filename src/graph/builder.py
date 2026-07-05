@@ -8,19 +8,18 @@ Flow:
     → translate_to_english
     → rewrite_query
     → retrieve
-    → (confidence pass) → generate
-                            → verify_groundedness
-                                → (grounded)   → translate_to_vernacular → synthesize → [summarize?] → END
-                                → (ungrounded) → fallback                → synthesize → [summarize?] → END
-    → (confidence fail) → fallback             → synthesize → [summarize?] → END
+    → (confidence pass) → generate → verify_groundedness
+        → (grounded)   → translate_to_vernacular → synthesize → [summarize?] → END
+        → (ungrounded) → fallback                → synthesize → [summarize?] → END
+    → (confidence fail) → fallback → synthesize → [summarize?] → END
 
 `summarize` fires after `synthesize` when accumulated messages >= SUMMARIZE_THRESHOLD (8).
 It compresses the oldest messages into `conversation_summary` and removes them from state,
 keeping the checkpoint bounded while giving `rewrite_query` full conversation context.
 
 `build_graph(checkpointer, deps)` returns a compiled `StateGraph`. A
-`checkpointer` is required — use `async_postgres_checkpointer()` for
-production or pass a `MemorySaver` explicitly in tests.
+`checkpointer` is required - production opens one via `checkpointer_lifespan()`
+in `src/db/db.py`; tests pass a `MemorySaver` explicitly.
 """
 
 from __future__ import annotations
