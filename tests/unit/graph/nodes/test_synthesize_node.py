@@ -1,18 +1,24 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
 from langchain_core.messages import AIMessage, HumanMessage
 
 from src.graph.nodes.synthesize import make_synthesize
+from src.graph.state import VoicebotState
 
 
-def _node(tts: MagicMock | None = None):
+def _node(
+    tts: MagicMock | None = None,
+) -> tuple[Callable[[VoicebotState], dict[str, Any]], MagicMock]:
     deps = MagicMock()
     if tts is not None:
         deps.tts = tts
-    return make_synthesize(deps)
+    deps.audio_cache.put.return_value = "cached-audio-id"
+    return make_synthesize(deps), deps
 
 
 # TTS called / not called
@@ -20,9 +26,11 @@ def test_tts_called_when_text_present() -> None:
     tts = MagicMock()
     tts.synthesize.return_value = b"AUDIO"
     state = {"vernacular_response": "पीएम किसान ₹6000 देता है।", "source_language": "hi"}
-    result = _node(tts)(state)  # type: ignore[arg-type]
+    node, deps = _node(tts)
+    result = node(state)  # type: ignore[arg-type]
     tts.synthesize.assert_called_once_with("पीएम किसान ₹6000 देता है।", "hi")
-    assert result["audio_output"] == b"AUDIO"
+    deps.audio_cache.put.assert_called_once_with(b"AUDIO", content_type="audio/wav")
+    assert result["audio_id"] == "cached-audio-id"
 
 
 @pytest.mark.parametrize(
@@ -33,11 +41,13 @@ def test_tts_called_when_text_present() -> None:
     ],
     ids=["empty-text", "missing-key"],
 )
-def test_tts_not_called_when_text_absent(state: dict) -> None:
+def test_tts_not_called_when_text_absent(state: dict[str, Any]) -> None:
     tts = MagicMock()
-    result = _node(tts)(state)  # type: ignore[arg-type]
+    node, deps = _node(tts)
+    result = node(state)  # type: ignore[arg-type]
     tts.synthesize.assert_not_called()
-    assert result["audio_output"] is None
+    deps.audio_cache.put.assert_not_called()
+    assert result["audio_id"] is None
 
 
 # TTS exception - graceful degradation
@@ -56,14 +66,17 @@ def test_tts_exception_returns_none_audio_but_still_appends_messages(
         "transcript": "What is PM Kisan?",
         "english_response": "PM Kisan gives ₹6000.",
     }
-    result = _node(tts)(state)  # type: ignore[arg-type]
-    assert result["audio_output"] is None
+    node, deps = _node(tts)
+    result = node(state)  # type: ignore[arg-type]
+    deps.audio_cache.put.assert_not_called()
+    assert result["audio_id"] is None
     assert len(result["messages"]) == 2
 
 
 # always returns audio_content_type
 def test_audio_content_type_always_set() -> None:
-    result = _node()({"vernacular_response": "", "source_language": "en"})  # type: ignore[arg-type]
+    node, _ = _node()
+    result = node({"vernacular_response": "", "source_language": "en"})
     assert result["audio_content_type"] == "audio/wav"
 
 
@@ -84,7 +97,8 @@ def test_messages_human_turn(transcript: str | None, expected: str) -> None:
     }
     if transcript is not None:
         state["transcript"] = transcript
-    result = _node()(state)  # type: ignore[arg-type]
+    node, _ = _node()
+    result = node(state)  # type: ignore[arg-type]
     human_msg = result["messages"][0]
     assert isinstance(human_msg, HumanMessage)
     assert human_msg.content == expected
@@ -108,7 +122,8 @@ def test_messages_ai_turn(
     }
     if english_response is not None:
         state["english_response"] = english_response
-    result = _node()(state)  # type: ignore[arg-type]
+    node, _ = _node()
+    result = node(state)  # type: ignore[arg-type]
     ai_msg = result["messages"][1]
     assert isinstance(ai_msg, AIMessage)
     assert ai_msg.content == expected
@@ -123,5 +138,6 @@ def test_tts_receives_correct_language(lang: str) -> None:
     tts = MagicMock()
     tts.synthesize.return_value = b"AUDIO"
     state = {"vernacular_response": "Some text.", "source_language": lang}
-    _node(tts)(state)  # type: ignore[arg-type]
+    node, _ = _node(tts)
+    node(state)  # type: ignore[arg-type]
     tts.synthesize.assert_called_once_with("Some text.", lang)

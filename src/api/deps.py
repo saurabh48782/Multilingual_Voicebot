@@ -12,6 +12,7 @@ from typing import Any
 from fastapi import Depends, Request
 
 from src.api.audio_cache import AudioCache
+from src.api.session_locks import SessionLocks
 
 
 def get_graph(request: Request) -> Any:
@@ -34,7 +35,13 @@ def get_db_pool(request: Request) -> Any:
     return getattr(request.app.state, "db_pool", None)
 
 
+def get_session_locks(request: Request) -> SessionLocks:
+    locks: SessionLocks = request.app.state.session_locks
+    return locks
+
+
 GraphDep = Depends(get_graph)
 AudioCacheDep = Depends(get_audio_cache)
 CheckpointerDep = Depends(get_checkpointer)
 DbPoolDep = Depends(get_db_pool)
+SessionLocksDep = Depends(get_session_locks)

@@ -28,7 +28,7 @@ from src.utils.logger import get_logger
 logger = get_logger(__name__)
 
 
-class GroundednessVerdict(BaseModel):
+class GroundednessVerdict(BaseModel):  # type: ignore[misc]
     grounded: bool
     reasoning: str = ""
 
@@ -38,7 +38,7 @@ def parse_verdict(content: str) -> bool:
     callers must treat that as ungrounded (fail closed).
     """
     data = parse_json_markdown(content.strip(), parser=json.loads)
-    return GroundednessVerdict.model_validate(data).grounded
+    return GroundednessVerdict.model_validate(data).grounded  # type: ignore[no-any-return]
 
 
 def make_verify_groundedness(deps: Deps) -> Callable[[VoicebotState], dict[str, Any]]:
@@ -50,6 +50,7 @@ def make_verify_groundedness(deps: Deps) -> Callable[[VoicebotState], dict[str, 
         if not answer:
             return {"grounded": False}
 
+        query = state.get("rewritten_query") or state.get("english_query", "")
         context = _build_context(state.get("retrieved_docs") or [])
         reason = "ungrounded"
         try:
@@ -59,12 +60,18 @@ def make_verify_groundedness(deps: Deps) -> Callable[[VoicebotState], dict[str, 
                     {
                         "role": "user",
                         "content": GROUNDEDNESS_PROMPT.format(
-                            context=context, answer=sanitize_untrusted(answer)
+                            context=context,
+                            query=sanitize_untrusted(query),
+                            answer=sanitize_untrusted(answer),
                         ),
                     },
                 ],
-                model=cfg["llm"]["model"],
+                # Defaults to the shared generation model, but a different-family
+                # model can be pinned via llm.verifier_model to avoid correlated
+                # failure modes between generator and verifier.
+                model=cfg["llm"].get("verifier_model") or cfg["llm"]["model"],
                 json_mode=True,
+                temperature=0.0,  # deterministic safety gate
             )
             grounded = parse_verdict(resp.content)
         except Exception:

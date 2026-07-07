@@ -40,7 +40,7 @@ class IndicParlerRemoteTts:
         self._base_url = base_url.rstrip("/")
 
     # Traced as a tool span; audio output is redacted to a byte count.
-    @traceable(
+    @traceable(  # type: ignore[misc]
         run_type="tool",
         name="tts_sidecar",
         process_inputs=strip_self,
@@ -53,4 +53,4 @@ class IndicParlerRemoteTts:
             timeout=_TIMEOUT,
         )
         resp.raise_for_status()
-        return resp.content
+        return resp.content  # type: ignore[no-any-return]

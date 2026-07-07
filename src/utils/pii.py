@@ -20,10 +20,14 @@ _SIX_TO_NINE = "6-9६-९৬-৯௬-௯"
 _PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.-]+\b"), "[EMAIL]"),
     # PHONE must precede AADHAAR and ACCOUNT - a 10-digit Indian phone matches
-    # both \d{9,18} and (with +91 prefix) \d{4}\s?\d{4}\s?\d{4}
-    (re.compile(rf"(?<!\d)(?:\+91|91)?[{_SIX_TO_NINE}]\d{{9}}(?!\d)"), "[PHONE]"),
-    (re.compile(r"\b\d{4}\s?\d{4}\s?\d{4}\b"), "[AADHAAR]"),
-    (re.compile(r"\b[A-Z]{5}[0-9]{4}[A-Z]\b"), "[PAN]"),
+    # both \d{9,18} and (with +91 prefix) \d{4}\s?\d{4}\s?\d{4}. Digits may be
+    # grouped with spaces/hyphens (e.g. "98765 43210", "9876-543-210").
+    (
+        re.compile(rf"(?<!\d)(?:\+91[\s-]?|91[\s-]?)?" rf"[{_SIX_TO_NINE}](?:[\s-]?\d){{9}}(?!\d)"),
+        "[PHONE]",
+    ),
+    (re.compile(r"\b\d{4}[\s-]?\d{4}[\s-]?\d{4}\b"), "[AADHAAR]"),
+    (re.compile(r"\b[A-Z]{5}[0-9]{4}[A-Z]\b", re.IGNORECASE), "[PAN]"),
     (re.compile(r"\b\d{9,18}\b"), "[ACCOUNT]"),
 ]
 

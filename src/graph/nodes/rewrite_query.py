@@ -33,9 +33,7 @@ def _format_recent(messages: list[BaseMessage]) -> str:
 def _build_history_context(messages: list[BaseMessage], summary: str) -> str:
     parts: list[str] = []
     if summary:
-        parts.append(
-            f"[Summary of earlier conversation]\n{sanitize_untrusted(summary)}"
-        )
+        parts.append(f"[Summary of earlier conversation]\n{sanitize_untrusted(summary)}")
     recent = _format_recent(messages)
     if recent:
         parts.append(f"[Recent turns]\n{recent}")
@@ -60,12 +58,11 @@ def make_rewrite_query(deps: Deps) -> Callable[[VoicebotState], dict[str, Any]]:
                     {"role": "system", "content": REWRITE_SYSTEM},
                     {
                         "role": "user",
-                        "content": REWRITE_PROMPT.format(
-                            history=history_context, query=query
-                        ),
+                        "content": REWRITE_PROMPT.format(history=history_context, query=query),
                     },
                 ],
                 model=cfg["llm"]["model"],
+                temperature=0.0,  # deterministic coreference resolution
             )
         except Exception:
             logger.exception("Query rewrite failed - using original query")

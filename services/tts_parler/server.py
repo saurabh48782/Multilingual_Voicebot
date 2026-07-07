@@ -21,10 +21,11 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import Response
 from parler_tts import ParlerTTSForConditionalGeneration
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from transformers import AutoTokenizer
 
 MODEL_ID = "ai4bharat/indic-parler-tts"
+_MAX_TEXT_LEN = 2000  # caps generation cost from an unbounded input string
 DEFAULT_DESCRIPTION = (
     "A clear, calm voice speaks at a natural, moderate pace in a quiet "
     "environment. The recording is very high quality, with the voice sounding "
@@ -54,15 +55,13 @@ def _ensure_loaded() -> None:
         _state.update(
             model=model,
             prompt_tok=AutoTokenizer.from_pretrained(MODEL_ID),
-            desc_tok=AutoTokenizer.from_pretrained(
-                model.config.text_encoder._name_or_path
-            ),
+            desc_tok=AutoTokenizer.from_pretrained(model.config.text_encoder._name_or_path),
             device=device,
         )
 
 
 class TtsRequest(BaseModel):
-    text: str
+    text: str = Field(..., min_length=1, max_length=_MAX_TEXT_LEN)
     description: str | None = None
 
 
@@ -85,7 +84,9 @@ def tts(req: TtsRequest) -> Response:
     desc_ids = desc_tok(description, return_tensors="pt").to(device)
     prompt_ids = prompt_tok(req.text, return_tensors="pt").to(device)
 
-    with torch.no_grad():
+    # Serialize generate() calls: concurrent requests sharing one GPU-resident
+    # model can each allocate enough activation memory to OOM the device.
+    with _lock, torch.no_grad():
         generation = model.generate(
             input_ids=desc_ids.input_ids,
             attention_mask=desc_ids.attention_mask,
@@ -95,9 +96,7 @@ def tts(req: TtsRequest) -> Response:
 
     wav: np.ndarray = generation.cpu().numpy().squeeze()
     buf = io.BytesIO()
-    sf.write(
-        buf, wav, samplerate=model.config.sampling_rate, format="WAV", subtype="PCM_16"
-    )
+    sf.write(buf, wav, samplerate=model.config.sampling_rate, format="WAV", subtype="PCM_16")
     return Response(content=buf.getvalue(), media_type="audio/wav")
 
 

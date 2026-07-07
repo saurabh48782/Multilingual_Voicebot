@@ -42,7 +42,7 @@ class VoicebotState(TypedDict, total=False):
 
     # output
     vernacular_response: str
-    audio_output: bytes | None
+    audio_id: str | None
     audio_content_type: str
 
     # routing flags

@@ -107,9 +107,7 @@ class Retriever:
         with index_rwlock.read():
             dense_hits = self.store.search(qvec, top_k=vec_n)
             dense_ranking = [_search_result_id(r) for r in dense_hits]
-            meta_lookup: dict[int, SearchResult] = {
-                _search_result_id(r): r for r in dense_hits
-            }
+            meta_lookup: dict[int, SearchResult] = {_search_result_id(r): r for r in dense_hits}
 
             bm25_hits = self.bm25.search(query, top_n=bm25_n)
             bm25_ranking = [h.chunk_id_int for h in bm25_hits]
@@ -127,28 +125,26 @@ class Retriever:
 
         # 4. Rerank (or keep RRF order)
         candidate_pool = max(k * 4, 20)
-        candidates = [
-            meta_lookup[cid] for cid, _ in fused[:candidate_pool] if cid in meta_lookup
-        ]
+        candidates = [meta_lookup[cid] for cid, _ in fused[:candidate_pool] if cid in meta_lookup]
 
         if use_reranker and candidates:
             from src.rag.reranker import rerank
 
-            scores = rerank(
-                query, [c.text_en for c in candidates], batch_size=rerank_batch
-            )
-            scored = [_with_score(c, s) for c, s in zip(candidates, scores)]
+            scores = rerank(query, [c.text_en for c in candidates], batch_size=rerank_batch)
+            scored = [_with_score(c, s) for c, s in zip(candidates, scores, strict=False)]
             scored.sort(key=lambda sr: sr.score, reverse=True)
             docs = scored[:k]
         else:
-            # No reranker: use RRF position; carry a normalised RRF score
+            # No reranker: use RRF position; carry a normalised RRF score.
+            # Filter to fused ids with metadata *before* slicing to k, so a
+            # missing-metadata id below the cut doesn't under-fill the top-k.
             top_rrf = fused[0][1] or 1.0
             cid_to_rrf = {cid: score / top_rrf for cid, score in fused}
             docs = [
                 _with_score(meta_lookup[cid], cid_to_rrf[cid])
-                for cid, _ in fused[:k]
+                for cid, _ in fused
                 if cid in meta_lookup
-            ]
+            ][:k]
 
         # 5. Confidence gate. Reranker scores are absolute sigmoids; the
         # RRF-only branch yields relative scores (top normalised to 1.0), so
@@ -159,9 +155,7 @@ class Retriever:
             gap_threshold = float(rag["retrieval_gap_threshold"])
         else:
             threshold = float(retr.get("rrf_threshold", rag["retrieval_threshold"]))
-            gap_threshold = float(
-                retr.get("rrf_gap_threshold", rag["retrieval_gap_threshold"])
-            )
+            gap_threshold = float(retr.get("rrf_gap_threshold", rag["retrieval_gap_threshold"]))
 
         top_score = docs[0].score if docs else 0.0
         second_score = docs[1].score if len(docs) > 1 else 0.0

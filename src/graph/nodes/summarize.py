@@ -62,13 +62,14 @@ def make_summarize(deps: Deps) -> Callable[[VoicebotState], dict[str, Any]]:
                     },
                 ],
                 model=cfg["llm"]["model"],
+                temperature=0.05,  # near-deterministic, faithful compression
             )
             new_summary = resp.content.strip() or previous_summary
         except Exception:
-            logger.exception("Summarization failed - keeping existing summary")
-            new_summary = previous_summary
+            logger.exception("Summarization failed - keeping messages and summary intact")
+            return {}
 
-        removals = [RemoveMessage(id=m.id) for m in to_compress]  # type: ignore[call-arg]
+        removals = [RemoveMessage(id=m.id) for m in to_compress]
         return {"conversation_summary": new_summary, "messages": removals}
 
     return summarize

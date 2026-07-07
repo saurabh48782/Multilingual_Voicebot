@@ -21,9 +21,7 @@ from src.translation.base import SUPPORTED_VERNACULARS
 from src.translation.base import TranslationProvider as TranslationProtocol
 from src.translation.ollama_translator import OllamaTranslator
 
-# ---------- fixtures ----------------------------------------------------------
-
-
+# fixtures
 # (vernacular, english) pairs - kept short so semantic-preservation checks are
 # easy to assert. Five sentences each for hi/bn.
 PAIRS: dict[str, list[tuple[str, str]]] = {
@@ -70,6 +68,9 @@ class FakeLLM:
         model: str | None = None,
         json_mode: bool = False,
         think: bool = False,
+        temperature: float | None = None,
+        num_ctx: int | None = None,
+        **_: object,
     ) -> LLMResponse:
         self.calls.append(_Call(messages=messages, model=model, json_mode=json_mode))
         system = messages[0]["content"]
@@ -80,11 +81,7 @@ class FakeLLM:
         else:
             # Pick whichever vernacular name appears in the system prompt.
             tgt = next(
-                (
-                    code
-                    for code, name in {"hi": "Hindi", "bn": "Bengali"}.items()
-                    if name in system
-                ),
+                (code for code, name in {"hi": "Hindi", "bn": "Bengali"}.items() if name in system),
                 "en",
             )
         translated = self.table.get((user_text, tgt), user_text)
@@ -110,20 +107,14 @@ def translator(fake_llm: FakeLLM) -> OllamaTranslator:
     return OllamaTranslator(llm=fake_llm)
 
 
-# ---------- protocol conformance ---------------------------------------------
-
-
+# protocol conformance
 def test_ollama_translator_satisfies_protocol(translator: OllamaTranslator) -> None:
     assert isinstance(translator, TranslationProtocol)
 
 
-# ---------- round-trip semantic checks (5 sentences per language) ------------
-
-
+# round-trip semantic checks (5 sentences per language)
 @pytest.mark.parametrize("language", sorted(SUPPORTED_VERNACULARS))
-def test_roundtrip_preserves_meaning(
-    language: str, translator: OllamaTranslator
-) -> None:
+def test_roundtrip_preserves_meaning(language: str, translator: OllamaTranslator) -> None:
     for vern, english in PAIRS[language]:
         en_result = translator.to_english(vern, source_language=language)
         assert en_result.text == english
@@ -136,28 +127,20 @@ def test_roundtrip_preserves_meaning(
         assert back.target_language == language
 
 
-# ---------- short-circuit paths ----------------------------------------------
-
-
-def test_english_input_is_passthrough(
-    translator: OllamaTranslator, fake_llm: FakeLLM
-) -> None:
+# short-circuit paths
+def test_english_input_is_passthrough(translator: OllamaTranslator, fake_llm: FakeLLM) -> None:
     result = translator.to_english("Hello world", source_language="en")
     assert result.text == "Hello world"
     assert fake_llm.calls == []
 
 
-def test_empty_text_is_passthrough(
-    translator: OllamaTranslator, fake_llm: FakeLLM
-) -> None:
+def test_empty_text_is_passthrough(translator: OllamaTranslator, fake_llm: FakeLLM) -> None:
     result = translator.to_vernacular("   ", target_language="hi")
     assert result.text == "   "
     assert fake_llm.calls == []
 
 
-def test_english_target_is_passthrough(
-    translator: OllamaTranslator, fake_llm: FakeLLM
-) -> None:
+def test_english_target_is_passthrough(translator: OllamaTranslator, fake_llm: FakeLLM) -> None:
     result = translator.to_vernacular("Hello", target_language="en")
     assert result.text == "Hello"
     assert fake_llm.calls == []
@@ -173,9 +156,7 @@ def test_unsupported_target_raises(translator: OllamaTranslator) -> None:
         translator.to_vernacular("hello", target_language="fr")
 
 
-# ---------- prompt construction ----------------------------------------------
-
-
+# prompt construction
 def test_to_english_prompt_names_source_language(
     translator: OllamaTranslator, fake_llm: FakeLLM
 ) -> None:
@@ -194,6 +175,9 @@ def test_quoted_output_is_stripped(fake_llm: FakeLLM) -> None:
             model: str | None = None,
             json_mode: bool = False,
             think: bool = False,
+            temperature: float | None = None,
+            num_ctx: int | None = None,
+            **_: object,  # absorb future kwargs
         ) -> LLMResponse:
             return LLMResponse(content='"Hello world"', model="x", usage={})
 
@@ -202,16 +186,12 @@ def test_quoted_output_is_stripped(fake_llm: FakeLLM) -> None:
     assert result.text == "Hello world"
 
 
-# ---------- factory ----------------------------------------------------------
-
-
+# factory
 def test_factory_default_returns_ollama() -> None:
     assert isinstance(get_translator(), OllamaTranslator)
 
 
-# ---------- batch translation (corpus ingestion path) ------------------------
-
-
+# batch translation (corpus ingestion path)
 class _NumberedLLM:
     """Stub that translates each [N] passage by prefixing 'EN:' and echoing it.
 
@@ -227,6 +207,9 @@ class _NumberedLLM:
         model: str | None = None,
         json_mode: bool = False,
         think: bool = False,
+        temperature: float | None = None,
+        num_ctx: int | None = None,
+        **_: object,
     ) -> LLMResponse:
         self.calls.append(messages)
         prompt = messages[-1]["content"]
@@ -236,9 +219,7 @@ class _NumberedLLM:
             match = re.match(r"^\[(\d+)\]\s*(.*)$", stripped)
             if match:
                 out_lines.append(f"[{match.group(1)}] EN:{match.group(2)}")
-        return LLMResponse(
-            content="\n".join(out_lines), model=model or "fake", usage={}
-        )
+        return LLMResponse(content="\n".join(out_lines), model=model or "fake", usage={})
 
 
 def test_to_english_batch_aligns_and_translates() -> None:

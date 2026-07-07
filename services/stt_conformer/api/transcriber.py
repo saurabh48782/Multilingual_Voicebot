@@ -38,9 +38,7 @@ class Transcriber:
             if self._model is not None:
                 return
             device = "cuda:0" if torch.cuda.is_available() else "cpu"
-            model = AutoModel.from_pretrained(MODEL_ID, trust_remote_code=True).to(
-                device
-            )
+            model = AutoModel.from_pretrained(MODEL_ID, trust_remote_code=True).to(device)
             model.eval()
             self._model, self._device = model, device
 
@@ -62,10 +60,12 @@ class Transcriber:
     def transcribe(self, audio: bytes, language: str, decode_strategy: str) -> str:
         self._ensure_loaded()
         wav = self._load_waveform(audio).to(self._device)
-        with torch.no_grad():
+        # Serialize inference calls: concurrent requests sharing one
+        # GPU-resident model can each allocate enough memory to OOM the device.
+        with self._lock, torch.no_grad():
             out = self._model(wav, language, decode_strategy)
         if isinstance(out, str):
             return out.strip()
-        if isinstance(out, (list, tuple)):
+        if isinstance(out, list | tuple):
             return " ".join(str(x) for x in out).strip()
         return str(out).strip()

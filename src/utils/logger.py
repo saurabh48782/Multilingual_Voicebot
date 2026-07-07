@@ -22,9 +22,7 @@ import structlog
 # bound onto every log event via ``structlog.contextvars.bind_contextvars``.
 current_session: ContextVar[str | None] = ContextVar("current_session", default=None)
 
-_PROJECT_ROOT = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-)
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 LOGS_DIR = os.path.join(_PROJECT_ROOT, "logs")
 
 _initialized = False
@@ -115,7 +113,9 @@ def setup_logging(
     root.addHandler(console)
 
     if enable_file_logging:
-        assert log_file is not None
+        # Provably set by the enable_file_logging branch above; narrows the
+        # type for mypy rather than guarding a real runtime condition.
+        assert log_file is not None  # noqa: S101
         # File formatter: JSON (one object per line)
         json_formatter = structlog.stdlib.ProcessorFormatter(
             processors=[

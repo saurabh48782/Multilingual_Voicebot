@@ -48,9 +48,7 @@ class LLMTranslator:
         if source_language not in SUPPORTED_LANGUAGES:
             raise ValueError(f"Unsupported source language: {source_language!r}")
         if source_language == "en" or not text.strip():
-            return TranslationResult(
-                text=text, source_language="en", target_language="en"
-            )
+            return TranslationResult(text=text, source_language="en", target_language="en")
 
         system = TO_EN_SYSTEM.format(src_name=LANG_NAMES[source_language])
         resp = self._llm.complete(
@@ -59,6 +57,7 @@ class LLMTranslator:
                 {"role": "user", "content": text},
             ],
             model=self._model,
+            temperature=0.0,  # faithful, deterministic translation
         )
         return TranslationResult(
             text=_clean(resp.content),
@@ -69,9 +68,7 @@ class LLMTranslator:
     def to_vernacular(self, text: str, target_language: str) -> TranslationResult:
         if target_language not in SUPPORTED_VERNACULARS:
             if target_language == "en":
-                return TranslationResult(
-                    text=text, source_language="en", target_language="en"
-                )
+                return TranslationResult(text=text, source_language="en", target_language="en")
             raise ValueError(f"Unsupported target language: {target_language!r}")
         if not text.strip():
             return TranslationResult(
@@ -88,6 +85,7 @@ class LLMTranslator:
                 {"role": "user", "content": text},
             ],
             model=self._model,
+            temperature=0.0,  # faithful, deterministic translation
         )
         return TranslationResult(
             text=_clean(resp.content),

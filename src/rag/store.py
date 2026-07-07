@@ -42,6 +42,7 @@ class FAISSStore:
         self.metadata_path = metadata_path or faiss_metadata_path
         self._index: faiss.IndexIDMap2 | None = None
         self._meta: pd.DataFrame = pd.DataFrame()
+        self._id_to_meta: dict[int, dict[str, Any]] | None = None
 
     # ------------------------------------------------------------------
     # Index access
@@ -70,6 +71,15 @@ class FAISSStore:
             self._meta = pd.read_parquet(self.metadata_path)
         else:
             self._meta = _empty_meta()
+        self._id_to_meta = None
+
+    def _meta_index(self) -> dict[int, dict[str, Any]]:
+        """Row-by-id lookup, cached and rebuilt lazily after mutations."""
+        if self._id_to_meta is None:
+            self._id_to_meta = {
+                int(row["chunk_id_int"]): row for row in self._meta.to_dict("records")
+            }
+        return self._id_to_meta
 
     def _save_meta(self) -> None:
         self.metadata_path.parent.mkdir(parents=True, exist_ok=True)
@@ -99,12 +109,10 @@ class FAISSStore:
         if not chunk_ids_int:
             return
 
-        existing_ids = (
-            set(self._meta["chunk_id"].tolist()) if len(self._meta) else set()
-        )
+        existing_ids = set(self._meta["chunk_id"].tolist()) if len(self._meta) else set()
         ids_to_remove = [
             cid_int
-            for cid_int, cid_hex in zip(chunk_ids_int, chunk_ids_hex)
+            for cid_int, cid_hex in zip(chunk_ids_int, chunk_ids_hex, strict=False)
             if cid_hex in existing_ids
         ]
         if ids_to_remove:
@@ -120,6 +128,7 @@ class FAISSStore:
 
         new_rows = pd.DataFrame(meta_rows)
         self._meta = pd.concat([self._meta, new_rows], ignore_index=True)
+        self._id_to_meta = None
 
     def remove_doc(self, doc_id: str) -> int:
         """Remove all chunks for doc_id. Returns count removed."""
@@ -129,11 +138,10 @@ class FAISSStore:
         ids_int = rows["chunk_id_int"].tolist()
         self.index.remove_ids(np.array(ids_int, dtype=np.int64))
         self._meta = self._meta[self._meta["doc_id"] != doc_id]
+        self._id_to_meta = None
         return len(ids_int)
 
-    def search(
-        self, query_vec: np.ndarray, top_k: int | None = None
-    ) -> list[SearchResult]:
+    def search(self, query_vec: np.ndarray, top_k: int | None = None) -> list[SearchResult]:
         """Return top-k results sorted by cosine score descending."""
         k = top_k or cfg["rag"]["top_k"]
         if self.index.ntotal == 0:
@@ -144,9 +152,9 @@ class FAISSStore:
         scores = scores[0]
         ids = ids[0]
 
-        id_to_meta = {row["chunk_id_int"]: row for _, row in self._meta.iterrows()}
+        id_to_meta = self._meta_index()
         results: list[SearchResult] = []
-        for score, fid in zip(scores, ids):
+        for score, fid in zip(scores, ids, strict=False):
             if fid == -1:
                 continue
             row = id_to_meta.get(int(fid))

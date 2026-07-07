@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
@@ -11,10 +13,14 @@ from src.graph.nodes.verify_groundedness import (
     parse_verdict,
     route_after_verify,
 )
+from src.graph.state import VoicebotState
+from src.utils.config import cfg
 from tests.unit.graph.nodes.conftest import make_doc
 
 
-def _node(llm_content: str | None = None, side_effect: Exception | None = None):
+def _node(
+    llm_content: str | None = None, side_effect: Exception | None = None
+) -> Callable[[VoicebotState], dict[str, Any]]:
     deps = MagicMock()
     resp = MagicMock()
     if side_effect:
@@ -74,7 +80,7 @@ def test_parse_verdict_malformed_raises(bad_content: str) -> None:
     ],
     ids=["fallback-triggered", "not-triggered", "key-absent"],
 )
-def test_route_after_verify(state: dict, expected: str) -> None:
+def test_route_after_verify(state: dict[str, Any], expected: str) -> None:
     assert route_after_verify(state) == expected  # type: ignore[arg-type]
 
 
@@ -92,7 +98,7 @@ def test_route_after_verify(state: dict, expected: str) -> None:
         "missing-english-response",
     ],
 )
-def test_early_exit_skips_llm(state: dict) -> None:
+def test_early_exit_skips_llm(state: dict[str, Any]) -> None:
     deps = MagicMock()
     node = make_verify_groundedness(deps)
     result = node(state)  # type: ignore[arg-type]
@@ -117,7 +123,7 @@ def test_early_exit_skips_llm(state: dict) -> None:
     ],
     ids=["grounded-true", "grounded-false-triggers-fallback"],
 )
-def test_grounded_verdict(llm_content: str, amount: str, expected: dict) -> None:
+def test_grounded_verdict(llm_content: str, amount: str, expected: dict[str, Any]) -> None:
     node = _node(llm_content)
     state = {
         "english_response": f"PM Kisan gives {amount} per year.",
@@ -162,6 +168,49 @@ def test_llm_called_with_json_mode() -> None:
     resp.content = '{"grounded": true}'
     deps.llm.complete.return_value = resp
     node = make_verify_groundedness(deps)
-    node({"english_response": "Answer.", "retrieved_docs": [make_doc()]})  # type: ignore[arg-type]
+    node({"english_response": "Answer.", "retrieved_docs": [make_doc()]})
     call_kwargs = deps.llm.complete.call_args.kwargs
     assert call_kwargs.get("json_mode") is True
+
+
+def test_prompt_includes_the_question() -> None:
+    deps = MagicMock()
+    resp = MagicMock()
+    resp.content = '{"grounded": true}'
+    deps.llm.complete.return_value = resp
+    node = make_verify_groundedness(deps)
+    node(
+        {
+            "english_response": "Answer.",
+            "retrieved_docs": [make_doc()],
+            "rewritten_query": "What is the eligibility for PM Kisan?",
+        }
+    )
+    call_kwargs = deps.llm.complete.call_args.kwargs
+    user_content = call_kwargs["messages"][1]["content"]
+    assert "What is the eligibility for PM Kisan?" in user_content
+    assert "<question>" in user_content
+
+
+def test_verifier_uses_generation_model_by_default(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setitem(cfg["llm"], "verifier_model", None)
+    deps = MagicMock()
+    resp = MagicMock()
+    resp.content = '{"grounded": true}'
+    deps.llm.complete.return_value = resp
+    node = make_verify_groundedness(deps)
+    node({"english_response": "Answer.", "retrieved_docs": [make_doc()]})
+    call_kwargs = deps.llm.complete.call_args.kwargs
+    assert call_kwargs["model"] == cfg["llm"]["model"]
+
+
+def test_verifier_model_override_is_honored(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setitem(cfg["llm"], "verifier_model", "different-family:7b")
+    deps = MagicMock()
+    resp = MagicMock()
+    resp.content = '{"grounded": true}'
+    deps.llm.complete.return_value = resp
+    node = make_verify_groundedness(deps)
+    node({"english_response": "Answer.", "retrieved_docs": [make_doc()]})
+    call_kwargs = deps.llm.complete.call_args.kwargs
+    assert call_kwargs["model"] == "different-family:7b"

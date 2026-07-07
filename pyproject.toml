@@ -56,8 +56,10 @@ dev = [
     "mypy>=1.13.0",
     "pytest>=8.0.0",
     "pytest-asyncio>=0.24.0",
+    "pytest-cov>=6.0.0",
     "httpx>=0.27.0",
     "types-pyyaml>=6.0.12.20260510",
+    "tavern>=3.6.1",
 ]
 
 [build-system]
@@ -73,12 +75,20 @@ line-length = 100
 target-version = "py313"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "W", "UP"]
+select = ["E", "F", "I", "N", "W", "UP", "S", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# assert / hardcoded-fixture-value warnings are expected in test code.
+"tests/**" = ["S101", "S105", "S106", "S311"]
 
 [tool.mypy]
 python_version = "3.13"
 strict = true
 exclude = ["alembic/", "services/"]
+
+[[tool.mypy.overrides]]
+module = "fitz"
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
@@ -87,3 +97,6 @@ markers = [
     "eval: RAGAS regression - manual only, requires a running Ollama + testset",
 ]
 addopts = "-m 'not eval'"
+
+[tool.coverage.run]
+source = ["src"]

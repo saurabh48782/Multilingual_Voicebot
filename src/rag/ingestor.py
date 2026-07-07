@@ -44,11 +44,8 @@ SUPPORTED_EXTENSIONS = {".pdf", ".txt"}
 # actual index mutation. Process-local - see src/rag/locks.py.
 _INGEST_LOCK = threading.Lock()
 
-# ---------------------------------------------------------------------------
+
 # Manifest helpers
-# ---------------------------------------------------------------------------
-
-
 def _file_hash(path: Path) -> str:
     h = hashlib.sha256()
     with open(path, "rb") as f:
@@ -69,11 +66,7 @@ def _save_manifest(manifest: dict[str, str]) -> None:
     faiss_manifest_path.write_text(json.dumps(manifest, indent=2))
 
 
-# ---------------------------------------------------------------------------
 # Index teardown
-# ---------------------------------------------------------------------------
-
-
 def clear_index() -> list[Path]:
     """Delete every on-disk FAISS + BM25 artifact and the ingestion manifest.
     Returns the artifact paths that existed and were removed.
@@ -112,14 +105,20 @@ def _ingest_file(
     path: Path,
     store: FAISSStore,
     bm25: BM25Store,
+    manifest: dict[str, str],
     force: bool = False,
     translate: bool = True,
 ) -> tuple[int, str]:
-    """Ingest one file. Returns (chunks_added, status).
+    """Ingest one file, mutating `manifest` in place. Returns (chunks_added, status).
 
     status ∈ {'added', 'updated', 'skipped'}.
+
+    Does NOT persist the manifest or the store/bm25 to disk - the caller
+    persists the manifest only after `store.save()`/`bm25.save()` succeed, so
+    a mid-run crash never records a hash for chunks that were never written
+    to disk.
     """
-    manifest = _load_manifest()
+    doc_id = path.name
     file_key = str(path.resolve())
     current_hash = _file_hash(path)
 
@@ -127,21 +126,17 @@ def _ingest_file(
         logger.info("Skipping %s (unchanged)", path.name)
         return 0, "skipped"
 
-    # Stale-chunk removal is deferred into the write-locked window below so
-    # searches never observe a half-removed document.
-    needs_removal = file_key in manifest
-    status = "updated" if needs_removal else "added"
+    status = "updated" if file_key in manifest else "added"
 
     chunks = chunk_file(path)
     if not chunks:
         logger.warning("No chunks extracted from %s", path.name)
-        if needs_removal:
-            with index_rwlock.write():
-                removed = store.remove_doc(path.stem)
-                bm25.remove_doc(path.stem)
+        with index_rwlock.write():
+            removed = store.remove_doc(doc_id)
+            bm25.remove_doc(doc_id)
+        if removed:
             logger.info("Removed %d stale chunks for %s", removed, path.name)
         manifest[file_key] = current_hash
-        _save_manifest(manifest)
         return 0, status
 
     logger.info("Chunked %s → %d passages", path.name, len(chunks))
@@ -152,7 +147,7 @@ def _ingest_file(
 
         original_texts = [c.text for c in chunks]
         translated = get_translator().to_english_batch(original_texts)
-        for chunk, en in zip(chunks, translated):
+        for chunk, en in zip(chunks, translated, strict=False):
             chunk.text_en = en
             # Recompute IDs now that text_en is set
             from src.rag.chunker import _make_id
@@ -188,9 +183,9 @@ def _ingest_file(
     ]
 
     with index_rwlock.write():
-        if needs_removal:
-            removed = store.remove_doc(path.stem)
-            bm25.remove_doc(path.stem)
+        removed = store.remove_doc(doc_id)
+        bm25.remove_doc(doc_id)
+        if removed:
             logger.info("Removed %d stale chunks for %s", removed, path.name)
 
         store.upsert(
@@ -202,7 +197,6 @@ def _ingest_file(
         bm25.upsert([(c.chunk_id_int, c.doc_id, c.text_en) for c in chunks])
 
     manifest[file_key] = current_hash
-    _save_manifest(manifest)
     logger.info("Upserted %d chunks for %s (FAISS + BM25)", len(chunks), path.name)
     return len(chunks), status
 
@@ -221,20 +215,34 @@ def ingest_corpus(
     bm25 = get_bm25_store()
 
     files = [
-        p
-        for p in corpus_dir.iterdir()
-        if p.is_file() and p.suffix.lower() in SUPPORTED_EXTENSIONS
+        p for p in corpus_dir.iterdir() if p.is_file() and p.suffix.lower() in SUPPORTED_EXTENSIONS
     ]
     if not files:
         logger.warning("No supported files found in %s", corpus_dir)
-        return {}
 
     summary: dict[str, int] = {}
     with _INGEST_LOCK:
+        manifest = _load_manifest()
+
+        # Prune docs whose source file no longer exists in the corpus -
+        # manifest membership alone never triggers this (the per-file loop
+        # below only ever sees files still on disk), so deleted files would
+        # otherwise stay in the index forever.
+        current_keys = {str(p.resolve()) for p in files}
+        stale_keys = [k for k in manifest if k not in current_keys]
+        if stale_keys:
+            with index_rwlock.write():
+                for key in stale_keys:
+                    doc_id = Path(key).name
+                    removed = store.remove_doc(doc_id)
+                    bm25.remove_doc(doc_id)
+                    logger.info("Pruned %d chunks for deleted corpus file %s", removed, doc_id)
+                    del manifest[key]
+
         for path in sorted(files):
             try:
                 count, status = _ingest_file(
-                    path, store, bm25, force=force, translate=translate
+                    path, store, bm25, manifest, force=force, translate=translate
                 )
                 summary[path.name] = count
                 logger.info("[%s] %s - %d chunks", status.upper(), path.name, count)
@@ -244,6 +252,8 @@ def ingest_corpus(
         with index_rwlock.write():
             store.save()
             bm25.save()
+        # Only persist the manifest once the index is durably saved
+        _save_manifest(manifest)
     logger.info(
         "Ingestion complete. Index size: %d FAISS / %d BM25 chunks.",
         store.total_chunks,
@@ -261,11 +271,11 @@ def ingest_file(
     store = get_store()
     bm25 = get_bm25_store()
     with _INGEST_LOCK:
-        count, status = _ingest_file(
-            path, store, bm25, force=force, translate=translate
-        )
+        manifest = _load_manifest()
+        count, status = _ingest_file(path, store, bm25, manifest, force=force, translate=translate)
         with index_rwlock.write():
             store.save()
             bm25.save()
+        _save_manifest(manifest)
     logger.info("[%s] %s - %d chunks", status.upper(), path.name, count)
     return count

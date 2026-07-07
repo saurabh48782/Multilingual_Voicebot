@@ -1,5 +1,8 @@
 """Unit tests for text chunking logic."""
 
+from pathlib import Path
+
+import fitz
 import pytest
 
 from src.rag.chunker import (
@@ -8,6 +11,8 @@ from src.rag.chunker import (
     _make_id,
     _paragraph_split,
     _split_sentences,
+    chunk_pdf,
+    chunk_text_file,
 )
 
 
@@ -50,9 +55,7 @@ def test_paragraph_split_overlap_prepends_tail() -> None:
     ],
     ids=["deterministic", "differs_by_text"],
 )
-def test_make_id(
-    args_a: tuple[str, int, str], args_b: tuple[str, int, str], equal: bool
-) -> None:
+def test_make_id(args_a: tuple[str, int, str], args_b: tuple[str, int, str], equal: bool) -> None:
     assert (_make_id(*args_a) == _make_id(*args_b)) is equal
 
 
@@ -81,6 +84,27 @@ def test_chunk_id_set_on_init() -> None:
 )
 def test_detect_lang(text: str, expected: str) -> None:
     assert _detect_lang(text) == expected
+
+
+def test_chunk_text_file_doc_id_is_full_filename(tmp_path: Path) -> None:
+    """doc_id must include the extension so `a.pdf` and `a.txt` never collide
+    in the index (previously `path.stem` made them the same doc_id)."""
+    path = tmp_path / "a.txt"
+    path.write_text("Hello world.")
+    chunks = chunk_text_file(path)
+    assert chunks[0].doc_id == "a.txt"
+
+
+def test_chunk_pdf_doc_id_is_full_filename(tmp_path: Path) -> None:
+    path = tmp_path / "a.pdf"
+    doc = fitz.open()
+    page = doc.new_page()
+    page.insert_text((72, 72), "Hello world.")
+    doc.save(str(path))
+    doc.close()
+
+    chunks = chunk_pdf(path)
+    assert chunks[0].doc_id == "a.pdf"
 
 
 def test_split_sentences_english() -> None:

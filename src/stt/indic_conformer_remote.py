@@ -24,7 +24,7 @@ class IndicConformerRemoteStt:
         self._base_url = base_url.rstrip("/")
 
     # Traced as a tool span; raw audio bytes are redacted to a byte count.
-    @traceable(run_type="tool", name="stt_sidecar", process_inputs=redact_audio_inputs)
+    @traceable(run_type="tool", name="stt_sidecar", process_inputs=redact_audio_inputs)  # type: ignore[misc]
     def transcribe(self, audio: bytes, language: str) -> TranscriptionResult:
         lang = language.lower()
         strategy = (cfg.get("stt", {}).get("decode_strategy") or "rnnt").lower()

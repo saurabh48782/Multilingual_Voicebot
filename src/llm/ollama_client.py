@@ -16,11 +16,11 @@ class OllamaLLM:
 
     def __init__(self, base_url: str | None = None, model: str | None = None) -> None:
         self._base_url = (base_url or cfg["llm"]["ollama_base_url"]).rstrip("/")
-        self._default_model = model or cfg["llm"]["ollama_model"]
+        self._default_model = model or cfg["llm"]["model"]
 
     # LangGraph traces the node span; this makes the actual LLM call inside it
     # a nested llm-type span with prompt/completion token usage.
-    @traceable(
+    @traceable(  # type: ignore[misc]
         run_type="llm",
         name="ollama_chat",
         process_inputs=strip_self,
@@ -32,12 +32,25 @@ class OllamaLLM:
         model: str | None = None,
         json_mode: bool = False,
         think: bool = False,
+        temperature: float | None = None,
+        num_ctx: int | None = None,
     ) -> LLMResponse:
         model = model or self._default_model
+        # Always pin num_ctx: Ollama's default window (2048/4096) is smaller than
+        # our system prompt + retrieved context, and it silently truncates from
+        # the FRONT - dropping the system prompt (injection guard, INSUFFICIENT_
+        # CONTEXT rule) before the model ever sees it. temperature is per-call:
+        # deterministic nodes (verify/translate/rewrite) pass 0.0.
+        options: dict[str, Any] = {
+            "num_ctx": num_ctx if num_ctx is not None else cfg["llm"].get("num_ctx", 8192),
+        }
+        if temperature is not None:
+            options["temperature"] = temperature
         payload: dict[str, Any] = {
             "model": model,
             "messages": messages,
             "stream": False,
+            "options": options,
         }
         if json_mode:
             payload["format"] = "json"

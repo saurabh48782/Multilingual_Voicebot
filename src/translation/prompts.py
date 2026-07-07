@@ -1,8 +1,8 @@
 """Shared prompt templates and language metadata for LLM-backed translators.
 
-Both the Ollama and Groq translators emit the same deterministic,
-instruction-only prompts (model returns ONLY the translation, no preamble or
-quotes), so the templates and language lookups live here and are reused.
+The translators emit the same deterministic, instruction-only prompts
+(model returns ONLY the translation, no preamble or quotes),
+so the templates and language lookups live here and are reused.
 """
 
 from __future__ import annotations

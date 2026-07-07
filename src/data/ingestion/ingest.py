@@ -36,9 +36,7 @@ def get_stats() -> None:
     from src.rag.store import get_store
 
     store = get_store()
-    logger.info(
-        "Index stats", total_chunks=store.total_chunks, index_path=str(store.index_path)
-    )
+    logger.info("Index stats", total_chunks=store.total_chunks, index_path=str(store.index_path))
     print(f"Index chunks : {store.total_chunks}")
     print(f"Index path   : {store.index_path}")
     print(f"Metadata path: {store.metadata_path}")
@@ -96,15 +94,9 @@ def ingest(args: argparse.Namespace) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Voicebot corpus ingestion")
     parser.add_argument("--file", metavar="PATH", help="Ingest a single file")
-    parser.add_argument(
-        "--force", action="store_true", help="Re-ingest even if unchanged"
-    )
-    parser.add_argument(
-        "--no-translate", action="store_true", help="Skip Groq translation"
-    )
-    parser.add_argument(
-        "--stats", action="store_true", help="Show index stats and exit"
-    )
+    parser.add_argument("--force", action="store_true", help="Re-ingest even if unchanged")
+    parser.add_argument("--no-translate", action="store_true", help="Skip translation")
+    parser.add_argument("--stats", action="store_true", help="Show index stats and exit")
     parser.add_argument(
         "--clear",
         action="store_true",

@@ -68,9 +68,7 @@ def _parse_numbered(raw: str, expected: int, fallback: list[str]) -> list[str]:
     return out
 
 
-def translate_batch_to_english(
-    llm: LLMProvider, model: str, texts: list[str]
-) -> list[str]:
+def translate_batch_to_english(llm: LLMProvider, model: str, texts: list[str]) -> list[str]:
     """Translate passages to English in numbered batches via the given LLM.
 
     Shared by every translation provider's ``to_english_batch``; returns a list
@@ -86,6 +84,10 @@ def translate_batch_to_english(
             "keeping the [N] prefix. If a passage is already in English, copy it unchanged.\n\n"
             + numbered
         )
-        resp = llm.complete(messages=[{"role": "user", "content": prompt}], model=model)
+        resp = llm.complete(
+            messages=[{"role": "user", "content": prompt}],
+            model=model,
+            temperature=0.0,  # faithful, deterministic translation
+        )
         results.extend(_parse_numbered(resp.content or "", len(batch), batch))
     return results

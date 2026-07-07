@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
+from src.api.audio_cache import AudioCache
 from src.llm.base import LLMProvider as LLMProto
 from src.stt.base import STTProvider as STTProto
 from src.translation.base import TranslationProvider as TranslationProto
@@ -71,3 +72,4 @@ class Deps:
     translator: TranslationProto = field(default_factory=_default_translator)
     llm: LLMProto = field(default_factory=_default_llm)
     retriever: Retriever = field(default_factory=_default_retriever)
+    audio_cache: AudioCache = field(default_factory=AudioCache)

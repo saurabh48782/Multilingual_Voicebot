@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
@@ -26,7 +27,7 @@ def _messages(n: int) -> list[HumanMessage | AIMessage]:
     return [_human(f"q{i}") if i % 2 == 0 else _ai(f"a{i}") for i in range(n)]
 
 
-def _node(llm_content: str | None = None, side_effect: Exception | None = None):
+def _node(llm_content: str | None = None, side_effect: Exception | None = None) -> Any:
     deps = MagicMock()
     resp = MagicMock()
     if side_effect:
@@ -55,7 +56,7 @@ def _node(llm_content: str | None = None, side_effect: Exception | None = None):
         "above-threshold",
     ],
 )
-def test_should_summarize(state: dict, expected: str) -> None:
+def test_should_summarize(state: dict[str, Any], expected: str) -> None:
     assert should_summarize(state) == expected  # type: ignore[arg-type]
 
 
@@ -67,7 +68,7 @@ def test_should_summarize(state: dict, expected: str) -> None:
 )
 def test_nothing_to_compress_returns_empty_dict(n_messages: int) -> None:
     node = _node("New summary.")
-    result = node({"messages": _messages(n_messages), "conversation_summary": ""})  # type: ignore[arg-type]
+    result = node({"messages": _messages(n_messages), "conversation_summary": ""})
     assert result == {}
 
 
@@ -77,7 +78,7 @@ def test_compresses_old_messages_and_keeps_recent() -> None:
     messages = _messages(10)
     to_compress = messages[:-KEEP_RECENT]
     node = _node("Summary of older turns.")
-    result = node({"messages": messages, "conversation_summary": ""})  # type: ignore[arg-type]
+    result = node({"messages": messages, "conversation_summary": ""})
 
     assert result["conversation_summary"] == "Summary of older turns."
     removals = result["messages"]
@@ -92,7 +93,7 @@ def test_previous_summary_included_in_llm_prompt() -> None:
     resp.content = "Updated summary."
     deps.llm.complete.return_value = resp
     node = make_summarize(deps)
-    node({"messages": _messages(8), "conversation_summary": "Prior summary."})  # type: ignore[arg-type]
+    node({"messages": _messages(8), "conversation_summary": "Prior summary."})
 
     call_user_content = deps.llm.complete.call_args.kwargs["messages"][-1]["content"]
     assert "Prior summary." in call_user_content
@@ -113,8 +114,13 @@ def test_llm_failure_keeps_previous_summary(
     llm_content: str | None, side_effect: Exception | None, previous_summary: str
 ) -> None:
     node = _node(llm_content, side_effect)
-    result = node({"messages": _messages(8), "conversation_summary": previous_summary})  # type: ignore[arg-type]
-    assert result["conversation_summary"] == previous_summary
+    result = node({"messages": _messages(8), "conversation_summary": previous_summary})
+    if side_effect is not None:
+        # An LLM exception must emit no state update at all (no RemoveMessage),
+        # so the checkpointed summary + messages are left intact.
+        assert result == {}
+    else:
+        assert result["conversation_summary"] == previous_summary
 
 
 # _format_messages helper
@@ -130,5 +136,5 @@ def test_llm_failure_keeps_previous_summary(
     ],
     ids=["human-then-ai", "human-only", "empty"],
 )
-def test_format_messages(messages: list, expected: str) -> None:
+def test_format_messages(messages: list[HumanMessage | AIMessage], expected: str) -> None:
     assert _format_messages(messages) == expected

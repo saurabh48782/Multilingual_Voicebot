@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
@@ -10,9 +12,10 @@ from src.graph.nodes.rewrite_query import (
     _format_recent,
     make_rewrite_query,
 )
+from src.graph.state import VoicebotState
 
 
-def _node(llm: MagicMock | None = None):
+def _node(llm: MagicMock | None = None) -> Callable[[VoicebotState], dict[str, Any]]:
     deps = MagicMock()
     if llm is not None:
         deps.llm = llm
@@ -58,9 +61,9 @@ def _llm_returning(text: str) -> MagicMock:
         "none-messages-none-summary",
     ],
 )
-def test_no_history_skips_llm(state: dict, expected_rewritten: str) -> None:
+def test_no_history_skips_llm(state: dict[str, Any], expected_rewritten: str) -> None:
     llm = MagicMock()
-    result = _node(llm)(state)
+    result = _node(llm)(state)  # type: ignore[arg-type]
     llm.complete.assert_not_called()
     assert result == {"rewritten_query": expected_rewritten}
 
@@ -77,7 +80,7 @@ def test_blank_query_skips_llm(query: str) -> None:
         "messages": [HumanMessage(content="Previous question")],
         "conversation_summary": "",
     }
-    result = _node(llm)(state)
+    result = _node(llm)(state)  # type: ignore[arg-type]
     llm.complete.assert_not_called()
     assert result == {"rewritten_query": query}
 
@@ -123,10 +126,10 @@ def test_blank_query_skips_llm(query: str) -> None:
     ids=["messages-only", "summary-only", "messages-and-summary"],
 )
 def test_rewrite_calls_llm_and_returns_result(
-    state: dict, llm_response: str, expected_rewritten: str
+    state: dict[str, Any], llm_response: str, expected_rewritten: str
 ) -> None:
     llm = _llm_returning(llm_response)
-    result = _node(llm)(state)
+    result = _node(llm)(state)  # type: ignore[arg-type]
     llm.complete.assert_called_once()
     assert result == {"rewritten_query": expected_rewritten}
 
@@ -140,16 +143,14 @@ def test_rewrite_calls_llm_and_returns_result(
     ],
     ids=["empty-response", "whitespace-response"],
 )
-def test_llm_blank_response_falls_back_to_original(
-    llm_response: str, english_query: str
-) -> None:
+def test_llm_blank_response_falls_back_to_original(llm_response: str, english_query: str) -> None:
     llm = _llm_returning(llm_response)
     state = {
         "english_query": english_query,
         "messages": [HumanMessage(content="What is PM Kisan?")],
         "conversation_summary": "",
     }
-    result = _node(llm)(state)
+    result = _node(llm)(state)  # type: ignore[arg-type]
     assert result == {"rewritten_query": english_query}
 
 
@@ -165,7 +166,7 @@ def test_llm_exception_falls_back_to_original(exc: Exception) -> None:
         "messages": [HumanMessage(content="Tell me about PM Kisan.")],
         "conversation_summary": "",
     }
-    result = _node(llm)(state)
+    result = _node(llm)(state)  # type: ignore[arg-type]
     assert result == {"rewritten_query": "What is the benefit amount?"}
 
 
@@ -191,7 +192,7 @@ def test_llm_exception_falls_back_to_original(exc: Exception) -> None:
     ],
     ids=["human-then-ai", "human-only", "empty"],
 )
-def test_format_recent(messages: list, expected_lines: list[str]) -> None:
+def test_format_recent(messages: list[Any], expected_lines: list[str]) -> None:
     result = _format_recent(messages)
     assert result == "\n".join(expected_lines)
 
@@ -216,11 +217,12 @@ def test_format_recent(messages: list, expected_lines: list[str]) -> None:
         (
             [HumanMessage(content="How do I apply?")],
             "User discussed PM Kisan.",
-            "[Summary of earlier conversation]\nUser discussed PM Kisan.\n\n[Recent turns]\nUser: How do I apply?",
+            "[Summary of earlier conversation]\nUser discussed PM Kisan.\n\n"
+            "[Recent turns]\nUser: How do I apply?",
         ),
         ([], "", ""),
     ],
     ids=["summary-only", "messages-only", "both-summary-and-messages", "empty"],
 )
-def test_build_history_context(messages: list, summary: str, expected: str) -> None:
+def test_build_history_context(messages: list[Any], summary: str, expected: str) -> None:
     assert _build_history_context(messages, summary) == expected

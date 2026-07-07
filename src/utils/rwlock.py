@@ -37,9 +37,11 @@ class RWLock:
     def write(self) -> Iterator[None]:
         with self._cond:
             self._writers_waiting += 1
-            while self._writer_active or self._readers:
-                self._cond.wait()
-            self._writers_waiting -= 1
+            try:
+                while self._writer_active or self._readers:
+                    self._cond.wait()
+            finally:
+                self._writers_waiting -= 1
             self._writer_active = True
         try:
             yield

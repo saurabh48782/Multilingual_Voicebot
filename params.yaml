@@ -12,14 +12,19 @@ observability:
 
 llm:
   provider: "ollama"
-  model: "gemma4:26b"
+  model: "gemma4:12b"
+  # Optional: pin the groundedness verifier to a different model (ideally a
+  # different family than `model`, e.g. a Qwen/Llama model) so generator and
+  # judge don't share the same hallucination failure modes. Unset = verifier
+  # reuses `model`.
+  # verifier_model: "qwen2.5:14b"
   ollama_base_url: "http://localhost:11434"
-  ollama_model: "gemma4:26b"
   think_on_generate: true
+  num_ctx: 8192
 
 translation:
   provider: "ollama"
-  ollama_model: "translategemma:27b"
+  ollama_model: "translategemma:12b"
 
 rag:
   embedding_model: "intfloat/multilingual-e5-large"
@@ -54,3 +59,7 @@ tts:
   provider: "indic_parler"
   description: "A clear, calm voice speaks at a natural, moderate pace in a quiet environment. The recording is very high quality, with the voice sounding close-up and natural, with no background noise."
   remote_url: "${TTS_REMOTE_URL:-}"   # tts_parler sidecar URL (required; compose sets http://tts:8001)
+
+audio:
+  cache_ttl_seconds: 3600
+  cache_max_files: 1000

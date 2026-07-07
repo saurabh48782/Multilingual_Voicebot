@@ -21,4 +21,6 @@ class LLMProvider(Protocol):
         model: str | None = None,
         json_mode: bool = False,
         think: bool = False,
+        temperature: float | None = None,
+        num_ctx: int | None = None,
     ) -> LLMResponse: ...

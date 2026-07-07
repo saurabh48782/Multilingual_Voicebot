@@ -1,4 +1,8 @@
-"""Render vernacular response text to speech bytes + append turn to memory."""
+"""Render vernacular response text to speech + append turn to memory.
+
+The synthesized WAV is pushed straight to the `AudioCache` and only its id
+is kept in graph state - keeping raw audio bytes out of state means they
+never get serialized into the LangGraph checkpoint."""
 
 from __future__ import annotations
 
@@ -18,10 +22,12 @@ def make_synthesize(deps: Deps) -> Callable[[VoicebotState], dict[str, Any]]:
     def synthesize(state: VoicebotState) -> dict[str, Any]:
         text = state.get("vernacular_response", "")
         lang = state.get("source_language", "en")
-        audio: bytes | None = None
+        audio_id: str | None = None
+        content_type = "audio/wav"
         if text:
             try:
                 audio = deps.tts.synthesize(text, lang)
+                audio_id = deps.audio_cache.put(audio, content_type=content_type)
             except Exception:
                 logger.exception("TTS failed - returning text-only response")
 
@@ -30,8 +36,8 @@ def make_synthesize(deps: Deps) -> Callable[[VoicebotState], dict[str, Any]]:
             AIMessage(content=state.get("english_response") or text),
         ]
         return {
-            "audio_output": audio,
-            "audio_content_type": "audio/wav",
+            "audio_id": audio_id,
+            "audio_content_type": content_type,
             "messages": new_messages,
         }
 

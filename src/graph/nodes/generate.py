@@ -30,10 +30,16 @@ def _build_context(docs: list[SearchResult]) -> str:
 # inline <think>/<|think|> blocks defensively so chain-of-thought never reaches
 # the translator/TTS as part of the answer.
 _THINK_TAGS = re.compile(r"<\|?think\|?>.*?</\|?think\|?>", re.DOTALL | re.IGNORECASE)
+# A response truncated mid-thought (e.g. hit max tokens) leaves an opening
+# tag with no closing one - _THINK_TAGS won't match it, so drop everything
+# from that point on rather than leak raw chain-of-thought into TTS.
+_THINK_OPEN_UNCLOSED = re.compile(r"<\|?think\|?>.*", re.DOTALL | re.IGNORECASE)
 
 
 def _strip_thinking(text: str) -> str:
-    return _THINK_TAGS.sub("", text).strip()
+    text = _THINK_TAGS.sub("", text)
+    text = _THINK_OPEN_UNCLOSED.sub("", text)
+    return text.strip()
 
 
 def make_generate(deps: Deps) -> Callable[[VoicebotState], dict[str, Any]]:
@@ -61,6 +67,7 @@ def make_generate(deps: Deps) -> Callable[[VoicebotState], dict[str, Any]]:
                 ],
                 model=cfg["llm"]["model"],
                 think=bool(cfg["llm"].get("think_on_generate", False)),
+                temperature=0.05,  # low: grounded QA, minimal invention
             )
         except Exception:
             logger.exception("Generation LLM failed - degrading to fallback")

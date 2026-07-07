@@ -23,7 +23,10 @@ logger = get_logger(__name__)
 async def db_pool_lifespan(app: FastAPI) -> AsyncIterator[asyncpg.Pool]:
     """Open the asyncpg pool for chat-session metadata, stash it on
     ``app.state.db_pool``, and close it on exit."""
-    pool = await asyncpg.create_pool(cfg["memory"]["checkpoint_dsn"])
+    # asyncpg's default (min_size=10, max_size=10) is sized for a multi-tenant
+    # service; this app is single-worker with one implicit user, so a small
+    # pool avoids holding idle connections Postgres never needs.
+    pool = await asyncpg.create_pool(cfg["memory"]["checkpoint_dsn"], min_size=1, max_size=5)
     app.state.db_pool = pool
     try:
         yield pool

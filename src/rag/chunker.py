@@ -153,7 +153,12 @@ def _semantic_split(text: str) -> list[str]:
 
 
 def _enforce_max_size(chunks: list[str], max_size: int) -> list[str]:
-    """Sub-split any chunk longer than max_size on sentence boundaries."""
+    """Sub-split any chunk longer than max_size on sentence boundaries.
+
+    A single sentence that itself exceeds max_size (no punctuation to split
+    on) is hard-split on word boundaries instead of being emitted whole,
+    which would otherwise be silently truncated by the embedder's token limit.
+    """
     out: list[str] = []
     for chunk in chunks:
         if len(chunk) <= max_size:
@@ -163,6 +168,12 @@ def _enforce_max_size(chunks: list[str], max_size: int) -> list[str]:
         buf: list[str] = []
         size = 0
         for s in sents:
+            if len(s) > max_size:
+                if buf:
+                    out.append(" ".join(buf).strip())
+                    buf, size = [], 0
+                out.extend(_hard_split(s, max_size))
+                continue
             if size + len(s) + 1 > max_size and buf:
                 out.append(" ".join(buf).strip())
                 buf, size = [], 0
@@ -170,6 +181,28 @@ def _enforce_max_size(chunks: list[str], max_size: int) -> list[str]:
             size += len(s) + 1
         if buf:
             out.append(" ".join(buf).strip())
+    return out
+
+
+def _hard_split(text: str, max_size: int) -> list[str]:
+    """Split a boundary-less sentence on word boundaries so no piece exceeds
+    max_size; a single word longer than max_size is cut on characters."""
+    out: list[str] = []
+    buf = ""
+    for word in text.split(" "):
+        while len(word) > max_size:
+            if buf:
+                out.append(buf)
+                buf = ""
+            out.append(word[:max_size])
+            word = word[max_size:]
+        if buf and len(buf) + len(word) + 1 > max_size:
+            out.append(buf)
+            buf = word
+        else:
+            buf = f"{buf} {word}".strip()
+    if buf:
+        out.append(buf)
     return out
 
 
@@ -280,7 +313,7 @@ def chunk_pdf(path: Path, doc_id: str | None = None) -> list[Chunk]:
     together; each chunk is attributed to the page where it starts.
     `sort=True` orders blocks by position, which fixes reading order on the
     multi-column layouts common in government PDFs."""
-    doc_id = doc_id or path.stem
+    doc_id = doc_id or path.name
 
     with fitz.open(str(path)) as doc:
         page_texts = [page.get_text(sort=True) for page in doc]
@@ -321,7 +354,7 @@ def chunk_pdf(path: Path, doc_id: str | None = None) -> list[Chunk]:
 
 
 def chunk_text_file(path: Path, doc_id: str | None = None) -> list[Chunk]:
-    doc_id = doc_id or path.stem
+    doc_id = doc_id or path.name
     text = path.read_text(encoding="utf-8", errors="replace")
     return [
         Chunk(
