@@ -119,9 +119,7 @@ class TestSetupLogging:
         root = logging.getLogger()
         assert len(root.handlers) == 1
         assert isinstance(root.handlers[0], logging.StreamHandler)
-        assert not any(
-            isinstance(h, logging.handlers.WatchedFileHandler) for h in root.handlers
-        )
+        assert not any(isinstance(h, logging.handlers.WatchedFileHandler) for h in root.handlers)
 
     @pytest.mark.parametrize(
         "noisy_logger_name",

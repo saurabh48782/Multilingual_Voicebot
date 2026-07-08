@@ -40,9 +40,7 @@ def _replace_env_vars(config_str: str) -> str:
             return value
         if default is not None:
             return default
-        raise RuntimeError(
-            f"Environment variable '${{{name}}}' referenced in config but not set."
-        )
+        raise RuntimeError(f"Environment variable '${{{name}}}' referenced in config but not set.")
 
     return pattern.sub(_lookup, config_str)
 
@@ -65,9 +63,7 @@ def load_config(config_path: str = "params.yaml") -> dict[str, Any]:
     resolved = _replace_env_vars(config_str)
     config: dict[str, Any] = yaml.safe_load(resolved)
 
-    logger.debug(
-        "Configuration loaded, keys: %s", list(config.keys()) if config else []
-    )
+    logger.debug("Configuration loaded, keys: %s", list(config.keys()) if config else [])
     return config
 
 
@@ -75,15 +71,18 @@ def validate_config() -> None:
     """Validate critical config at startup so problems surface immediately."""
     cfg = load_config(str(ROOT_DIR / "params.yaml"))
 
+    # Required top-level sections — a trimmed params.yaml (missing memory/
+    # evaluation) otherwise fails late with an opaque KeyError deep in db.py
+    # startup or at pytest collection. Surface it here instead.
+    for section in ("llm", "rag", "stt", "tts", "memory", "evaluation"):
+        if section not in cfg:
+            raise RuntimeError(f"Missing required config section '{section}' in params.yaml.")
+
     rag = cfg.get("rag", {})
     for name in ("retrieval_threshold", "retrieval_gap_threshold"):
         value = rag.get(name)
-        if value is not None and (
-            not isinstance(value, int | float) or not (0.0 < value <= 1.0)
-        ):
-            raise RuntimeError(
-                f"Invalid rag.{name}: {value!r} - must be a number in (0, 1]."
-            )
+        if value is not None and (not isinstance(value, int | float) or not (0.0 < value <= 1.0)):
+            raise RuntimeError(f"Invalid rag.{name}: {value!r} - must be a number in (0, 1].")
 
 
 cfg = load_config(str(ROOT_DIR / "params.yaml"))

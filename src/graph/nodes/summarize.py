@@ -56,7 +56,10 @@ def make_summarize(deps: Deps) -> Callable[[VoicebotState], dict[str, Any]]:
                     {
                         "role": "user",
                         "content": SUMMARIZE_PROMPT.format(
-                            previous_summary=previous_summary,
+                            # previous_summary is prior model output derived from
+                            # untrusted turns - sanitize so it can't break out of
+                            # its <previous_summary> delimiter or forge a sentinel.
+                            previous_summary=sanitize_untrusted(previous_summary),
                             history=formatted,
                         ),
                     },

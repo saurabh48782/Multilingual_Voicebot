@@ -63,3 +63,45 @@ tts:
 audio:
   cache_ttl_seconds: 3600
   cache_max_files: 1000
+
+memory:
+  checkpoint_dsn: "${CHECKPOINT_DSN:-}"
+
+evaluation:
+  # Decorrelate the judge from the generator: ideally a DIFFERENT model family
+  # than llm.model so the judge doesn't share the generator's failure modes
+  # (a hallucination the generator makes, a same-family judge tends to rate as
+  # faithful). ragas_eval warns when this equals llm.model. GPU budget is
+  # committed to Gemma by default, so this stays gemma4:12b until a second
+  # family can be co-hosted; override to e.g. qwen2.5:14b when it can.
+  judge_model: "gemma4:12b"          # Ollama judge (shares llm.ollama_base_url)
+  embedding_model: "intfloat/multilingual-e5-large"
+  judge_temperature: 0.0
+  # Eval generation mirrors the production `generate` node (temp 0.3 + native
+  # thinking when llm.think_on_generate) so reported metrics reflect real traffic.
+  sample_strategy: "random"          # "random" | "head" — how --sample-size picks rows
+  sample_seed: 42
+  testset:
+    path: "data/eval/testset.jsonl"
+    size: 50
+    languages: ["en", "hi", "bn"]    # synthesize Qs in English then translate to vernaculars
+    query_distribution:
+      simple: 0.5
+      reasoning: 0.25
+      multi_context: 0.25
+  metrics:
+    - context_precision
+    - context_recall
+    - faithfulness
+    - answer_relevancy
+    - answer_correctness
+    - answer_similarity
+  thresholds:
+    context_precision: 0.70
+    context_recall: 0.70
+    faithfulness: 0.80
+    answer_relevancy: 0.75
+    answer_correctness: 0.60
+    answered_rate: 0.70              # min fraction of rows that must produce a grounded answer
+  report_dir: "data/eval/reports"
+  max_workers: 4

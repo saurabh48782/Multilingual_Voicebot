@@ -7,14 +7,10 @@ runs in an isolated sidecar.
 
 from __future__ import annotations
 
-import httpx
-
 from src.stt.base import TranscriptionResult
 from src.utils.config import cfg
+from src.utils.http import post_with_retry
 from src.utils.observability import redact_audio_inputs, traceable
-
-# Transcription is fast once warm, but the first call also loads the model.
-_TIMEOUT = httpx.Timeout(connect=10.0, read=180.0, write=30.0, pool=10.0)
 
 
 class IndicConformerRemoteStt:
@@ -28,11 +24,10 @@ class IndicConformerRemoteStt:
     def transcribe(self, audio: bytes, language: str) -> TranscriptionResult:
         lang = language.lower()
         strategy = (cfg.get("stt", {}).get("decode_strategy") or "rnnt").lower()
-        resp = httpx.post(
+        resp = post_with_retry(
             f"{self._base_url}/stt",
             files={"audio": ("audio", audio, "application/octet-stream")},
             data={"language": lang, "decode_strategy": strategy},
-            timeout=_TIMEOUT,
         )
         resp.raise_for_status()
         body = resp.json()

@@ -219,18 +219,37 @@ class _NumberedLLM:
             match = re.match(r"^\[(\d+)\]\s*(.*)$", stripped)
             if match:
                 out_lines.append(f"[{match.group(1)}] EN:{match.group(2)}")
+        if not out_lines:
+            # No [N] markers → this is the single-passage retry the ingest gate
+            # fires when a batch translation came back still in Indic script.
+            # Simulate a successful retry that returns real (ASCII) English.
+            return LLMResponse(content="retried english", model=model or "fake", usage={})
         return LLMResponse(content="\n".join(out_lines), model=model or "fake", usage={})
 
 
 def test_to_english_batch_aligns_and_translates() -> None:
     llm = _NumberedLLM()
     translator = OllamaTranslator(llm=llm)
+    texts = ["Already English", "still English"]
+
+    out = translator.to_english_batch(texts)
+
+    assert out == ["EN:Already English", "EN:still English"]
+    assert len(llm.calls) == 1  # all fit in one batch, none need a retry
+
+
+def test_to_english_batch_retries_untranslated_passages() -> None:
+    # The batch mock echoes Devanagari unchanged (a failed translation); the
+    # ingest gate must detect it and retry each offending passage on its own so
+    # vernacular text never lands in the English-only index.
+    llm = _NumberedLLM()
+    translator = OllamaTranslator(llm=llm)
     texts = ["नमस्ते", "Already English", "धन्यवाद"]
 
     out = translator.to_english_batch(texts)
 
-    assert out == ["EN:नमस्ते", "EN:Already English", "EN:धन्यवाद"]
-    assert len(llm.calls) == 1  # all three fit in one batch
+    assert out == ["retried english", "EN:Already English", "retried english"]
+    assert len(llm.calls) == 3  # 1 batch + 2 single-passage retries
 
 
 def test_to_english_batch_splits_into_batches_of_ten() -> None:

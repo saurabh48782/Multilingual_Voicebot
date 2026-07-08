@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
@@ -10,7 +11,7 @@ from src.rag.store import SearchResult
 from tests.unit.graph.nodes.conftest import make_doc
 
 
-def _node(retriever: MagicMock | None = None):
+def _node(retriever: MagicMock | None = None) -> Any:
     deps = MagicMock()
     if retriever is not None:
         deps.retriever = retriever
@@ -22,11 +23,9 @@ def _retriever_returning(
     passed: bool = True,
     top_score: float = 0.9,
     gap: float = 0.1,
-):
+) -> MagicMock:
     r = MagicMock()
-    r.search.return_value = RetrievalResult(
-        docs=docs, top_score=top_score, gap=gap, passed=passed
-    )
+    r.search.return_value = RetrievalResult(docs=docs, top_score=top_score, gap=gap, passed=passed)
     return r
 
 
@@ -41,7 +40,7 @@ def _retriever_returning(
     ],
     ids=["both-empty", "whitespace-rewritten", "english-empty", "no-keys"],
 )
-def test_blank_query_skips_retriever_and_fails_gate(state: dict) -> None:
+def test_blank_query_skips_retriever_and_fails_gate(state: dict[str, Any]) -> None:
     retriever = MagicMock()
     result = _node(retriever)(state)
     retriever.search.assert_not_called()
@@ -125,5 +124,5 @@ def test_retriever_exception_returns_retrieval_error_fallback(exc: Exception) ->
     ],
     ids=["passed-true", "passed-false", "key-absent", "passed-none"],
 )
-def test_route_after_retrieve(state: dict, expected: str) -> None:
+def test_route_after_retrieve(state: dict[str, Any], expected: str) -> None:
     assert route_after_retrieve(state) == expected  # type: ignore[arg-type]

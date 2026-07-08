@@ -28,7 +28,7 @@ from src.rag.bm25_store import get_bm25_store
 from src.rag.embedder import embed_query
 from src.rag.reranker import rerank
 from src.rag.store import get_store
-from src.utils.config import cfg
+from src.utils.config import cfg, validate_config
 from src.utils.logger import get_logger, setup_logging
 from src.utils.observability import configure_tracing
 
@@ -47,6 +47,7 @@ def _warm_rag_models() -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     setup_logging()
+    validate_config()
     configure_tracing()
 
     if not api_key_configured():

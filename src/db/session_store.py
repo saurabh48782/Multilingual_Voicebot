@@ -83,8 +83,14 @@ async def list_sessions(pool: Any) -> list[dict[str, Any]]:
         )
         .orderby(chat.last_active, order=Order.desc)
     )
-    async with pool.acquire() as conn:
-        rows = await conn.fetch(str(query))
+    # Best-effort, like touch_session: a metadata read failure must not 500 the
+    # sidebar - the checkpointer (conversation content) is the source of truth.
+    try:
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(str(query))
+    except Exception:
+        logger.exception("failed to list session metadata")
+        return []
     return [dict(r) for r in rows]
 
 
@@ -93,8 +99,11 @@ async def delete_session(pool: Any, session_id: str) -> None:
     if pool is None:
         return
     query = PostgreSQLQuery.from_(chat).where(chat.session_id == Parameter("$1")).delete()
-    async with pool.acquire() as conn:
-        await conn.execute(str(query), session_id)
+    try:
+        async with pool.acquire() as conn:
+            await conn.execute(str(query), session_id)
+    except Exception:
+        logger.exception("failed to delete session metadata", session_id=session_id)
 
 
 __all__ = [

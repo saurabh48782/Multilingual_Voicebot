@@ -76,9 +76,7 @@ def test_gate_passes_when_top_clearly_above_rest(
     other = _make_doc(0.40, chunk_id="aaaa000000000002", doc_id="d2")
     mock_store.search.return_value = [top, other]
     mock_bm25.search.return_value = [
-        BM25Hit(
-            chunk_id_int=int("aaaa000000000001", 16) % (2**63), doc_id="d1", score=5.0
-        ),
+        BM25Hit(chunk_id_int=int("aaaa000000000001", 16) % (2**63), doc_id="d1", score=5.0),
     ]
 
     with patch.object(
@@ -91,9 +89,7 @@ def test_gate_passes_when_top_clearly_above_rest(
     assert result.docs[0].doc_id == "d1"
 
 
-def test_gate_fails_when_gap_too_small(
-    retriever: Retriever, mock_store: MagicMock
-) -> None:
+def test_gate_fails_when_gap_too_small(retriever: Retriever, mock_store: MagicMock) -> None:
     docs = [
         _make_doc(0.80, chunk_id="aaaa000000000001"),
         _make_doc(0.79, chunk_id="aaaa000000000002"),
@@ -110,9 +106,7 @@ def test_gate_fails_when_gap_too_small(
     assert result.passed is False
 
 
-def test_empty_store_returns_failed_gate(
-    retriever: Retriever, mock_store: MagicMock
-) -> None:
+def test_empty_store_returns_failed_gate(retriever: Retriever, mock_store: MagicMock) -> None:
     mock_store.search.return_value = []
 
     with patch.object(
@@ -137,9 +131,7 @@ def test_rrf_fuses_dense_and_bm25(
 
     # BM25 ranks d1 first
     mock_bm25.search.return_value = [
-        BM25Hit(
-            chunk_id_int=int("aaaa000000000001", 16) % (2**63), doc_id="d1", score=5.0
-        ),
+        BM25Hit(chunk_id_int=int("aaaa000000000001", 16) % (2**63), doc_id="d1", score=5.0),
     ]
 
     with patch.object(

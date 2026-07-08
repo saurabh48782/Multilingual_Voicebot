@@ -13,7 +13,9 @@ import re
 
 INSUFFICIENT_CONTEXT = "INSUFFICIENT_CONTEXT"
 
-_TAG_BREAKOUT_RE = re.compile(r"</?\s*(context|question|answer|history|query)\s*>", re.IGNORECASE)
+_TAG_BREAKOUT_RE = re.compile(
+    r"</?\s*(context|question|answer|history|query|previous_summary)\s*>", re.IGNORECASE
+)
 
 
 def sanitize_untrusted(text: str) -> str:

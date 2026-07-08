@@ -51,7 +51,9 @@ class ApiKeyMiddleware(BaseHTTPMiddleware):  # type: ignore[misc]
         expected = os.environ.get("VOICEBOT_API_KEY", "")
         if expected and request.url.path.startswith(_PROTECTED_PREFIX):
             provided = request.headers.get("X-API-Key", "")
-            if not secrets.compare_digest(provided, expected):
+            # Compare as bytes: secrets.compare_digest raises TypeError on str
+            # inputs containing non-ASCII chars (a malformed header would 500).
+            if not secrets.compare_digest(provided.encode("utf-8"), expected.encode("utf-8")):
                 return JSONResponse({"detail": "invalid or missing API key"}, status_code=401)
         response: Response = await call_next(request)
         return response

@@ -4,10 +4,9 @@ from __future__ import annotations
 
 from typing import Any
 
-import httpx
-
 from src.llm.base import LLMResponse
 from src.utils.config import cfg
+from src.utils.http import post_with_retry
 from src.utils.observability import llm_run_outputs, strip_self, traceable
 
 
@@ -59,20 +58,8 @@ class OllamaLLM:
             # keeping message.content as the clean final answer.
             payload["think"] = True
 
-        resp: httpx.Response | None = None
-        for attempt in range(2):
-            try:
-                resp = httpx.post(
-                    f"{self._base_url}/api/chat",
-                    json=payload,
-                    timeout=120.0,
-                )
-                break
-            except httpx.TransportError:
-                if attempt == 1:
-                    raise
-        if resp is None:
-            raise RuntimeError("Ollama request failed without a response")
+        # Shared pooled client + exponential backoff on transient transport errors.
+        resp = post_with_retry(f"{self._base_url}/api/chat", json=payload)
         resp.raise_for_status()
         data = resp.json()
         content = data.get("message", {}).get("content", "")

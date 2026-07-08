@@ -9,13 +9,9 @@ Synchronous on purpose: synthesize() runs in a LangGraph worker thread (sync nod
 
 from __future__ import annotations
 
-import httpx
-
 from src.utils.config import cfg
+from src.utils.http import post_with_retry
 from src.utils.observability import redact_audio_outputs, strip_self, traceable
-
-# Synthesis can take several seconds (esp. CPU); first call also loads the model.
-_TIMEOUT = httpx.Timeout(connect=10.0, read=180.0, write=30.0, pool=10.0)
 
 # Generic voice description; works for every supported language. Naming a
 # recommended speaker (e.g. "Divya" for Hindi) yields a more consistent voice.
@@ -47,10 +43,9 @@ class IndicParlerRemoteTts:
         process_outputs=redact_audio_outputs,
     )
     def synthesize(self, text: str, language: str) -> bytes:
-        resp = httpx.post(
+        resp = post_with_retry(
             f"{self._base_url}/tts",
             json={"text": text, "description": _description_for(language)},
-            timeout=_TIMEOUT,
         )
         resp.raise_for_status()
         return resp.content  # type: ignore[no-any-return]

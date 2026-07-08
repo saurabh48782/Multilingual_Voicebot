@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
@@ -9,7 +10,9 @@ from src.graph.prompts import INSUFFICIENT_CONTEXT
 from tests.unit.graph.nodes.conftest import make_doc
 
 
-def _node(llm_content: str | None = None, side_effect: Exception | None = None):
+def _node(
+    llm_content: str | None = None, side_effect: Exception | None = None
+) -> tuple[Any, MagicMock]:
     deps = MagicMock()
     resp = MagicMock()
     if side_effect:
@@ -30,9 +33,9 @@ def _node(llm_content: str | None = None, side_effect: Exception | None = None):
     ],
     ids=["empty-docs", "none-docs", "missing-docs-key"],
 )
-def test_no_docs_returns_fallback(state: dict) -> None:
+def test_no_docs_returns_fallback(state: dict[str, Any]) -> None:
     node, deps = _node()
-    result = node(state)  # type: ignore[arg-type]
+    result = node(state)
     deps.llm.complete.assert_not_called()
     assert result == {
         "english_response": "",
@@ -47,9 +50,7 @@ def test_no_docs_returns_fallback(state: dict) -> None:
     [
         (
             {
-                "retrieved_docs": [
-                    make_doc("PM Kisan: ₹6000/year direct income support.")
-                ],
+                "retrieved_docs": [make_doc("PM Kisan: ₹6000/year direct income support.")],
                 "rewritten_query": "What is PM Kisan about?",
                 "english_query": "What is it?",
             },
@@ -65,9 +66,9 @@ def test_no_docs_returns_fallback(state: dict) -> None:
     ],
     ids=["rewritten-query-preferred", "falls-back-to-english-query"],
 )
-def test_query_preference(state: dict, expected_query: str) -> None:
+def test_query_preference(state: dict[str, Any], expected_query: str) -> None:
     node, deps = _node("PM Kisan gives ₹6000 per year.")
-    node(state)  # type: ignore[arg-type]
+    node(state)
     call_kwargs = deps.llm.complete.call_args
     assert expected_query in call_kwargs.kwargs["messages"][-1]["content"]
 
@@ -80,7 +81,7 @@ def test_successful_generation_returns_english_response() -> None:
         "retrieved_docs": [make_doc("PM Kisan: ₹6000/year direct income support.")],
         "rewritten_query": "What is PM Kisan?",
     }
-    result = node(state)  # type: ignore[arg-type]
+    result = node(state)
     assert result == {"english_response": answer}
 
 
@@ -99,7 +100,7 @@ def test_insufficient_context_sentinel_triggers_fallback(llm_answer: str) -> Non
         "retrieved_docs": [make_doc("Some context.")],
         "rewritten_query": "Unrelated query",
     }
-    result = node(state)  # type: ignore[arg-type]
+    result = node(state)
     assert result == {
         "english_response": "",
         "fallback_triggered": True,
@@ -115,7 +116,7 @@ def test_insufficient_context_not_triggered_as_substring() -> None:
         "retrieved_docs": [make_doc("Some context.")],
         "rewritten_query": "A question",
     }
-    result = node(state)  # type: ignore[arg-type]
+    result = node(state)
     assert result == {"english_response": answer}
 
 
@@ -130,7 +131,7 @@ def test_llm_exception_returns_llm_error_fallback(exc: Exception) -> None:
         "retrieved_docs": [make_doc("PM Kisan scheme context.")],
         "rewritten_query": "What is PM Kisan?",
     }
-    result = node(state)  # type: ignore[arg-type]
+    result = node(state)
     assert result == {
         "english_response": "",
         "fallback_triggered": True,
@@ -173,5 +174,5 @@ def test_strip_thinking(raw: str, expected: str) -> None:
     ],
     ids=["empty", "single-doc", "multiple-docs-numbered-and-separated"],
 )
-def test_build_context(docs: list, expected: str) -> None:
+def test_build_context(docs: list[Any], expected: str) -> None:
     assert _build_context(docs) == expected

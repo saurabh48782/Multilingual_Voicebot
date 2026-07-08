@@ -21,9 +21,7 @@ from src.rag.retriever import confidence_gate
     ],
 )
 def test_gate_absolute_scores(top: float, second: float, should_pass: bool) -> None:
-    passed = confidence_gate(
-        top, second, threshold=0.65, gap_threshold=0.03, absolute_scores=True
-    )
+    passed = confidence_gate(top, second, threshold=0.65, gap_threshold=0.03, absolute_scores=True)
     assert passed is should_pass
 
 
@@ -36,7 +34,5 @@ def test_gate_absolute_scores(top: float, second: float, should_pass: bool) -> N
     ],
 )
 def test_gate_relative_rrf_scores(top: float, second: float, should_pass: bool) -> None:
-    passed = confidence_gate(
-        top, second, threshold=0.5, gap_threshold=0.05, absolute_scores=False
-    )
+    passed = confidence_gate(top, second, threshold=0.5, gap_threshold=0.05, absolute_scores=False)
     assert passed is should_pass
