@@ -36,9 +36,8 @@ logger = get_logger(__name__)
 
 
 def _warm_rag_models() -> None:
-    """Force the e5 embedder + cross-encoder reranker to load now, off the
-    request path - both are lazy singletons and would otherwise cold-load
-    ~4.5 GB of weights synchronously during the first search."""
+    """Force the e5 embedder + cross-encoder reranker to load
+    at startup, to avoid cold-load during the first search."""
     embed_query("warmup")
     if cfg["rag"].get("retrieval", {}).get("use_reranker", True):
         rerank("warmup", ["warmup"])

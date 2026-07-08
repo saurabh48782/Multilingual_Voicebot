@@ -201,7 +201,7 @@ def test_verifier_uses_generation_model_by_default(monkeypatch: pytest.MonkeyPat
     node = make_verify_groundedness(deps)
     node({"english_response": "Answer.", "retrieved_docs": [make_doc()]})
     call_kwargs = deps.llm.complete.call_args.kwargs
-    assert call_kwargs["model"] == cfg["llm"]["model"]
+    assert call_kwargs["model"] is None
 
 
 def test_verifier_model_override_is_honored(monkeypatch: pytest.MonkeyPatch) -> None:

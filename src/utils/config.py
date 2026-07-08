@@ -68,12 +68,9 @@ def load_config(config_path: str = "params.yaml") -> dict[str, Any]:
 
 
 def validate_config() -> None:
-    """Validate critical config at startup so problems surface immediately."""
+    """Validate critical config at startup."""
     cfg = load_config(str(ROOT_DIR / "params.yaml"))
 
-    # Required top-level sections — a trimmed params.yaml (missing memory/
-    # evaluation) otherwise fails late with an opaque KeyError deep in db.py
-    # startup or at pytest collection. Surface it here instead.
     for section in ("llm", "rag", "stt", "tts", "memory", "evaluation"):
         if section not in cfg:
             raise RuntimeError(f"Missing required config section '{section}' in params.yaml.")

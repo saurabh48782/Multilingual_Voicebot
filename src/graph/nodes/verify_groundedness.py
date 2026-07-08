@@ -66,10 +66,9 @@ def make_verify_groundedness(deps: Deps) -> Callable[[VoicebotState], dict[str, 
                         ),
                     },
                 ],
-                # Defaults to the shared generation model, but a different-family
-                # model can be pinned via llm.verifier_model to avoid correlated
+                # A different-family model is used to avoid correlated
                 # failure modes between generator and verifier.
-                model=cfg["llm"].get("verifier_model") or cfg["llm"]["model"],
+                model=cfg["llm"].get("verifier_model"),
                 json_mode=True,
                 temperature=0.0,  # deterministic safety gate
             )

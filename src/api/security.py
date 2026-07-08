@@ -7,12 +7,10 @@ Both are env-driven so local dev works with zero config:
   at startup). ``/healthcheck``, ``/audio/*`` (unguessable UUID ids) and the
   static frontend stay open.
 - ``RATE_LIMIT_PER_MINUTE``: sliding-window per-client-IP limit on ``/api/*``
-  routes (default 120). In-process only - adequate for the single-worker
-  deployment this app requires.
-  When ``RATE_LIMIT_TRUST_FORWARDED`` is set the
-  client IP is taken from the left-most ``X-Forwarded-For`` hop (set this only
-  behind a trusted reverse proxy that overwrites the header — otherwise clients
-  can spoof it to evade the limit).
+  routes (default 120).
+  When ``RATE_LIMIT_TRUST_FORWARDED`` is set the client IP is taken from the
+  left-most ``X-Forwarded-For`` hop (set this only behind a trusted reverse proxy
+  that overwrites the header - otherwise clients can spoof it to evade the limit).
 - ``MAX_REQUEST_BYTES``: hard cap on request body size (default 50 MB) enforced
   by ``MaxBodySizeMiddleware`` *before* the body is buffered into memory, so an
   oversized upload is rejected with 413 rather than materialized in RAM.
@@ -51,8 +49,6 @@ class ApiKeyMiddleware(BaseHTTPMiddleware):  # type: ignore[misc]
         expected = os.environ.get("VOICEBOT_API_KEY", "")
         if expected and request.url.path.startswith(_PROTECTED_PREFIX):
             provided = request.headers.get("X-API-Key", "")
-            # Compare as bytes: secrets.compare_digest raises TypeError on str
-            # inputs containing non-ASCII chars (a malformed header would 500).
             if not secrets.compare_digest(provided.encode("utf-8"), expected.encode("utf-8")):
                 return JSONResponse({"detail": "invalid or missing API key"}, status_code=401)
         response: Response = await call_next(request)
@@ -98,7 +94,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):  # type: ignore[misc]
             # Bound memory: drop clients whose most-recent hit has aged out of the
             # window once the table grows large. Idle deques are never drained by
             # the loop above (that only touches the requesting IP), so purge by the
-            # age of the newest entry rather than emptiness — otherwise stale IPs
+            # age of the newest entry rather than emptiness - otherwise stale IPs
             # (e.g. rotating IPv6 /64s) accumulate unbounded.
             if len(self._hits) > 10_000:
                 stale = [ip for ip, q in self._hits.items() if not q or now - q[-1] > 60.0]

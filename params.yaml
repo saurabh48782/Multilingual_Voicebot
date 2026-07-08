@@ -13,11 +13,7 @@ observability:
 llm:
   provider: "ollama"
   model: "gemma4:12b"
-  # Optional: pin the groundedness verifier to a different model (ideally a
-  # different family than `model`, e.g. a Qwen/Llama model) so generator and
-  # judge don't share the same hallucination failure modes. Unset = verifier
-  # reuses `model`.
-  # verifier_model: "qwen2.5:14b"
+  verifier_model: "qwen2.5:14b"
   ollama_base_url: "http://localhost:11434"
   think_on_generate: true
   num_ctx: 8192
