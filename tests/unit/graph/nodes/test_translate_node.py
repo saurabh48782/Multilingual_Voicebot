@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
@@ -8,14 +10,18 @@ from src.graph.nodes.translate import make_to_english, make_to_vernacular
 from src.translation.base import TranslationResult
 
 
-def _en_node(translator: MagicMock | None = None):
+def _en_node(
+    translator: MagicMock | None = None,
+) -> Callable[..., dict[str, Any]]:
     deps = MagicMock()
     if translator is not None:
         deps.translator = translator
     return make_to_english(deps)
 
 
-def _vern_node(translator: MagicMock | None = None):
+def _vern_node(
+    translator: MagicMock | None = None,
+) -> Callable[..., dict[str, Any]]:
     deps = MagicMock()
     if translator is not None:
         deps.translator = translator
@@ -50,7 +56,7 @@ def _tr(text: str, src: str, tgt: str) -> TranslationResult:
     ids=["hindi-to-english", "bengali-to-english", "default-lang-en"],
 )
 def test_to_english_translates(
-    state: dict, translation: TranslationResult, expected_query: str
+    state: dict[str, Any], translation: TranslationResult, expected_query: str
 ) -> None:
     translator = MagicMock()
     translator.to_english.return_value = translation
@@ -110,7 +116,7 @@ def test_to_vernacular_english_source_skips_translator() -> None:
     ids=["english-to-hindi", "english-to-bengali"],
 )
 def test_to_vernacular_translates(
-    state: dict, translation: TranslationResult, expected: str
+    state: dict[str, Any], translation: TranslationResult, expected: str
 ) -> None:
     translator = MagicMock()
     translator.to_vernacular.return_value = translation

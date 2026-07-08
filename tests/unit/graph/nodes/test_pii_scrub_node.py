@@ -15,7 +15,7 @@ from src.graph.nodes.pii_scrub import pii_scrub
     ids=["aadhaar", "pan", "phone"],
 )
 def test_pii_patterns_are_masked(transcript: str, contains_mask: str) -> None:
-    result = pii_scrub({"transcript": transcript})  # type: ignore[arg-type]
+    result = pii_scrub({"transcript": transcript})
     assert contains_mask in result["transcript"]
 
 
@@ -30,6 +30,6 @@ def test_pii_patterns_are_masked(transcript: str, contains_mask: str) -> None:
     ],
     ids=["clean_passthrough", "missing_empty"],
 )
-def test_transcript_passthrough_and_missing(state: dict, expected: str) -> None:
+def test_transcript_passthrough_and_missing(state: dict[str, str], expected: str) -> None:
     result = pii_scrub(state)  # type: ignore[arg-type]
     assert result["transcript"] == expected

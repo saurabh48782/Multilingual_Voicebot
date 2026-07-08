@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import os
 from logging.config import fileConfig
 from urllib.parse import urlsplit, urlunsplit
@@ -27,12 +28,10 @@ def _resolve_dsn() -> str:
     the scheme to SQLAlchemy's asyncpg driver so no extra DB driver (psycopg2)
     is needed. ``.env`` is loaded best-effort for local ``uv run alembic``;
     under docker compose the variable is already exported."""
-    try:
+    with contextlib.suppress(Exception):  # dotenv is optional
         from dotenv import load_dotenv
 
         load_dotenv()
-    except Exception:  # pragma: no cover - dotenv is optional
-        pass
 
     dsn = os.environ.get("CHECKPOINT_DSN")
     if not dsn:

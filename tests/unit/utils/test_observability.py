@@ -49,11 +49,15 @@ def _patch_cfg(monkeypatch: pytest.MonkeyPatch, langsmith: dict[str, Any]) -> No
             id="enabled-without-api-key",
         ),
         pytest.param(
-            {"enabled": "true", "api_key": "ls-test-key", "project": "voicebot-dev"},
+            {
+                "enabled": "true",
+                "api_key": "ls-test-key",  # pragma: allowlist secret
+                "project": "voicebot-dev",
+            },
             {},
             True,
             {
-                "LANGSMITH_API_KEY": "ls-test-key",
+                "LANGSMITH_API_KEY": "ls-test-key",  # pragma: allowlist secret
                 "LANGSMITH_PROJECT": "voicebot-dev",
                 "LANGSMITH_ENDPOINT": "https://api.smith.langchain.com",  # code default
             },

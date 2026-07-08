@@ -41,9 +41,7 @@ def upgrade() -> None:
             nullable=False,
             server_default=sa.text("now()"),
         ),
-        sa.Column(
-            "message_count", sa.Integer(), nullable=False, server_default=sa.text("0")
-        ),
+        sa.Column("message_count", sa.Integer(), nullable=False, server_default=sa.text("0")),
     )
 
 

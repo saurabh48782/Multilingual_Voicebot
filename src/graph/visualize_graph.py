@@ -6,7 +6,7 @@ from src.graph.builder import build_graph
 from src.graph.deps import Deps
 
 
-def main():
+def main() -> None:
     deps = Deps(
         stt=MagicMock(),
         tts=MagicMock(),
