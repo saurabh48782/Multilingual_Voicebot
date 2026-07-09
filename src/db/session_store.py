@@ -41,8 +41,6 @@ async def touch_session(
     ``message_count`` always refresh. Best-effort - failures are logged."""
     if pool is None:
         return
-    # Insert a new row, or on conflict refresh activity/count and set the title
-    # only if it was never set (first non-empty hint wins, never overwritten).
     query = (
         PostgreSQLQuery.into(chat)
         .columns(chat.session_id, chat.title, chat.last_active, chat.message_count)

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+import pytest
+
 from src.db import session_store
 
 
@@ -42,19 +44,22 @@ class _FakePool:
         return _FakeAcquire(self.conn)
 
 
-def test_make_title_collapses_whitespace() -> None:
-    assert session_store.make_title("  hello   world \n there ") == "hello world there"
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("  hello   world \n there ", "hello world there"),
+        ("", ""),
+        ("   ", ""),
+    ],
+)
+def test_make_title(text: str, expected: str) -> None:
+    assert session_store.make_title(text) == expected
 
 
 def test_make_title_truncates_long_text() -> None:
     title = session_store.make_title("x" * 200)
     assert len(title) == 60
     assert title.endswith("…")
-
-
-def test_make_title_handles_empty() -> None:
-    assert session_store.make_title("") == ""
-    assert session_store.make_title("   ") == ""
 
 
 async def test_none_pool_is_a_noop() -> None:

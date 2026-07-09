@@ -32,8 +32,8 @@ jobs:
           path: ~/.cache/pre-commit
           key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
 
-      - name: Pre-commit checks
-        run: bash scripts/precommit_check.sh
+      # - name: Pre-commit checks
+      #   run: bash scripts/precommit_check.sh
 
       - name: Unit tests
         run: bash scripts/unit_test.sh

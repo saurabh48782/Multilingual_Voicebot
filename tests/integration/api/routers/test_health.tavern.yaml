@@ -1,0 +1,15 @@
+---
+test_name: Health endpoint reports readiness
+
+stages:
+  - name: Healthcheck returns ok with stub state
+    request:
+      url: "{tavern.env_vars.API_URL}/healthcheck"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        status: ok
+        faiss_loaded: false
+        total_chunks: 0
+        tracing_enabled: !anybool

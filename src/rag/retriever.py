@@ -85,10 +85,7 @@ class Retriever:
             self._bm25 = get_bm25_store()
         return self._bm25
 
-    # ------------------------------------------------------------------
     # Public API
-    # ------------------------------------------------------------------
-
     def search(self, query: str, k: int | None = None) -> RetrievalResult:
         """Hybrid retrieve + rerank + confidence gate."""
         rag = cfg["rag"]
@@ -124,8 +121,7 @@ class Retriever:
             return RetrievalResult(docs=[], top_score=0.0, gap=0.0, passed=False)
 
         # 4. Rerank (or keep RRF order)
-        candidate_pool = max(k * 4, 20)
-        candidates = [meta_lookup[cid] for cid, _ in fused[:candidate_pool] if cid in meta_lookup]
+        candidates = [meta_lookup[cid] for cid, _ in fused[: max(k * 4, 20)] if cid in meta_lookup]
 
         if use_reranker and candidates:
             from src.rag.reranker import rerank
@@ -175,11 +171,7 @@ class Retriever:
         return cls(store=get_store(), bm25=get_bm25_store())
 
 
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
-
-
 def _search_result_id(sr: SearchResult) -> int:
     """Reconstruct chunk_id_int from hex chunk_id (stable across runs)."""
     return int(sr.chunk_id, 16) % (2**63)
