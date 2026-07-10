@@ -1,0 +1,24 @@
+---
+test_name: Low-confidence retrieval routes to the fallback answer
+
+# This test targets the FALLBACK_URL stack, whose stub retriever always fails
+# the confidence gate (passed=false), so every turn takes the fallback path.
+stages:
+  - name: A query that fails the confidence gate triggers fallback
+    request:
+      url: "{tavern.env_vars.FALLBACK_URL}/api/chat"
+      method: POST
+      json:
+        text: "What is the weather in Delhi?"
+        session_id: tavern-fallback
+        language: en
+    response:
+      status_code: 200
+      json:
+        session_id: tavern-fallback
+        fallback_triggered: true
+        confidence:
+          retrieval_passed: false
+          overall: red
+      strict:
+        - json:off

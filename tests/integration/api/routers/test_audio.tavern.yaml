@@ -1,0 +1,48 @@
+---
+test_name: Cached TTS audio can be streamed back
+
+stages:
+  - name: Produce a turn and capture its audio url
+    request:
+      url: "{tavern.env_vars.API_URL}/api/chat"
+      method: POST
+      json:
+        text: "What is PM Kisan?"
+        session_id: tavern-audio
+        language: hi
+    response:
+      status_code: 200
+      save:
+        json:
+          audio_url: audio_url
+
+  - name: Fetch the cached audio bytes
+    request:
+      url: "{tavern.env_vars.API_URL}{audio_url}"
+      method: GET
+    response:
+      status_code: 200
+      headers:
+        content-type: audio/wav
+
+---
+test_name: Audio endpoint rejects a malformed id
+
+stages:
+  - name: Non-hex id is a 400
+    request:
+      url: "{tavern.env_vars.API_URL}/audio/not-a-valid-id.wav"
+      method: GET
+    response:
+      status_code: 400
+
+---
+test_name: Audio endpoint 404s an unknown id
+
+stages:
+  - name: Well-formed but unknown id is a 404
+    request:
+      url: "{tavern.env_vars.API_URL}/audio/deadbeefdeadbeef.wav"
+      method: GET
+    response:
+      status_code: 404

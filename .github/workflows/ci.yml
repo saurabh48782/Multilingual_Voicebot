@@ -37,3 +37,6 @@ jobs:
 
       - name: Unit tests
         run: bash scripts/unit_test.sh
+
+      - name: Integration tests
+        run: bash scripts/integration_test.sh

@@ -1,0 +1,42 @@
+---
+test_name: Document upload indexes a valid .txt file
+
+stages:
+  - name: A valid sample.txt is accepted and returns a DocumentUploadResponse
+    request:
+      url: "{tavern.env_vars.API_URL}/api/documents"
+      method: POST
+      files:
+        file: "tests/integration/api/routers/fixtures/sample.txt"
+    response:
+      status_code: 200
+      json:
+        filename: "sample.txt"
+        chunks_added: 3
+        message: "Indexed 3 chunks from 'sample.txt'."
+
+---
+test_name: Document upload rejects an unsupported file type
+
+stages:
+  - name: A .md file is rejected before ingestion
+    request:
+      url: "{tavern.env_vars.API_URL}/api/documents"
+      method: POST
+      files:
+        file: "tests/integration/api/routers/fixtures/notes.md"
+    response:
+      status_code: 422
+
+---
+test_name: Document upload rejects an empty file
+
+stages:
+  - name: An empty .txt is a 400
+    request:
+      url: "{tavern.env_vars.API_URL}/api/documents"
+      method: POST
+      files:
+        file: "tests/integration/api/routers/fixtures/empty.txt"
+    response:
+      status_code: 400

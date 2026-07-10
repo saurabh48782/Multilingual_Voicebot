@@ -14,6 +14,7 @@ from langgraph.checkpoint.memory import MemorySaver
 
 from src.api.app import create_app
 from src.api.audio_cache import AudioCache
+from src.api.routers import documents as _documents
 from src.graph.builder import build_graph
 from src.graph.deps import Deps
 from tests.stubs import StubLLM, StubRetriever, StubSTT, StubTranslator, StubTTS
@@ -48,6 +49,11 @@ def build_stub_app(cache_dir: Path, *, passed: bool = True, top_score: float = 0
         audio_cache=cache,
     )
     graph = build_graph(checkpointer=checkpointer, deps=deps)
+
+    def _stub_ingest_file(path: Path, *, force: bool = True, translate: bool = True) -> int:
+        return 3
+
+    _documents.ingest_file = _stub_ingest_file  # type: ignore[assignment,attr-defined]
 
     def bootstrap(fastapi_app: FastAPI) -> None:
         fastapi_app.state.checkpointer = checkpointer
