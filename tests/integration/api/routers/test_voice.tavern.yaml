@@ -1,0 +1,85 @@
+---
+test_name: Voice happy path runs the full pipeline
+
+stages:
+  - name: Multipart audio in Hindi returns a VoiceResponse + audio url
+    request:
+      url: "{tavern.env_vars.API_URL}/api/voice"
+      method: POST
+      data:
+        session_id: tavern-voice
+        language: hi
+      files:
+        audio: "tests/integration/api/routers/fixtures/sample.wav"
+    response:
+      status_code: 200
+      json:
+        session_id: tavern-voice
+        transcript: "पीएम किसान योजना क्या है?"
+        detected_language: hi
+        english_query: "What is the PM Kisan scheme?"
+        rewritten_query: "What is the PM Kisan scheme?"
+        retrieved_context:
+          - text: "PM Kisan provides ₹6000/year."
+            score: 0.9
+            source: pm_kisan.pdf
+            page_num: 1
+        response_text: "पीएम किसान योजना का जवाब।"
+        response_text_english: "PM Kisan provides ₹6000/year direct income support to farmers."
+        audio_url: !re_fullmatch '/audio/[0-9a-f]{8,64}\.wav'
+        audio_content_type: audio/wav
+        confidence:
+          retrieval_score: 0.9
+          retrieval_gap: 0.12
+          retrieval_passed: true
+          grounded: true
+          overall: green
+        fallback_triggered: false
+        fallback_reason: null
+
+---
+test_name: Voice rejects empty audio upload
+
+stages:
+  - name: Zero-byte audio is a 400
+    request:
+      url: "{tavern.env_vars.API_URL}/api/voice"
+      method: POST
+      data:
+        session_id: tavern-voice-empty
+        language: hi
+      files:
+        audio: "tests/integration/api/routers/fixtures/empty.wav"
+    response:
+      status_code: 400
+
+---
+test_name: Voice rejects an unsupported language
+
+stages:
+  - name: language 'ta' is a 422
+    request:
+      url: "{tavern.env_vars.API_URL}/api/voice"
+      method: POST
+      data:
+        session_id: tavern-voice-badlang
+        language: ta
+      files:
+        audio: "tests/integration/api/routers/fixtures/sample.wav"
+    response:
+      status_code: 422
+
+---
+test_name: Voice requires the language field
+
+stages:
+  - name: Missing language is a 422
+    request:
+      url: "{tavern.env_vars.API_URL}/api/voice"
+      method: POST
+      data:
+        session_id: tavern-voice-nolang
+      files:
+        audio: "tests/integration/api/routers/fixtures/sample.wav"
+    response:
+      status_code: 422

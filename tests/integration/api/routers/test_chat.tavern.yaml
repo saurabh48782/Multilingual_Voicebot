@@ -1,0 +1,84 @@
+---
+test_name: Chat happy path returns a grounded VoiceResponse
+
+stages:
+  - name: First turn - full response contract
+    request:
+      url: "{tavern.env_vars.API_URL}/api/chat"
+      method: POST
+      json:
+        text: "What is PM Kisan?"
+        session_id: tavern-chat
+        language: en
+    response:
+      status_code: 200
+      json:
+        session_id: tavern-chat
+        transcript: "What is PM Kisan?"
+        detected_language: en
+        english_query: "What is the PM Kisan scheme?"
+        rewritten_query: "What is the PM Kisan scheme?"
+        retrieved_context:
+          - text: "PM Kisan provides ₹6000/year."
+            score: 0.9
+            source: pm_kisan.pdf
+            page_num: 1
+        response_text: "PM Kisan provides ₹6000/year direct income support to farmers."
+        response_text_english: "PM Kisan provides ₹6000/year direct income support to farmers."
+        audio_url: !re_fullmatch '/audio/[0-9a-f]{8,64}\.wav'
+        audio_content_type: audio/wav
+        confidence:
+          retrieval_score: 0.9
+          retrieval_gap: 0.12
+          retrieval_passed: true
+          grounded: true
+          overall: green
+        fallback_triggered: false
+        fallback_reason: null
+
+  - name: Second turn on same session triggers the coreference rewriter
+    request:
+      url: "{tavern.env_vars.API_URL}/api/chat"
+      method: POST
+      json:
+        text: "Does it cover loan waivers?"
+        session_id: tavern-chat
+        language: en
+    response:
+      status_code: 200
+      json:
+        session_id: tavern-chat
+        rewritten_query: "What is the PM Kisan scheme follow-up?"
+        fallback_triggered: false
+      strict:
+        - json:off
+
+---
+test_name: Chat rejects an unsupported language
+
+stages:
+  - name: language 'ta' is not supported
+    request:
+      url: "{tavern.env_vars.API_URL}/api/chat"
+      method: POST
+      json:
+        text: "hello"
+        session_id: tavern-chat-badlang
+        language: ta
+    response:
+      status_code: 422
+
+---
+test_name: Chat rejects an empty body field
+
+stages:
+  - name: empty text fails validation
+    request:
+      url: "{tavern.env_vars.API_URL}/api/chat"
+      method: POST
+      json:
+        text: ""
+        session_id: tavern-chat-empty
+        language: en
+    response:
+      status_code: 422

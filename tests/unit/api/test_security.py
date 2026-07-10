@@ -14,18 +14,18 @@ def _make_app(rate_limit: int | None = None) -> FastAPI:
         app.add_middleware(RateLimitMiddleware, limit_per_minute=rate_limit)
     app.add_middleware(ApiKeyMiddleware)
 
-    @app.get("/api/ping")  # type: ignore[misc]
+    @app.get("/api/ping")
     def ping() -> dict[str, str]:
         return {"pong": "ok"}
 
-    @app.get("/healthcheck")  # type: ignore[misc]
+    @app.get("/healthcheck")
     def healthcheck() -> dict[str, str]:
         return {"status": "ok"}
 
     return app
 
 
-@pytest_asyncio.fixture  # type: ignore[misc]
+@pytest_asyncio.fixture
 async def client() -> AsyncIterator[AsyncClient]:
     transport = ASGITransport(app=_make_app())
     async with AsyncClient(transport=transport, base_url="http://test") as ac:

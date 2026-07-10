@@ -21,8 +21,6 @@ from tests.stubs import StubLLM, StubRetriever, StubSTT, StubTranslator, StubTTS
 if TYPE_CHECKING:
     from src.rag.retriever import Retriever
 
-# ---------- Fixtures ---------------------------------------------------------
-
 
 @pytest.fixture
 def audio_cache_dir(tmp_path: Path) -> Path:
@@ -65,7 +63,7 @@ def app(audio_cache_dir: Path) -> FastAPI:
     return build_stub_app(audio_cache_dir)
 
 
-@pytest_asyncio.fixture  # type: ignore[misc]  # untyped decorator
+@pytest_asyncio.fixture
 async def client(app: FastAPI) -> AsyncIterator[AsyncClient]:
     transport = ASGITransport(app=app)
     async with app.router.lifespan_context(app):

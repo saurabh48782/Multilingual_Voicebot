@@ -12,7 +12,7 @@ from src.api.session_locks import SessionLocks
 router = APIRouter(prefix="/api", tags=["chat"])
 
 
-@router.post("/chat", response_model=VoiceResponse)  # type: ignore[misc]
+@router.post("/chat", response_model=VoiceResponse)
 async def chat(
     payload: ChatRequest,
     graph: Any = GraphDep,

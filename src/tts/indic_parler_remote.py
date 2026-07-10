@@ -36,7 +36,7 @@ class IndicParlerRemoteTts:
         self._base_url = base_url.rstrip("/")
 
     # Traced as a tool span; audio output is redacted to a byte count.
-    @traceable(  # type: ignore[misc]
+    @traceable(
         run_type="tool",
         name="tts_sidecar",
         process_inputs=strip_self,
@@ -48,4 +48,4 @@ class IndicParlerRemoteTts:
             json={"text": text, "description": _description_for(language)},
         )
         resp.raise_for_status()
-        return resp.content  # type: ignore[no-any-return]
+        return resp.content  # type: ignore[no-any-return, unused-ignore]

@@ -19,7 +19,7 @@ class OllamaLLM:
 
     # LangGraph traces the node span; this makes the actual LLM call inside it
     # a nested llm-type span with prompt/completion token usage.
-    @traceable(  # type: ignore[misc]
+    @traceable(
         run_type="llm",
         name="ollama_chat",
         process_inputs=strip_self,

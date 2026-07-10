@@ -28,7 +28,7 @@ from src.utils.logger import get_logger
 logger = get_logger(__name__)
 
 
-class GroundednessVerdict(BaseModel):  # type: ignore[misc]
+class GroundednessVerdict(BaseModel):
     grounded: bool
     reasoning: str = ""
 
@@ -38,7 +38,7 @@ def parse_verdict(content: str) -> bool:
     callers must treat that as ungrounded (fail closed).
     """
     data = parse_json_markdown(content.strip(), parser=json.loads)
-    return GroundednessVerdict.model_validate(data).grounded  # type: ignore[no-any-return]
+    return GroundednessVerdict.model_validate(data).grounded
 
 
 def make_verify_groundedness(deps: Deps) -> Callable[[VoicebotState], dict[str, Any]]:

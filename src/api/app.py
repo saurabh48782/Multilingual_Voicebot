@@ -86,7 +86,7 @@ def create_app(bootstrap: Callable[[FastAPI], None] | None = None) -> FastAPI:
     app.add_middleware(RateLimitMiddleware)
     app.add_middleware(ApiKeyMiddleware)
 
-    @app.middleware("http")  # type: ignore[misc]
+    @app.middleware("http")
     async def request_id_middleware(request: Request, call_next: Any) -> Any:
         request_id = request.headers.get("X-Request-ID") or str(uuid.uuid4())
         structlog.contextvars.bind_contextvars(request_id=request_id)

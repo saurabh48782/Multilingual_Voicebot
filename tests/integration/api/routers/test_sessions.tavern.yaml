@@ -1,0 +1,113 @@
+---
+test_name: Sessions list is empty without a metadata pool
+
+# The stub bootstrap sets no db_pool, so the metadata store degrades to a
+# no-op and GET /api/sessions always returns an empty list.
+stages:
+  - name: List sessions is empty
+    request:
+      url: "{tavern.env_vars.API_URL}/api/sessions"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        sessions: []
+
+---
+test_name: History replay after a chat turn
+
+stages:
+  - name: One chat turn seeds the thread
+    request:
+      url: "{tavern.env_vars.API_URL}/api/chat"
+      method: POST
+      json:
+        text: "What is PM Kisan?"
+        session_id: tavern-history
+        language: en
+    response:
+      status_code: 200
+
+  - name: History replays exactly one user + one assistant message
+    request:
+      url: "{tavern.env_vars.API_URL}/api/sessions/tavern-history"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        session_id: tavern-history
+        messages:
+          - role: user
+            content: !anystr
+          - role: assistant
+            content: !anystr
+
+---
+test_name: Reset clears a session
+
+stages:
+  - name: Seed a turn to reset
+    request:
+      url: "{tavern.env_vars.API_URL}/api/chat"
+      method: POST
+      json:
+        text: "What is PM Kisan?"
+        session_id: tavern-reset
+        language: en
+    response:
+      status_code: 200
+
+  - name: Reset the session
+    request:
+      url: "{tavern.env_vars.API_URL}/api/sessions/tavern-reset/reset"
+      method: POST
+    response:
+      status_code: 200
+      json:
+        session_id: tavern-reset
+        status: cleared
+
+  - name: History is empty after reset
+    request:
+      url: "{tavern.env_vars.API_URL}/api/sessions/tavern-reset"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        session_id: tavern-reset
+        messages: []
+
+---
+test_name: Delete clears a session
+
+stages:
+  - name: Seed a turn to delete
+    request:
+      url: "{tavern.env_vars.API_URL}/api/chat"
+      method: POST
+      json:
+        text: "What is PM Kisan?"
+        session_id: tavern-delete
+        language: en
+    response:
+      status_code: 200
+
+  - name: Delete the session
+    request:
+      url: "{tavern.env_vars.API_URL}/api/sessions/tavern-delete"
+      method: DELETE
+    response:
+      status_code: 200
+      json:
+        session_id: tavern-delete
+        status: deleted
+
+  - name: History is empty after delete
+    request:
+      url: "{tavern.env_vars.API_URL}/api/sessions/tavern-delete"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        session_id: tavern-delete
+        messages: []

@@ -42,7 +42,7 @@ def api_key_configured() -> bool:
     return bool(os.environ.get("VOICEBOT_API_KEY"))
 
 
-class ApiKeyMiddleware(BaseHTTPMiddleware):  # type: ignore[misc]
+class ApiKeyMiddleware(BaseHTTPMiddleware):  # type: ignore[misc, unused-ignore]
     """Require X-API-Key on /api/* when VOICEBOT_API_KEY is set."""
 
     async def dispatch(self, request: Request, call_next: Any) -> Response:
@@ -55,7 +55,7 @@ class ApiKeyMiddleware(BaseHTTPMiddleware):  # type: ignore[misc]
         return response
 
 
-class RateLimitMiddleware(BaseHTTPMiddleware):  # type: ignore[misc]
+class RateLimitMiddleware(BaseHTTPMiddleware):  # type: ignore[misc, unused-ignore]
     """Sliding-window per-IP limiter on /api/* routes."""
 
     def __init__(self, app: Any, limit_per_minute: int | None = None) -> None:
@@ -70,7 +70,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):  # type: ignore[misc]
             forwarded = request.headers.get("X-Forwarded-For", "")
             if forwarded:
                 # Left-most hop is the original client; the proxy appends itself.
-                return forwarded.split(",")[0].strip()  # type: ignore[no-any-return]
+                return forwarded.split(",")[0].strip()  # type: ignore[no-any-return, unused-ignore]
         return request.client.host if request.client else "unknown"
 
     async def dispatch(self, request: Request, call_next: Any) -> Response:

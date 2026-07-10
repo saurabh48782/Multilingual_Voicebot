@@ -81,7 +81,7 @@ def state_to_response(
             overall=_overall_band(retrieval_passed, grounded, fallback_triggered),
         ),
         fallback_triggered=fallback_triggered,
-        fallback_reason=state.get("fallback_reason"),
+        fallback_reason=state.get("fallback_reason") or None,
     )
 
 
@@ -139,7 +139,7 @@ async def reset_session(checkpointer: Any, session_id: str) -> None:
     elif hasattr(checkpointer, "delete_thread"):
         checkpointer.delete_thread(session_id)
     else:
-        # fallback for in-memory checkpointers (tests)
+        # fallback for in-memory checkpointers (used in tests)
         store = getattr(checkpointer, "storage", None)
         if isinstance(store, dict):
             store.pop(session_id, None)
