@@ -12,7 +12,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.audio_cache import AudioCache
-from src.api.routers import audio, chat, documents, evaluation, health, sessions, voice
+from src.api.routers import audio, chat, documents, health, sessions, voice
 from src.api.security import (
     ApiKeyMiddleware,
     MaxBodySizeMiddleware,
@@ -111,7 +111,6 @@ def create_app(bootstrap: Callable[[FastAPI], None] | None = None) -> FastAPI:
     app.include_router(sessions.router)
     app.include_router(audio.router)
     app.include_router(documents.router)
-    app.include_router(evaluation.router)
 
     mount_frontend(app)
     return app
