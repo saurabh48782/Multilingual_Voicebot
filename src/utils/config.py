@@ -3,6 +3,7 @@ import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 import yaml
 
@@ -26,9 +27,13 @@ audio_cache_dir = DATA_DIR / "audio_cache"
 def _replace_env_vars(config_str: str) -> str:
     """Replace ${ENV_VAR} or ${ENV_VAR:-default} placeholders with environment values.
 
-    ${VAR}        - raises RuntimeError when unset (required)
-    ${VAR:-}      - returns empty string when unset (optional)
-    ${VAR:-value} - returns 'value' when unset (optional with default)
+    ${VAR}        - raises RuntimeError when unset or empty (required)
+    ${VAR:-}      - returns empty string when unset or empty (optional)
+    ${VAR:-value} - returns 'value' when unset or empty (optional with default)
+
+    Matches shell ${VAR:-default} semantics: a var that is *set but empty* is
+    treated the same as unset, so the default fires. (Needed because direnv/.env
+    export bare-metal-only vars like STT_REMOTE_URL as empty strings on the host.)
     """
     pattern = re.compile(r"\$\{(\w+)(?::-(.*?))?\}")
 
@@ -36,7 +41,7 @@ def _replace_env_vars(config_str: str) -> str:
         name = match.group(1)
         default: str | None = match.group(2)  # None when no :- present
         value = os.environ.get(name)
-        if value is not None:
+        if value:  # set and non-empty (shell :- treats "" like unset)
             return value
         if default is not None:
             return default
@@ -71,7 +76,7 @@ def validate_config() -> None:
     """Validate critical config at startup."""
     cfg = load_config(str(ROOT_DIR / "params.yaml"))
 
-    for section in ("llm", "rag", "stt", "tts", "memory", "evaluation"):
+    for section in ("llm", "rag", "stt", "tts", "memory", "evaluation", "db"):
         if section not in cfg:
             raise RuntimeError(f"Missing required config section '{section}' in params.yaml.")
 
@@ -80,6 +85,33 @@ def validate_config() -> None:
         value = rag.get(name)
         if value is not None and (not isinstance(value, int | float) or not (0.0 < value <= 1.0)):
             raise RuntimeError(f"Invalid rag.{name}: {value!r} - must be a number in (0, 1].")
+
+    _validate_db_dsn(cfg.get("memory", {}).get("checkpoint_dsn", ""))
+
+
+def _validate_db_dsn(dsn: str) -> None:
+    """Check the DB DSN the app actually connects with (memory.checkpoint_dsn) is
+    a well-formed postgresql:// URL with host/user/password/dbname all present.
+
+    Only the resolved DSN is checked - not the individual db.* pieces in
+    params.yaml, since those are documentation/bare-metal defaults and are not
+    guaranteed to be populated inside every deployment (e.g. the docker-compose
+    `api` container only ever sets CHECKPOINT_DSN, not POSTGRES_PASSWORD)."""
+    if not dsn:
+        raise RuntimeError("memory.checkpoint_dsn is not set - export CHECKPOINT_DSN (see .env).")
+    parsed = urlsplit(dsn)
+    if parsed.scheme not in ("postgresql", "postgres"):
+        raise RuntimeError(
+            f"memory.checkpoint_dsn has invalid scheme {parsed.scheme!r} - expected postgresql://."
+        )
+    if not parsed.hostname:
+        raise RuntimeError("memory.checkpoint_dsn is missing a host.")
+    if not parsed.username:
+        raise RuntimeError("memory.checkpoint_dsn is missing a username.")
+    if not parsed.password:
+        raise RuntimeError("memory.checkpoint_dsn is missing a password.")
+    if not parsed.path.lstrip("/"):
+        raise RuntimeError("memory.checkpoint_dsn is missing a database name.")
 
 
 cfg = load_config(str(ROOT_DIR / "params.yaml"))

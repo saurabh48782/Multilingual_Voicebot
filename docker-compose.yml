@@ -1,0 +1,155 @@
+name: voicebot-local
+services:
+  db:
+    image: postgres:16-alpine
+    profiles:
+      - all
+      - dev
+      - integration_test
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_DB: voicebot
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 15s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./
+      target: api
+    profiles:
+      - all
+      - dev
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      LOG_TARGET: stdout
+      # Matches the `db` service's hardcoded dev credentials above.
+      CHECKPOINT_DSN: postgresql://test_user:test_password@db:5432/voicebot
+      # Behind the compose network the client IP the app sees is the proxy/gateway,
+      # so trust the left-most X-Forwarded-For hop to bucket rate limits per real
+      # client instead of collapsing everyone into one bucket.
+      RATE_LIMIT_TRUST_FORWARDED: "1"
+    volumes:
+      - ./data:/app/data
+    healthcheck:
+      test: curl --fail http://localhost:8000/healthcheck || exit 1
+      interval: 5s
+      timeout: 10s
+      retries: 8
+      start_period: 30s
+    restart: unless-stopped
+
+  tts:
+    # Indic Parler-TTS in its own image: parler-tts hard-pins transformers==4.46.1,
+    # which can't co-reside with the app's e5/reranker stack. Self-contained build
+    # (services/tts_parler) - the conflicting pin never touches the api image.
+    build:
+      context: ./services/tts_parler
+    profiles:
+      - all
+      - dev
+    ports:
+      # Loopback-only publish so host-run uvicorn (bare-metal dev) can reach the
+      # sidecar at localhost:8001. In-compose clients still reach it as tts:8001.
+      - "127.0.0.1:8001:8001"
+    environment:
+      HF_HOME: /cache/hf
+      # indic-parler-tts is a gated HF repo — token required to download it.
+      HF_TOKEN: ${HF_TOKEN:-}
+    volumes:
+      - ./data/hf_cache:/cache/hf
+    healthcheck:
+      test: curl --fail http://localhost:8001/healthz || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+    # GPU by default (the deploy block below is active): requires the host NVIDIA
+    # container runtime. For a CPU-only host, build with
+    # TORCH_INDEX=...cpu (see services/tts_parler/README.md)
+    # and comment out the deploy block below.
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  stt:
+    # AI4Bharat IndicConformer-600M in its own image: loads custom modeling code
+    # (trust_remote_code) + an onnxruntime/torchaudio stack kept out of the app
+    # image. Self-contained build (services/stt_conformer).
+    build:
+      context: ./services/stt_conformer
+    profiles:
+      - all
+      - dev
+    ports:
+      # Loopback-only publish so host-run uvicorn (bare-metal dev) can reach the
+      # sidecar at localhost:8002. In-compose clients still reach it as stt:8002.
+      - "127.0.0.1:8002:8002"
+    environment:
+      HF_HOME: /cache/hf
+      # gated HF repo may require a token to download the model.
+      HF_TOKEN: ${HF_TOKEN:-}
+    volumes:
+      - ./data/hf_cache:/cache/hf
+    healthcheck:
+      test: curl --fail http://localhost:8002/healthz || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+    # GPU by default (the deploy block below is active): requires the host NVIDIA
+    # container runtime. For a CPU-only host, build with
+    # TORCH_INDEX=...cpu + ONNXRUNTIME=onnxruntime==1.20.1
+    # (see services/stt_conformer/README.md) and comment out the deploy block below.
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  precommit-check:
+    build:
+      context: ./
+      target: precommit_check
+    profiles:
+      - precommit_check
+
+  unit-test:
+    build:
+      context: ./
+      target: unit_test
+    profiles:
+      - unit_test
+
+  integration-test:
+    build:
+      context: ./
+      target: integration_test
+    profiles:
+      - integration_test
+    environment:
+      CHECKPOINT_DSN: postgresql://test_user:test_password@db:5432/voicebot
+
+volumes:
+  pgdata:

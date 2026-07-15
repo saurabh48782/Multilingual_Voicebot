@@ -2,7 +2,7 @@
 # GPU by default; build a portable CPU image with:
 #   --build-arg TORCH_INDEX=https://download.pytorch.org/whl/cpu
 # GPU also needs the host NVIDIA container runtime at run time.
-FROM python:3.13-slim
+FROM python:3.12-slim
 
 ARG TORCH_INDEX=https://download.pytorch.org/whl/cu121
 

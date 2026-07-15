@@ -1,6 +1,10 @@
 # Isolated pinned env for the TTS sidecar; why a separate image: README.md,
 # build/GPU options: Dockerfile.
 torch==2.4.1
+# Pin torchaudio to torch's version+CUDA build. parler-tts (git HEAD) pulls
+# torchaudio transitively; left unpinned pip resolves to a CUDA-13 build
+# (libcudart.so.13) that mismatches torch's cu121 runtime → import crash.
+torchaudio==2.4.1
 transformers==4.46.1
 parler-tts @ git+https://github.com/huggingface/parler-tts.git
 fastapi>=0.115.0

@@ -3,6 +3,16 @@ api:
   port: "${API_PORT:-8000}"
   debug: "${DEBUG:-false}"
 
+db:
+  host: "${POSTGRES_HOST:-127.0.0.1}"
+  port: "${POSTGRES_PORT:-5433}"
+  user: "${POSTGRES_USER:-test_user}"
+  password: "${POSTGRES_PASSWORD:-}"
+  name: "${POSTGRES_DB:-voicebot}"
+
+memory:
+  checkpoint_dsn: "${CHECKPOINT_DSN:-}"
+
 observability:
   langsmith:
     enabled: "${LANGSMITH_TRACING:-false}"   # true → export every graph turn to LangSmith
@@ -13,7 +23,7 @@ observability:
 llm:
   provider: "ollama"
   model: "gemma4:12b"
-  verifier_model: "qwen2.5:14b"
+  verifier_model: "qwen3.5:4b"
   ollama_base_url: "http://localhost:11434"
   think_on_generate: true
   num_ctx: 8192
@@ -49,19 +59,16 @@ rag:
 stt:
   provider: "indic_conformer"
   decode_strategy: "rnnt"              # rnnt (accurate) | ctc (faster)
-  remote_url: "${STT_REMOTE_URL:-}"    # stt_conformer sidecar URL (required; compose sets http://stt:8002)
+  remote_url: "${STT_REMOTE_URL:-http://stt:8002}"    # stt_conformer sidecar URL
 
 tts:
   provider: "indic_parler"
   description: "A clear, calm voice speaks at a natural, moderate pace in a quiet environment. The recording is very high quality, with the voice sounding close-up and natural, with no background noise."
-  remote_url: "${TTS_REMOTE_URL:-}"   # tts_parler sidecar URL (required; compose sets http://tts:8001)
+  remote_url: "${TTS_REMOTE_URL:-http://tts:8001}"   # tts_parler sidecar URL
 
 audio:
   cache_ttl_seconds: 3600
   cache_max_files: 1000
-
-memory:
-  checkpoint_dsn: "${CHECKPOINT_DSN:-}"
 
 evaluation:
   # Decorrelate the judge from the generator: ideally a DIFFERENT model family
