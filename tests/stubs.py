@@ -58,6 +58,9 @@ class StubLLM:
     generate_response: str = "PM Kisan provides ₹6000/year direct income support to farmers."
     groundedness_response: str = '{"grounded": true, "reasoning": "ok"}'
     rewrite_response: str = "What is the PM Kisan scheme follow-up?"
+    # Default SCHEME keeps existing tests flowing through the full RAG path.
+    classify_response: str = "SCHEME"
+    smalltalk_response: str = "Hello! Ask me about a government scheme."
     calls: list[dict[str, Any]] = field(default_factory=list)
 
     def complete(
@@ -74,6 +77,11 @@ class StubLLM:
         )
         if json_mode:
             return LLMResponse(content=self.groundedness_response, model="stub")
+        system = messages[0]["content"]
+        if "intent classifier" in system:
+            return LLMResponse(content=self.classify_response, model="stub")
+        if "small talk" in system:
+            return LLMResponse(content=self.smalltalk_response, model="stub")
         if "Rewritten query" in messages[-1]["content"]:
             return LLMResponse(content=self.rewrite_response, model="stub")
         return LLMResponse(content=self.generate_response, model="stub")

@@ -7,11 +7,13 @@ Flow:
     → pii_scrub
     → translate_to_english
     → rewrite_query
-    → retrieve
-    → (confidence pass) → generate → verify_groundedness
-        → (grounded)   → translate_to_vernacular → synthesize → [summarize?] → END
-        → (ungrounded) → fallback                → synthesize → [summarize?] → END
-    → (confidence fail) → fallback → synthesize → [summarize?] → END
+    → classify_intent
+    → (general) → smalltalk → translate_to_vernacular → synthesize → [summarize?] → END
+    → (scheme)  → retrieve
+        → (confidence pass) → generate → verify_groundedness
+            → (grounded)   → translate_to_vernacular → synthesize → [summarize?] → END
+            → (ungrounded) → fallback                → synthesize → [summarize?] → END
+        → (confidence fail) → fallback → synthesize → [summarize?] → END
 
 `summarize` fires after `synthesize` when accumulated messages >= SUMMARIZE_THRESHOLD (8).
 It compresses the oldest messages into `conversation_summary` and removes them from state,
@@ -29,11 +31,13 @@ from typing import TYPE_CHECKING, Any
 from langgraph.graph import END, START, StateGraph
 
 from src.graph.deps import Deps
+from src.graph.nodes.classify_intent import make_classify_intent, route_after_classify
 from src.graph.nodes.fallback import fallback
 from src.graph.nodes.generate import make_generate
 from src.graph.nodes.pii_scrub import pii_scrub
 from src.graph.nodes.retrieve import make_retrieve, route_after_retrieve
 from src.graph.nodes.rewrite_query import make_rewrite_query
+from src.graph.nodes.smalltalk import make_smalltalk
 from src.graph.nodes.summarize import make_summarize, should_summarize
 from src.graph.nodes.synthesize import make_synthesize
 from src.graph.nodes.transcribe import make_transcribe
@@ -64,6 +68,8 @@ def build_graph(
     graph.add_node("pii_scrub", pii_scrub)
     graph.add_node("translate_to_english", make_to_english(deps))
     graph.add_node("rewrite_query", make_rewrite_query(deps))
+    graph.add_node("classify_intent", make_classify_intent(deps))
+    graph.add_node("smalltalk", make_smalltalk(deps))
     graph.add_node("retrieve", make_retrieve(deps))
     graph.add_node("generate", make_generate(deps))
     graph.add_node("verify_groundedness", make_verify_groundedness(deps))
@@ -76,7 +82,14 @@ def build_graph(
     graph.add_edge("transcribe", "pii_scrub")
     graph.add_edge("pii_scrub", "translate_to_english")
     graph.add_edge("translate_to_english", "rewrite_query")
-    graph.add_edge("rewrite_query", "retrieve")
+    graph.add_edge("rewrite_query", "classify_intent")
+
+    graph.add_conditional_edges(
+        "classify_intent",
+        route_after_classify,
+        {"smalltalk": "smalltalk", "retrieve": "retrieve"},
+    )
+    graph.add_edge("smalltalk", "translate_to_vernacular")
 
     graph.add_conditional_edges(
         "retrieve",

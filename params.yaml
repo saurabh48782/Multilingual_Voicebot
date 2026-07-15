@@ -28,6 +28,9 @@ llm:
   think_on_generate: true
   num_ctx: 8192
 
+intent:
+  enabled: true
+
 translation:
   provider: "ollama"
   ollama_model: "translategemma:12b"

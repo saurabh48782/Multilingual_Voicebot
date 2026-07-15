@@ -30,6 +30,9 @@ class VoicebotState(TypedDict, total=False):
     english_query: str
     rewritten_query: str
 
+    # intent gate
+    intent: str  # "general" | "scheme"
+
     # retrieval
     retrieved_docs: list[SearchResult]
     retrieval_confidence: float
