@@ -35,7 +35,10 @@ def make_synthesize(deps: Deps) -> Callable[[VoicebotState], dict[str, Any]]:
 
         new_messages = [
             HumanMessage(content=state.get("transcript", "")),
-            AIMessage(content=state.get("english_response") or text),
+            AIMessage(
+                content=state.get("english_response") or text,
+                additional_kwargs={"vernacular": text, "language": lang},
+            ),
         ]
         return {
             "audio_id": audio_id,

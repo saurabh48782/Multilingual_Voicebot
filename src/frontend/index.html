@@ -16,14 +16,6 @@
   <nav class="navbar navbar-dark bg-dark mb-4">
     <div class="container-fluid px-4">
       <span class="navbar-brand mb-0 h1">🌾 Multilingual Voicebot</span>
-      <div class="d-flex align-items-center gap-2">
-        <label for="lang-select" class="text-light small mb-0">Language</label>
-        <select id="lang-select" class="form-select form-select-sm" required>
-          <option value="hi" selected>Hindi</option>
-          <option value="bn">Bengali</option>
-          <option value="en">English</option>
-        </select>
-      </div>
     </div>
   </nav>
 
@@ -90,6 +82,17 @@
                 </button>
               </li>
             </ul>
+
+            <div id="lang-bar" class="lang-bar mb-3">
+              <label for="lang-select" class="lang-bar-label mb-0">
+                🌐 I'll speak / type in
+              </label>
+              <select id="lang-select" class="form-select form-select-sm lang-bar-select" required>
+                <option value="en" selected>English</option>
+                <option value="hi">Hindi</option>
+                <option value="bn">Bengali</option>
+              </select>
+            </div>
 
             <div class="tab-content">
               <div class="tab-pane fade" id="voice-pane" role="tabpanel">

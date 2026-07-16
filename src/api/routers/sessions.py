@@ -1,10 +1,10 @@
 """Session listing, inspection, reset, and delete endpoints.
 
-`messages` content note: the checkpointed history stores the user turn in the
-original (vernacular) language but the assistant turn in English - see
-`synthesize.py`, which keeps assistant text in English for the coreference
-rewrite. Replayed history therefore shows vernacular questions with English
-answers.
+`messages` content note: the checkpointed history stores the assistant turn's
+`content` in English (for the coreference rewrite - see `synthesize.py`), but
+the vernacular reply the user saw is preserved in the message's
+`additional_kwargs["vernacular"]`. `history_from_state` prefers that vernacular
+copy, so replayed history renders in the original language.
 """
 
 from __future__ import annotations

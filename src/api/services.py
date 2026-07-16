@@ -163,7 +163,10 @@ async def history_from_state(graph: Any, session_id: str) -> SessionHistory:
         if isinstance(msg, HumanMessage):
             entries.append(SessionHistoryEntry(role="user", content=str(msg.content)))
         elif isinstance(msg, AIMessage):
-            entries.append(SessionHistoryEntry(role="assistant", content=str(msg.content)))
+            # Prefer the vernacular reply the user originally saw; fall back to
+            # the English content stored for coreference rewrite.
+            content = msg.additional_kwargs.get("vernacular") or str(msg.content)
+            entries.append(SessionHistoryEntry(role="assistant", content=content))
     return SessionHistory(session_id=session_id, messages=entries)
 
 

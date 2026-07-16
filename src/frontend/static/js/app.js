@@ -466,6 +466,14 @@
   elements.newChatBtn.addEventListener("click", startNewChat);
   elements.clearChatBtn.addEventListener("click", clearCurrentChat);
 
+  // Language only applies to Voice/Text turns — hide the bar on the Docs tab.
+  const langBar = $("lang-bar");
+  document.querySelectorAll('[data-bs-toggle="tab"]').forEach((tab) => {
+    tab.addEventListener("shown.bs.tab", (e) => {
+      if (langBar) langBar.style.display = e.target.id === "docs-tab" ? "none" : "flex";
+    });
+  });
+
   // --- boot: resume the active chat + populate the sidebar ---
   (async () => {
     await loadHistory(sessionId);

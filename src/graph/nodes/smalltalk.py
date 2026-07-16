@@ -11,6 +11,7 @@ from collections.abc import Callable
 from typing import Any
 
 from src.graph.deps import Deps
+from src.graph.nodes.rewrite_query import _build_history_context
 from src.graph.prompts import SMALLTALK_PROMPT, SMALLTALK_SYSTEM
 from src.graph.state import VoicebotState
 from src.utils.config import cfg
@@ -24,11 +25,18 @@ _CANNED = "Hello! I can help you with government schemes. What would you like to
 def make_smalltalk(deps: Deps) -> Callable[[VoicebotState], dict[str, Any]]:
     def smalltalk(state: VoicebotState) -> dict[str, Any]:
         query = state.get("rewritten_query") or state.get("english_query", "")
+        history = _build_history_context(
+            list(state.get("messages") or []),
+            state.get("conversation_summary") or "",
+        )
         try:
             resp = deps.llm.complete(
                 messages=[
                     {"role": "system", "content": SMALLTALK_SYSTEM},
-                    {"role": "user", "content": SMALLTALK_PROMPT.format(query=query)},
+                    {
+                        "role": "user",
+                        "content": SMALLTALK_PROMPT.format(history=history, query=query),
+                    },
                 ],
                 model=cfg["llm"]["model"],
                 temperature=0.3,
