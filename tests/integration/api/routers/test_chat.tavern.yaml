@@ -25,7 +25,7 @@ stages:
             page_num: 1
         response_text: "PM Kisan provides ₹6000/year direct income support to farmers."
         response_text_english: "PM Kisan provides ₹6000/year direct income support to farmers."
-        audio_url: !re_fullmatch '/audio/[0-9a-f]{8,64}\.wav'
+        audio_url: null
         audio_content_type: audio/wav
         confidence:
           retrieval_score: 0.9

@@ -2,14 +2,17 @@
 test_name: Cached TTS audio can be streamed back
 
 stages:
-  - name: Produce a turn and capture its audio url
+  - name: Produce a voice turn and capture its audio url
+    # TTS runs only on voice-in turns, so drive the pipeline through /api/voice
+    # (a text /api/chat turn returns no audio -> audio_url would be null).
     request:
-      url: "{tavern.env_vars.API_URL}/api/chat"
+      url: "{tavern.env_vars.API_URL}/api/voice"
       method: POST
-      json:
-        text: "What is PM Kisan?"
+      data:
         session_id: tavern-audio
         language: hi
+      files:
+        audio: "tests/integration/api/routers/fixtures/sample.wav"
     response:
       status_code: 200
       save:
