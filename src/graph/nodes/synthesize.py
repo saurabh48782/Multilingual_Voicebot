@@ -22,9 +22,11 @@ def make_synthesize(deps: Deps) -> Callable[[VoicebotState], dict[str, Any]]:
     def synthesize(state: VoicebotState) -> dict[str, Any]:
         text = state.get("vernacular_response", "")
         lang = state.get("source_language", "en")
+        # Speak the reply back only when the turn came in as voice.
+        speak = state.get("input_mode") == "voice"
         audio_id: str | None = None
         content_type = "audio/wav"
-        if text:
+        if text and speak:
             try:
                 audio = deps.tts.synthesize(text, lang)
                 audio_id = deps.audio_cache.put(audio, content_type=content_type)

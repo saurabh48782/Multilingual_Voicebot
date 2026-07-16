@@ -33,10 +33,14 @@ def make_transcribe(deps: Deps) -> Callable[[VoicebotState], dict[str, Any]]:
     def transcribe(state: VoicebotState) -> dict[str, Any]:
         audio = state.get("audio_input")
         text = state.get("text_input")
+        # Record how this turn arrived while audio_input is still present (it's
+        # cleared below). synthesize reads input_mode to decide whether to speak
+        # the reply - text-in turns stay text-only.
         reset_flags = {
             "fallback_triggered": False,
             "fallback_reason": "",
             "grounded": False,
+            "input_mode": "voice" if audio else "text",
         }
 
         if not audio:

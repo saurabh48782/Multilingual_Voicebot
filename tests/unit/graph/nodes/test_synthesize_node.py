@@ -25,12 +25,36 @@ def _node(
 def test_tts_called_when_text_present() -> None:
     tts = MagicMock()
     tts.synthesize.return_value = b"AUDIO"
-    state = {"vernacular_response": "पीएम किसान ₹6000 देता है।", "source_language": "hi"}
+    state = {
+        "vernacular_response": "पीएम किसान ₹6000 देता है।",
+        "source_language": "hi",
+        "input_mode": "voice",
+    }
     node, deps = _node(tts)
     result = node(state)  # type: ignore[arg-type]
     tts.synthesize.assert_called_once_with("पीएम किसान ₹6000 देता है।", "hi")
     deps.audio_cache.put.assert_called_once_with(b"AUDIO", content_type="audio/wav")
     assert result["audio_id"] == "cached-audio-id"
+
+
+def test_tts_skipped_for_text_input() -> None:
+    # Text-in turn: reply text is present but we must not synthesize audio.
+    tts = MagicMock()
+    tts.synthesize.return_value = b"AUDIO"
+    state = {
+        "vernacular_response": "PM Kisan gives ₹6000.",
+        "source_language": "en",
+        "input_mode": "text",
+        "transcript": "What is PM Kisan?",
+        "english_response": "PM Kisan gives ₹6000.",
+    }
+    node, deps = _node(tts)
+    result = node(state)  # type: ignore[arg-type]
+    tts.synthesize.assert_not_called()
+    deps.audio_cache.put.assert_not_called()
+    assert result["audio_id"] is None
+    # The turn is still recorded to memory even without audio.
+    assert len(result["messages"]) == 2
 
 
 @pytest.mark.parametrize(
@@ -63,6 +87,7 @@ def test_tts_exception_returns_none_audio_but_still_appends_messages(
     state = {
         "vernacular_response": "PM Kisan gives ₹6000.",
         "source_language": "en",
+        "input_mode": "voice",
         "transcript": "What is PM Kisan?",
         "english_response": "PM Kisan gives ₹6000.",
     }
@@ -137,7 +162,11 @@ def test_messages_ai_turn(
 def test_tts_receives_correct_language(lang: str) -> None:
     tts = MagicMock()
     tts.synthesize.return_value = b"AUDIO"
-    state = {"vernacular_response": "Some text.", "source_language": lang}
+    state = {
+        "vernacular_response": "Some text.",
+        "source_language": lang,
+        "input_mode": "voice",
+    }
     node, _ = _node(tts)
     node(state)  # type: ignore[arg-type]
     tts.synthesize.assert_called_once_with("Some text.", lang)

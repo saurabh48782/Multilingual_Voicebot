@@ -31,18 +31,33 @@ RESET_FLAGS = {"fallback_triggered": False, "fallback_reason": "", "grounded": F
     [
         (
             {"requested_language": "hi", "text_input": "नमस्ते"},
-            {"transcript": "नमस्ते", "source_language": "hi", **RESET_FLAGS},
+            {
+                "transcript": "नमस्ते",
+                "source_language": "hi",
+                "input_mode": "text",
+                **RESET_FLAGS,
+            },
         ),
         (
             {"requested_language": "en"},
-            {"transcript": "", "source_language": "en", **RESET_FLAGS},
+            {
+                "transcript": "",
+                "source_language": "en",
+                "input_mode": "text",
+                **RESET_FLAGS,
+            },
         ),
         (
             {
                 "requested_language": "bn",
                 "text_input": "",
             },  # empty string treated as absent
-            {"transcript": "", "source_language": "bn", **RESET_FLAGS},
+            {
+                "transcript": "",
+                "source_language": "bn",
+                "input_mode": "text",
+                **RESET_FLAGS,
+            },
         ),
     ],
     ids=["text-passthrough", "no-input", "empty-string-absent"],
@@ -116,6 +131,7 @@ def test_stt_exception_triggers_fallback(exc: Exception) -> None:
         "audio_input": None,
         "transcript": "",
         "source_language": "hi",
+        "input_mode": "voice",
         "fallback_triggered": True,
         "fallback_reason": "stt_error",
         "grounded": False,

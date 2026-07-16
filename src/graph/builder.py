@@ -31,6 +31,7 @@ from typing import TYPE_CHECKING, Any
 from langgraph.graph import END, START, StateGraph
 
 from src.graph.deps import Deps
+from src.graph.node_logging import traced_node, traced_router
 from src.graph.nodes.classify_intent import make_classify_intent, route_after_classify
 from src.graph.nodes.fallback import fallback
 from src.graph.nodes.generate import make_generate
@@ -64,19 +65,23 @@ def build_graph(
 
     graph: Any = StateGraph(VoicebotState)
 
-    graph.add_node("transcribe", make_transcribe(deps))
-    graph.add_node("pii_scrub", pii_scrub)
-    graph.add_node("translate_to_english", make_to_english(deps))
-    graph.add_node("rewrite_query", make_rewrite_query(deps))
-    graph.add_node("classify_intent", make_classify_intent(deps))
-    graph.add_node("smalltalk", make_smalltalk(deps))
-    graph.add_node("retrieve", make_retrieve(deps))
-    graph.add_node("generate", make_generate(deps))
-    graph.add_node("verify_groundedness", make_verify_groundedness(deps))
-    graph.add_node("translate_to_vernacular", make_to_vernacular(deps))
-    graph.add_node("fallback", fallback)
-    graph.add_node("synthesize", make_synthesize(deps))
-    graph.add_node("summarize", make_summarize(deps))
+    def add(name: str, fn: Any) -> None:
+        """Register a node wrapped in the per-node stage tracer."""
+        graph.add_node(name, traced_node(name, fn))
+
+    add("transcribe", make_transcribe(deps))
+    add("pii_scrub", pii_scrub)
+    add("translate_to_english", make_to_english(deps))
+    add("rewrite_query", make_rewrite_query(deps))
+    add("classify_intent", make_classify_intent(deps))
+    add("smalltalk", make_smalltalk(deps))
+    add("retrieve", make_retrieve(deps))
+    add("generate", make_generate(deps))
+    add("verify_groundedness", make_verify_groundedness(deps))
+    add("translate_to_vernacular", make_to_vernacular(deps))
+    add("fallback", fallback)
+    add("synthesize", make_synthesize(deps))
+    add("summarize", make_summarize(deps))
 
     graph.add_edge(START, "transcribe")
     graph.add_edge("transcribe", "pii_scrub")
@@ -86,20 +91,20 @@ def build_graph(
 
     graph.add_conditional_edges(
         "classify_intent",
-        route_after_classify,
+        traced_router("classify_intent", route_after_classify),
         {"smalltalk": "smalltalk", "retrieve": "retrieve"},
     )
     graph.add_edge("smalltalk", "translate_to_vernacular")
 
     graph.add_conditional_edges(
         "retrieve",
-        route_after_retrieve,
+        traced_router("retrieve", route_after_retrieve),
         {"generate": "generate", "fallback": "fallback"},
     )
     graph.add_edge("generate", "verify_groundedness")
     graph.add_conditional_edges(
         "verify_groundedness",
-        route_after_verify,
+        traced_router("verify_groundedness", route_after_verify),
         {
             "translate_to_vernacular": "translate_to_vernacular",
             "fallback": "fallback",
@@ -109,7 +114,7 @@ def build_graph(
     graph.add_edge("fallback", "synthesize")
     graph.add_conditional_edges(
         "synthesize",
-        should_summarize,
+        traced_router("synthesize", should_summarize),
         {"summarize": "summarize", "end": END},
     )
     graph.add_edge("summarize", END)

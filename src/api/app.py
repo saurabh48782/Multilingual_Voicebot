@@ -45,7 +45,7 @@ def _warm_rag_models() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    setup_logging()
+    setup_logging(os.environ.get("LOG_LEVEL", "INFO"))
     validate_config()
     configure_tracing()
 

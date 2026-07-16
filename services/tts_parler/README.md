@@ -18,7 +18,12 @@ over HTTP. The conflicting pin lives only in this image - `pyproject.toml` /
 | `GET` | `/healthz` | – | `{"status":"ok","model_loaded":bool}` |
 | `POST` | `/tts` | `{"text": str, "description": str?}` | `audio/wav` bytes |
 
-The 0.9B model loads lazily on the first `/tts` request and stays resident.
+The 0.9B model loads lazily on the first `/tts` request into **page-locked CPU
+RAM** - it is *not* pinned to the GPU for the container's lifetime.
+
+## GPU memory (per-request swap)
+
+`_GpuSwap` (in `server.py`) pages the weights onto the GPU only for the span of each `/tts` call, then restores the pinned CPU copy and calls `torch.cuda.empty_cache()` to hand the VRAM back to the driver for peer processes. Weights are read-only during inference, so eviction just drops the transient GPU tensors - no device->host copy - and pinning keeps the host->device transfer a fast async DMA. On CPU-only builds it is a no-op.
 
 ## Run via docker-compose (recommended - works on any machine with Docker)
 

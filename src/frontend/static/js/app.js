@@ -289,10 +289,19 @@
     loadSessions();
   }
 
+  // Activate the Text input tab (default view; also used on New Chat).
+  function showTextTab() {
+    const tabEl = document.getElementById("text-tab");
+    if (tabEl && window.bootstrap?.Tab) {
+      window.bootstrap.Tab.getOrCreateInstance(tabEl).show();
+    }
+  }
+
   function startNewChat() {
     setActiveSessionId(newId());
     clearChatLog();
     loadSessions();
+    showTextTab();
     elements.textInput?.focus();
   }
 

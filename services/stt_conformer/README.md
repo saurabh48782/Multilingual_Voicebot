@@ -24,7 +24,16 @@ Bengali (`bn`).
 | `GET` | `/healthz` | – | `{"status":"ok","model_loaded":bool}` |
 | `POST` | `/stt` | multipart: `audio`=<file>, `language`=`hi`/`bn`/…, `decode_strategy`=`rnnt`/`ctc` | `{"text": str, "language": str}` |
 
-The 600M model loads lazily on the first `/stt` request and stays resident.
+The 600M model loads lazily on the first `/stt` request into **page-locked CPU
+RAM** - it is *not* pinned to the GPU for the container's lifetime.
+
+## GPU memory (per-request swap)
+
+`_GpuSwap` (in `api/transcriber.py`) pages the weights onto the GPU only for the span of each `/stt` call, then restores the pinned CPU copy and calls
+`torch.cuda.empty_cache()` to hand the VRAM back to the driver for peer
+processes. Weights are read-only during inference, so eviction just drops the
+transient GPU tensors - no device->host copy - and pinning keeps the
+host->device transfer a fast async DMA. On CPU-only builds it is a no-op.
 
 ## Run via docker-compose (recommended - works on any machine with Docker)
 

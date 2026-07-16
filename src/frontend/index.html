@@ -55,7 +55,7 @@
             <ul class="nav nav-tabs mb-3" role="tablist">
               <li class="nav-item" role="presentation">
                 <button
-                  class="nav-link active"
+                  class="nav-link"
                   id="voice-tab"
                   data-bs-toggle="tab"
                   data-bs-target="#voice-pane"
@@ -67,7 +67,7 @@
               </li>
               <li class="nav-item" role="presentation">
                 <button
-                  class="nav-link"
+                  class="nav-link active"
                   id="text-tab"
                   data-bs-toggle="tab"
                   data-bs-target="#text-pane"
@@ -92,7 +92,7 @@
             </ul>
 
             <div class="tab-content">
-              <div class="tab-pane fade show active" id="voice-pane" role="tabpanel">
+              <div class="tab-pane fade" id="voice-pane" role="tabpanel">
                 <div class="d-flex flex-column align-items-center gap-3 py-3">
                   <button id="mic-btn" class="btn btn-danger btn-lg rounded-circle mic-btn">
                     <span id="mic-icon">🎤</span>
@@ -107,7 +107,7 @@
                 </div>
               </div>
 
-              <div class="tab-pane fade" id="text-pane" role="tabpanel">
+              <div class="tab-pane fade show active" id="text-pane" role="tabpanel">
                 <form id="text-form">
                   <textarea
                     id="text-input"

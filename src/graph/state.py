@@ -21,6 +21,7 @@ class VoicebotState(TypedDict, total=False):
     audio_input: bytes | None
     text_input: str | None
     requested_language: str  # hi | bn | en
+    input_mode: str  # "voice" | "text"
 
     # transcription / language
     transcript: str
