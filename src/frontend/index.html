@@ -13,35 +13,60 @@
   <link rel="stylesheet" href="/static/css/app.css" />
 </head>
 <body>
-  <nav class="navbar navbar-dark bg-dark mb-4">
-    <div class="container-fluid px-4">
-      <span class="navbar-brand mb-0 h1">🌾 Multilingual Voicebot</span>
-    </div>
-  </nav>
+  <!-- Permanent slim icon rail on the far left -->
+  <div id="icon-rail" class="icon-rail">
+    <button
+      id="sidebar-toggle"
+      class="icon-btn"
+      type="button"
+      title="Toggle sidebar"
+      aria-label="Toggle sidebar"
+      aria-controls="sidebar"
+      aria-expanded="false"
+    >
+      ☰
+    </button>
+    <button
+      id="new-chat-icon"
+      class="icon-btn"
+      type="button"
+      title="New chat"
+      aria-label="Start a new chat"
+    >
+      ✎
+    </button>
+  </div>
 
-  <main class="container-fluid px-4">
-    <div class="row g-4">
-      <!-- Sidebar: chat list -->
-      <aside class="col-lg-3">
-        <div class="card shadow-sm">
-          <div class="card-body">
-            <button id="new-chat-btn" class="btn btn-primary w-100 mb-3">
-              ＋ New Chat
-            </button>
-            <div class="text-muted small text-uppercase fw-semibold mb-2">
-              Your conversations
-            </div>
-            <div id="session-list" class="session-list">
-              <div id="session-empty" class="text-muted small py-2">
-                No past chats yet.
-              </div>
-            </div>
-          </div>
+  <!-- Collapsible sidebar: chat list -->
+  <aside id="sidebar" class="app-sidebar" aria-label="Conversations">
+    <div class="app-sidebar-inner">
+      <button id="new-chat-btn" class="btn btn-primary w-100 mb-3">
+        ＋ New Chat
+      </button>
+      <div class="text-muted small text-uppercase fw-semibold mb-2">
+        Your conversations
+      </div>
+      <div id="session-list" class="session-list">
+        <div id="session-empty" class="text-muted small py-2">
+          No past chats yet.
         </div>
-      </aside>
+      </div>
+    </div>
+  </aside>
+  <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
 
+  <!-- Shell (title bar + content) — shifts right of the rail / sidebar -->
+  <div class="app-shell">
+    <nav class="navbar navbar-dark bg-dark mb-4">
+      <div class="container-fluid px-3">
+        <span class="navbar-brand mb-0 h1">🌾 Multilingual Voicebot</span>
+      </div>
+    </nav>
+
+    <main class="container-fluid px-4 app-main">
+      <div class="row g-4">
       <!-- Input panel -->
-      <section class="col-lg-4">
+      <section class="col-lg-5">
         <div class="card shadow-sm">
           <div class="card-body">
             <ul class="nav nav-tabs mb-3" role="tablist">
@@ -154,7 +179,7 @@
       </section>
 
       <!-- Conversation panel -->
-      <section class="col-lg-5">
+      <section class="col-lg-7">
         <div class="card shadow-sm conversation-card">
           <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Conversation</h5>
@@ -214,7 +239,8 @@
         </div>
       </section>
     </div>
-  </main>
+    </main>
+  </div>
 
   <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

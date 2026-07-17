@@ -1,6 +1,19 @@
+:root {
+  --nav-h: 56px;
+  --rail-w: 56px;
+  --sidebar-w: 300px;
+}
+
 body {
   background: #f6f8fa;
   min-height: 100vh;
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  min-height: var(--nav-h);
 }
 
 .mic-btn {
@@ -51,6 +64,106 @@ body {
 .context-chunk .meta {
   color: #6c757d;
   font-size: 0.8rem;
+}
+
+/* --- navbar icon buttons --- */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: #f8f9fa;
+  background: transparent;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.icon-btn:hover,
+.icon-btn:focus-visible {
+  background: rgba(255, 255, 255, 0.15);
+  outline: none;
+}
+
+/* Permanent slim icon rail on the far left (hamburger + new chat). */
+.icon-rail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--rail-w);
+  background: #212529; /* matches the dark navbar for a seamless corner */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding-top: 0.5rem;
+  z-index: 1060; /* above the sidebar and navbar — always clickable */
+}
+
+/* --- collapsible sidebar (slides out to the right of the rail) --- */
+.app-sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: var(--rail-w);
+  width: var(--sidebar-w);
+  max-width: calc(100vw - var(--rail-w));
+  background: #fff;
+  border-right: 1px solid #dde3ea;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
+  transform: translateX(-110%);
+  transition: transform 0.2s ease;
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+}
+
+body.sidebar-open .app-sidebar {
+  transform: translateX(0);
+}
+
+.app-sidebar-inner {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease;
+  z-index: 1040;
+}
+
+body.sidebar-open .sidebar-backdrop {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Shell = title bar + content; sits right of the rail, shifts when open. */
+.app-shell {
+  margin-left: var(--rail-w);
+  transition: margin-left 0.2s ease;
+}
+
+/* On large screens, push the shell aside instead of overlaying it. */
+@media (min-width: 992px) {
+  body.sidebar-open .app-shell {
+    margin-left: calc(var(--rail-w) + var(--sidebar-w));
+  }
+  body.sidebar-open .sidebar-backdrop {
+    visibility: hidden;
+    opacity: 0;
+  }
 }
 
 /* --- session sidebar --- */

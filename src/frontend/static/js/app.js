@@ -22,6 +22,10 @@
     clearChatBtn: $("clear-chat-btn"),
     // sidebar
     newChatBtn: $("new-chat-btn"),
+    newChatIcon: $("new-chat-icon"),
+    sidebar: $("sidebar"),
+    sidebarToggle: $("sidebar-toggle"),
+    sidebarBackdrop: $("sidebar-backdrop"),
     sessionList: $("session-list"),
     sessionEmpty: $("session-empty"),
     // details
@@ -58,6 +62,29 @@
   let sessionId = getActiveSessionId();
   elements.sessionId.textContent = sessionId;
 
+  // --- collapsible sidebar ---
+  const SIDEBAR_KEY = "voicebot_sidebar_open";
+  const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
+
+  function setSidebar(open) {
+    document.body.classList.toggle("sidebar-open", open);
+    elements.sidebarToggle?.setAttribute("aria-expanded", String(open));
+    localStorage.setItem(SIDEBAR_KEY, open ? "1" : "0");
+  }
+  function toggleSidebar() {
+    setSidebar(!document.body.classList.contains("sidebar-open"));
+  }
+
+  elements.sidebarToggle?.addEventListener("click", toggleSidebar);
+  elements.sidebarBackdrop?.addEventListener("click", () => setSidebar(false));
+  // Esc closes the overlay (mobile / narrow screens).
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !isDesktop()) setSidebar(false);
+  });
+
+  // Start collapsed; reopen only if the user explicitly left it open (desktop).
+  setSidebar(isDesktop() && localStorage.getItem(SIDEBAR_KEY) === "1");
+
   // --- helpers ---
   function showError(msg) {
     elements.errorBanner.textContent = msg;
@@ -75,6 +102,9 @@
     elements.chatLog.querySelectorAll(".msg").forEach((n) => n.remove());
     elements.chatEmpty.classList.remove("d-none");
     elements.detailsCard.classList.add("d-none");
+    // Hide any leftover document-upload status banner when switching chats;
+    // the RAG index is global, but the banner is per-upload UI feedback.
+    document.getElementById("doc-status")?.classList.add("d-none");
   }
 
   function appendBubble(role, text, audioUrl) {
@@ -265,6 +295,44 @@
     }
   }
 
+  // The RAG index is global (not per-session), but a document upload is not a
+  // graph turn, so it never appears in server-replayed history. To let a chat
+  // still show which files were added while it was open, we record the
+  // filenames per session_id in localStorage and replay them on load.
+  const DOCS_KEY_PREFIX = "voicebot_docs_";
+
+  function getSessionDocs(id) {
+    try {
+      const raw = localStorage.getItem(DOCS_KEY_PREFIX + id);
+      const docs = raw ? JSON.parse(raw) : [];
+      return Array.isArray(docs) ? docs : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function addSessionDoc(id, filename) {
+    const docs = getSessionDocs(id);
+    if (!docs.includes(filename)) {
+      docs.push(filename);
+      localStorage.setItem(DOCS_KEY_PREFIX + id, JSON.stringify(docs));
+    }
+  }
+
+  function clearSessionDocs(id) {
+    localStorage.removeItem(DOCS_KEY_PREFIX + id);
+  }
+
+  // Render the "documents uploaded here" note for a session. Built with
+  // textContent (not innerHTML) so stored filenames can't inject markup.
+  function renderSessionDocsBanner(id) {
+    const docs = getSessionDocs(id);
+    if (!docs.length) return;
+    docStatus.className = "mt-3 alert alert-info";
+    docStatus.textContent = `Documents uploaded in this chat: ${docs.join(", ")}`;
+    docStatus.classList.remove("d-none");
+  }
+
   async function loadHistory(id) {
     clearChatLog();
     let messages = [];
@@ -281,12 +349,14 @@
     for (const m of messages) {
       appendBubble(m.role === "assistant" ? "assistant" : "user", m.content);
     }
+    renderSessionDocsBanner(id);
   }
 
   async function selectSession(id) {
     if (id !== sessionId) setActiveSessionId(id);
     await loadHistory(id);
     loadSessions();
+    if (!isDesktop()) setSidebar(false); // overlay: close after picking a chat
   }
 
   // Activate the Text input tab (default view; also used on New Chat).
@@ -314,6 +384,7 @@
       showError(`Delete failed: ${err.message}`);
       return;
     }
+    clearSessionDocs(id);
     if (id === sessionId) {
       startNewChat();
     } else {
@@ -455,6 +526,7 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || `HTTP ${res.status}`);
       setDocStatus("success", `<strong>${data.filename}</strong> indexed - ${data.chunks_added} chunks ready.`);
+      addSessionDoc(sessionId, data.filename);
       docFileInput.value = "";
     } catch (err) {
       setDocStatus("danger", `Upload failed: ${err.message}`);
@@ -464,6 +536,8 @@
   });
 
   elements.newChatBtn.addEventListener("click", startNewChat);
+  // Navbar icon: new chat without opening the sidebar.
+  elements.newChatIcon?.addEventListener("click", startNewChat);
   elements.clearChatBtn.addEventListener("click", clearCurrentChat);
 
   // Language only applies to Voice/Text turns — hide the bar on the Docs tab.
