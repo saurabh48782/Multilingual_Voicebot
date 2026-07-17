@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import re
+import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
+
+from tqdm import tqdm
 
 from src.utils.logger import get_logger
 
@@ -115,6 +118,12 @@ def translate_batch_to_english(llm: LLMProvider, model: str, texts: list[str]) -
     aligned with ``texts`` (already-English passages pass through unchanged).
     """
     results: list[str] = []
+    progress = tqdm(
+        total=len(texts),
+        desc="Translating passages",
+        unit="passage",
+        disable=not sys.stderr.isatty(),  # only in an interactive terminal; keep server logs clean
+    )
     for i in range(0, len(texts), _BATCH_SIZE):
         batch = texts[i : i + _BATCH_SIZE]
         numbered = "\n---\n".join(f"[{j + 1}] {t}" for j, t in enumerate(batch))
@@ -152,4 +161,6 @@ def translate_batch_to_english(llm: LLMProvider, model: str, texts: list[str]) -
                     batch[idx][:60],
                 )
         results.extend(parsed)
+        progress.update(len(batch))
+    progress.close()
     return results

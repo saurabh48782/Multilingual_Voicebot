@@ -15,9 +15,12 @@ from __future__ import annotations
 import hashlib
 import json
 import shutil
+import sys
 import threading
 from pathlib import Path
 from typing import TypedDict
+
+from tqdm import tqdm
 
 from src.rag import bm25_store as _bm25_mod
 from src.rag import store as _store_mod
@@ -292,7 +295,12 @@ def ingest_corpus(
                     logger.info("Pruned %d chunks for deleted corpus file %s", removed, doc_id)
                     del manifest[key]
 
-        for path in sorted(files):
+        for path in tqdm(
+            sorted(files),
+            desc="Ingesting corpus",
+            unit="file",
+            disable=not sys.stderr.isatty(),
+        ):
             try:
                 count, status = _ingest_file(
                     path, store, bm25, manifest, force=force, translate=translate
