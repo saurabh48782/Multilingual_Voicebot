@@ -33,19 +33,19 @@ logger = get_logger("data.ingestion")
 
 
 def get_stats() -> None:
+    from src.rag.ingestor import index_stats
     from src.rag.store import get_store
 
     store = get_store()
-    logger.info("Index stats", total_chunks=store.total_chunks, index_path=str(store.index_path))
-    print(f"Index chunks : {store.total_chunks}")
+    stats = index_stats()
+    logger.info("Index stats", total_chunks=stats["total_chunks"], index_path=str(store.index_path))
+    print(f"Index chunks : {stats['total_chunks']}")
     print(f"Index path   : {store.index_path}")
     print(f"Metadata path: {store.metadata_path}")
-    if len(store._meta):
-        docs = store._meta["doc_id"].unique().tolist()
-        print(f"Total Documents    : {len(docs)}")
-        for doc in sorted(docs):
-            n = len(store._meta[store._meta["doc_id"] == doc])
-            print(f"{doc} has : {n} chunks")
+    if stats["documents"]:
+        print(f"Total Documents    : {stats['total_documents']}")
+        for doc in stats["documents"]:
+            print(f"{doc['doc_id']} has : {doc['chunks']} chunks")
 
 
 def clear() -> None:

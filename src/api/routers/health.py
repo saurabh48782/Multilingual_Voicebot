@@ -10,7 +10,12 @@ from src.utils.observability import tracing_enabled
 router = APIRouter(tags=["System Status"])
 
 
-@router.get("/healthcheck", response_model=HealthStatus)
+@router.get(
+    "/healthcheck",
+    response_model=HealthStatus,
+    summary="Liveness & readiness check",
+    description="Check server health, RAG index status, and tracing configuration",
+)
 def healthcheck(request: Request) -> HealthStatus:
     store = getattr(request.app.state, "faiss_store", None)
     total = store.total_chunks if store is not None else 0

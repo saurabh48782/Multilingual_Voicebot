@@ -40,3 +40,35 @@ stages:
         file: "tests/integration/api/routers/fixtures/empty.txt"
     response:
       status_code: 400
+
+---
+test_name: Index stats returns per-document chunk counts
+
+stages:
+  - name: GET /api/documents/stats returns an IndexStats body
+    request:
+      url: "{tavern.env_vars.API_URL}/api/documents/stats"
+      method: GET
+    response:
+      status_code: 200
+      json:
+        total_chunks: 3
+        total_documents: 1
+        documents:
+          - doc_id: "sample.txt"
+            chunks: 3
+
+---
+test_name: Index reset wipes the RAG index
+
+stages:
+  - name: DELETE /api/documents returns an IndexResetResponse
+    request:
+      url: "{tavern.env_vars.API_URL}/api/documents"
+      method: DELETE
+    response:
+      status_code: 200
+      json:
+        artifacts_removed: 2
+        total_chunks: 0
+        message: "Index wiped; removed 2 artifact(s)."

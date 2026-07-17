@@ -12,12 +12,18 @@ from src.api.services import record_turn, run_graph, state_to_response
 from src.api.session_locks import SessionLocks
 from src.translation.base import SUPPORTED_VERNACULARS
 
-router = APIRouter(prefix="/api", tags=["voice"])
+router = APIRouter(prefix="/api", tags=["Voice"])
 
 _MAX_AUDIO_BYTES = 25 * 1024 * 1024  # 25 MB ≈ several minutes of 16-bit WAV
 
 
-@router.post("/voice", response_model=VoiceResponse)
+@router.post(
+    "/voice",
+    response_model=VoiceResponse,
+    summary="Voice input with end-to-end reply",
+    description="Upload audio in Hindi/Bengali, "
+    "receive vernacular voice response via the RAG pipeline",
+)
 async def voice(
     session_id: Annotated[str, Form(min_length=1)],
     audio: Annotated[UploadFile, File()],

@@ -10,12 +10,16 @@ from fastapi.responses import FileResponse
 from src.api.audio_cache import AudioCache
 from src.api.deps import AudioCacheDep
 
-router = APIRouter(prefix="/audio", tags=["audio"])
+router = APIRouter(prefix="/audio", tags=["Audio"])
 
 _VALID_ID = re.compile(r"^[a-f0-9]{8,64}$")
 
 
-@router.get("/{audio_filename}")
+@router.get(
+    "/{audio_filename}",
+    summary="Stream cached audio",
+    description="Retrieve cached TTS (text-to-speech) audio files by ID (WAV or MP3)",
+)
 def stream_audio(
     audio_filename: str,
     audio_cache: AudioCache = AudioCacheDep,

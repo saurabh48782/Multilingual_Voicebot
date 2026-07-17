@@ -1,3 +1,5 @@
+"""POST /api/chat - text input → end-to-end vernacular reply."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -9,10 +11,15 @@ from src.api.schemas import ChatRequest, VoiceResponse
 from src.api.services import record_turn, run_graph, state_to_response
 from src.api.session_locks import SessionLocks
 
-router = APIRouter(prefix="/api", tags=["chat"])
+router = APIRouter(prefix="/api", tags=["Chat"])
 
 
-@router.post("/chat", response_model=VoiceResponse)
+@router.post(
+    "/chat",
+    response_model=VoiceResponse,
+    summary="Chat with voice bot",
+    description="Send a text query and get a response from the voice bot",
+)
 async def chat(
     payload: ChatRequest,
     graph: Any = GraphDep,

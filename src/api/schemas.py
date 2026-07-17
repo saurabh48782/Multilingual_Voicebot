@@ -87,3 +87,20 @@ class DocumentUploadResponse(BaseModel):
     filename: str
     chunks_added: int
     message: str
+
+
+class DocumentStatsEntry(BaseModel):
+    doc_id: str
+    chunks: int
+
+
+class IndexStats(BaseModel):
+    total_chunks: int
+    total_documents: int
+    documents: list[DocumentStatsEntry]
+
+
+class IndexResetResponse(BaseModel):
+    artifacts_removed: int
+    total_chunks: int
+    message: str

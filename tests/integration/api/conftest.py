@@ -53,7 +53,20 @@ def build_stub_app(cache_dir: Path, *, passed: bool = True, top_score: float = 0
     def _stub_ingest_file(path: Path, *, force: bool = True, translate: bool = True) -> int:
         return 3
 
+    def _stub_index_stats() -> dict[str, object]:
+        return {
+            "total_chunks": 3,
+            "total_documents": 1,
+            "documents": [{"doc_id": "sample.txt", "chunks": 3}],
+        }
+
+    def _stub_reset_index() -> list[Path]:
+        # Non-destructive: never touches the real on-disk index.
+        return [Path("data/index/faiss.index"), Path("data/index/metadata.parquet")]
+
     _documents.ingest_file = _stub_ingest_file  # type: ignore[assignment,attr-defined]
+    _documents.index_stats = _stub_index_stats  # type: ignore[assignment,attr-defined]
+    _documents.reset_index = _stub_reset_index  # type: ignore[attr-defined]
 
     def bootstrap(fastapi_app: FastAPI) -> None:
         fastapi_app.state.checkpointer = checkpointer

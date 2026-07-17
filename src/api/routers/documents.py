@@ -8,14 +8,23 @@ from typing import Annotated
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
-from src.api.schemas import DocumentUploadResponse
-from src.rag.ingestor import SUPPORTED_EXTENSIONS, ingest_file
+from src.api.schemas import (
+    DocumentUploadResponse,
+    IndexResetResponse,
+    IndexStats,
+)
+from src.rag.ingestor import (
+    SUPPORTED_EXTENSIONS,
+    index_stats,
+    ingest_file,
+    reset_index,
+)
 from src.utils.config import DATA_DIR
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/api", tags=["documents"])
+router = APIRouter(prefix="/api", tags=["Documents"])
 
 _UPLOAD_DIR = DATA_DIR / "uploads"
 _UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
@@ -45,7 +54,12 @@ def safe_destination(filename: str | None, upload_dir: Path = _UPLOAD_DIR) -> Pa
     return dest
 
 
-@router.post("/documents", response_model=DocumentUploadResponse)
+@router.post(
+    "/documents",
+    response_model=DocumentUploadResponse,
+    summary="Upload documents",
+    description="Upload a document to be indexed in the Vector Store",
+)
 async def upload_document(
     file: Annotated[UploadFile, File()],
 ) -> DocumentUploadResponse:
@@ -74,4 +88,34 @@ async def upload_document(
         filename=dest.name,
         chunks_added=chunks_added,
         message=f"Indexed {chunks_added} chunks from '{dest.name}'.",
+    )
+
+
+@router.get(
+    "/documents/stats",
+    response_model=IndexStats,
+    summary="Vector Store stats",
+    description="Fetch stats for all documents indexed in the Vector Store",
+)
+async def documents_stats() -> IndexStats:
+    """Per-document chunk counts for the RAG index (mirrors the CLI --stats)."""
+    stats = await asyncio.get_event_loop().run_in_executor(None, index_stats)
+    return IndexStats.model_validate(stats)
+
+
+@router.delete(
+    "/documents",
+    response_model=IndexResetResponse,
+    summary="Clear Vector Store",
+    description="Delete all documents indexed in the Vector Store",
+)
+async def reset_documents() -> IndexResetResponse:
+    """Wipe the entire RAG index (FAISS + BM25 + manifest) and reload the live
+    stores empty (mirrors the CLI --clear, but safe on a running server)."""
+    removed = await asyncio.get_event_loop().run_in_executor(None, reset_index)
+    logger.info("Index reset via API", artifacts_removed=len(removed))
+    return IndexResetResponse(
+        artifacts_removed=len(removed),
+        total_chunks=0,
+        message=f"Index wiped; removed {len(removed)} artifact(s).",
     )

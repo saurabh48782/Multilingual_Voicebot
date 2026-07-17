@@ -17,6 +17,7 @@ import json
 import shutil
 import threading
 from pathlib import Path
+from typing import TypedDict
 
 from src.rag import bm25_store as _bm25_mod
 from src.rag import store as _store_mod
@@ -45,6 +46,17 @@ SUPPORTED_EXTENSIONS = {".pdf", ".txt"}
 _INGEST_LOCK = threading.Lock()
 
 
+class DocChunkCount(TypedDict):
+    doc_id: str
+    chunks: int
+
+
+class IndexStatsResult(TypedDict):
+    total_chunks: int
+    total_documents: int
+    documents: list[DocChunkCount]
+
+
 # Manifest helpers
 def _file_hash(path: Path) -> str:
     h = hashlib.sha256()
@@ -67,27 +79,37 @@ def _save_manifest(manifest: dict[str, str]) -> None:
 
 
 # Index teardown
-def clear_index() -> list[Path]:
-    """Delete every on-disk FAISS + BM25 artifact and the ingestion manifest.
-    Returns the artifact paths that existed and were removed.
+def _delete_index_artifacts() -> list[Path]:
+    """Unlink every on-disk FAISS + BM25 artifact + manifest that exists.
+
+    Returns the paths that were removed. Caller must already hold
+    `_INGEST_LOCK` and `index_rwlock.write()`.
     """
-    artifacts = [
+    artifacts = (
         faiss_index_path,
         faiss_metadata_path,
         faiss_manifest_path,
         bm25_corpus_path,
         bm25_index_dir,
-    ]
+    )
     removed: list[Path] = []
+    for path in artifacts:
+        if not path.exists():
+            continue
+        if path.is_dir():
+            shutil.rmtree(path)
+        else:
+            path.unlink()
+        removed.append(path)
+    return removed
+
+
+def clear_index() -> list[Path]:
+    """Delete every on-disk FAISS + BM25 artifact and the ingestion manifest.
+    Returns the artifact paths that existed and were removed.
+    """
     with _INGEST_LOCK, index_rwlock.write():
-        for path in artifacts:
-            if not path.exists():
-                continue
-            if path.is_dir():
-                shutil.rmtree(path)
-            else:
-                path.unlink()
-            removed.append(path)
+        removed = _delete_index_artifacts()
         # Drop cached singletons; the next get_store()/get_bm25_store() rebuilds
         # an empty index from the now-missing files.
         _store_mod._store = None
@@ -96,11 +118,42 @@ def clear_index() -> list[Path]:
     return removed
 
 
-# ---------------------------------------------------------------------------
+def reset_index() -> list[Path]:
+    """Runtime-safe wipe: delete on-disk artifacts, then reload the live store
+    singletons *in place* so every holder (the running Retriever, app.state)
+    sees the now-empty index without a process restart.
+
+    clear_index() rebinds the module singletons to None, which is fine offline
+    (the CLI process exits) but leaves a live server searching the stale
+    in-memory index it already cached. Here we reload the same objects instead.
+    """
+    with _INGEST_LOCK, index_rwlock.write():
+        removed = _delete_index_artifacts()
+        # Reload from the now-missing files → empty index + empty metadata,
+        # mutating the shared singleton objects the Retriever already holds.
+        get_store().load()
+        get_bm25_store().load()
+    logger.info("Reset index", artifacts_removed=len(removed))
+    return removed
+
+
+def index_stats() -> IndexStatsResult:
+    """Per-document chunk counts for the live FAISS index."""
+    store = get_store()
+    with index_rwlock.read():
+        meta = store._meta
+        docs: list[DocChunkCount] = []
+        if not meta.empty:
+            counts = meta.groupby("doc_id").size().sort_index()
+            docs = [{"doc_id": str(doc), "chunks": int(n)} for doc, n in counts.items()]
+        return {
+            "total_chunks": store.total_chunks,
+            "total_documents": len(docs),
+            "documents": docs,
+        }
+
+
 # Core ingestion
-# ---------------------------------------------------------------------------
-
-
 def _ingest_file(
     path: Path,
     store: FAISSStore,
