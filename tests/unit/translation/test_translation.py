@@ -70,6 +70,7 @@ class FakeLLM:
         think: bool = False,
         temperature: float | None = None,
         num_ctx: int | None = None,
+        stream: bool = False,
         **_: object,
     ) -> LLMResponse:
         self.calls.append(_Call(messages=messages, model=model, json_mode=json_mode))
@@ -177,6 +178,7 @@ def test_quoted_output_is_stripped(fake_llm: FakeLLM) -> None:
             think: bool = False,
             temperature: float | None = None,
             num_ctx: int | None = None,
+            stream: bool = False,
             **_: object,  # absorb future kwargs
         ) -> LLMResponse:
             return LLMResponse(content='"Hello world"', model="x", usage={})
@@ -209,6 +211,7 @@ class _NumberedLLM:
         think: bool = False,
         temperature: float | None = None,
         num_ctx: int | None = None,
+        stream: bool = False,
         **_: object,
     ) -> LLMResponse:
         self.calls.append(messages)

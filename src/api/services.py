@@ -10,7 +10,9 @@ stall the event loop.
 
 from __future__ import annotations
 
+import asyncio
 import time
+from collections.abc import Callable
 from typing import Any, Literal
 
 import structlog
@@ -23,7 +25,9 @@ from src.api.schemas import (
     SessionHistoryEntry,
     VoiceResponse,
 )
+from src.api.session_locks import SessionLocks
 from src.db.session_store import touch_session
+from src.graph.nodes.summarize import should_summarize
 from src.rag.store import SearchResult
 from src.utils.logger import get_logger
 from src.utils.observability import graph_run_config
@@ -138,6 +142,40 @@ async def run_graph(
         raise
     finally:
         structlog.contextvars.unbind_contextvars("session_id", "input_mode", "language")
+
+
+async def summarize_session(
+    graph: Any,
+    summarizer: Callable[..., dict[str, Any]],
+    session_id: str,
+    locks: SessionLocks,
+) -> None:
+    """Compress old conversation history OFF the user-visible critical path.
+
+    Scheduled as a FastAPI ``BackgroundTask`` after the response has already been
+    returned, so the client never waits on the (full-history) summarization LLM call.
+
+    Correctness guards:
+    - Holds the per-session lock so its ``aupdate_state`` write cannot interleave
+      with the next turn's ``ainvoke`` on the same ``thread_id``.
+      If a follow-up turn beats it to the lock, that turn
+      simply runs on un-compressed history and this catches up afterwards.
+    - Runs the blocking ``summarizer`` in a worker thread, exactly as LangGraph
+      ran the sync node, so the event loop stays free for other requests.
+    """
+    thread_cfg = {"configurable": {"thread_id": session_id}}
+    try:
+        async with locks.get(session_id):
+            snapshot = await graph.aget_state(thread_cfg)
+            values: Any = snapshot.values or {}
+            if should_summarize(values) != "summarize":
+                return
+            update = await asyncio.to_thread(summarizer, values)
+            if update:
+                await graph.aupdate_state(thread_cfg, update, as_node="synthesize")
+                logger.info("session.summarized", session_id=session_id)
+    except Exception:
+        logger.exception("session.summarize_failed", session_id=session_id)
 
 
 async def record_turn(

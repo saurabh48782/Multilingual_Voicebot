@@ -23,4 +23,5 @@ class LLMProvider(Protocol):
         think: bool = False,
         temperature: float | None = None,
         num_ctx: int | None = None,
+        stream: bool = False,
     ) -> LLMResponse: ...

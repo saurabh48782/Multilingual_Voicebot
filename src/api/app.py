@@ -24,6 +24,7 @@ from src.api.templates import mount_frontend
 from src.db.db import checkpointer_lifespan, db_pool_lifespan
 from src.graph.builder import build_graph
 from src.graph.deps import Deps
+from src.graph.nodes.summarize import make_summarize
 from src.rag.bm25_store import get_bm25_store
 from src.rag.embedder import embed_query
 from src.rag.reranker import rerank
@@ -62,7 +63,11 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     app.state.audio_cache = audio_cache
 
     async with db_pool_lifespan(app), checkpointer_lifespan(app) as checkpointer:
-        app.state.graph = build_graph(checkpointer=checkpointer, deps=Deps(audio_cache=audio_cache))
+        deps = Deps(audio_cache=audio_cache)
+        app.state.graph = build_graph(checkpointer=checkpointer, deps=deps)
+        # Summarizer runs off the request path as a BackgroundTask (see
+        # src/api/services.py :: summarize_session)
+        app.state.summarizer = make_summarize(deps)
         logger.info("voicebot lifespan up - graph compiled, FAISS + BM25 + RAG models warmed")
         yield
 

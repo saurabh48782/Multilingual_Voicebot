@@ -66,6 +66,7 @@ def make_summarize(deps: Deps) -> Callable[[VoicebotState], dict[str, Any]]:
                 ],
                 model=cfg["llm"]["model"],
                 temperature=0.05,  # near-deterministic, faithful compression
+                stream=True,
             )
             new_summary = resp.content.strip() or previous_summary
         except Exception:

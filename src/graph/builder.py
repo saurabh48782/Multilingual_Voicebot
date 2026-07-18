@@ -8,16 +8,16 @@ Flow:
     → translate_to_english
     → rewrite_query
     → classify_intent
-    → (general) → smalltalk → translate_to_vernacular → synthesize → [summarize?] → END
+    → (general) → smalltalk → translate_to_vernacular → synthesize → END
     → (scheme)  → retrieve
         → (confidence pass) → generate → verify_groundedness
-            → (grounded)   → translate_to_vernacular → synthesize → [summarize?] → END
-            → (ungrounded) → fallback                → synthesize → [summarize?] → END
-        → (confidence fail) → fallback → synthesize → [summarize?] → END
+            → (grounded)   → translate_to_vernacular → synthesize → END
+            → (ungrounded) → fallback                → synthesize → END
+        → (confidence fail) → fallback → synthesize → END
 
-`summarize` fires after `synthesize` when accumulated messages >= SUMMARIZE_THRESHOLD (8).
-It compresses the oldest messages into `conversation_summary` and removes them from state,
-keeping the checkpoint bounded while giving `rewrite_query` full conversation context.
+History compression (the`summarize` node) is deliberately NOT in this graph:
+It now runs off the critical path as a FastAPI BackgroundTask after the response
+is returned - see `src/api/services.py :: summarize_session`.
 
 `build_graph(checkpointer, deps)` returns a compiled `StateGraph`. A
 `checkpointer` is required - production opens one via `checkpointer_lifespan()`
@@ -39,7 +39,6 @@ from src.graph.nodes.pii_scrub import pii_scrub
 from src.graph.nodes.retrieve import make_retrieve, route_after_retrieve
 from src.graph.nodes.rewrite_query import make_rewrite_query
 from src.graph.nodes.smalltalk import make_smalltalk
-from src.graph.nodes.summarize import make_summarize, should_summarize
 from src.graph.nodes.synthesize import make_synthesize
 from src.graph.nodes.transcribe import make_transcribe
 from src.graph.nodes.translate import make_to_english, make_to_vernacular
@@ -81,7 +80,6 @@ def build_graph(
     add("translate_to_vernacular", make_to_vernacular(deps))
     add("fallback", fallback)
     add("synthesize", make_synthesize(deps))
-    add("summarize", make_summarize(deps))
 
     graph.add_edge(START, "transcribe")
     graph.add_edge("transcribe", "pii_scrub")
@@ -112,11 +110,8 @@ def build_graph(
     )
     graph.add_edge("translate_to_vernacular", "synthesize")
     graph.add_edge("fallback", "synthesize")
-    graph.add_conditional_edges(
-        "synthesize",
-        traced_router("synthesize", should_summarize),
-        {"summarize": "summarize", "end": END},
-    )
-    graph.add_edge("summarize", END)
+    # synthesize is terminal for the request path. History compression runs
+    # off-critical-path (see module docstring / src/api/services.py).
+    graph.add_edge("synthesize", END)
 
     return graph.compile(checkpointer=checkpointer)

@@ -71,6 +71,7 @@ class StubLLM:
         think: bool = False,
         temperature: float | None = None,
         num_ctx: int | None = None,
+        stream: bool = False,
     ) -> LLMResponse:
         self.calls.append(
             {"system": messages[0]["content"], "user": messages[-1]["content"], "json": json_mode}

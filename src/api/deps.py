@@ -40,8 +40,15 @@ def get_session_locks(request: Request) -> SessionLocks:
     return locks
 
 
+def get_summarizer(request: Request) -> Any:
+    """Rolling-history summarizer callable, built once in the lifespan and used
+    off the request path (see src/api/services.py :: summarize_session)."""
+    return getattr(request.app.state, "summarizer", None)
+
+
 GraphDep = Depends(get_graph)
 AudioCacheDep = Depends(get_audio_cache)
 CheckpointerDep = Depends(get_checkpointer)
 DbPoolDep = Depends(get_db_pool)
 SessionLocksDep = Depends(get_session_locks)
+SummarizerDep = Depends(get_summarizer)

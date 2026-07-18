@@ -7,12 +7,19 @@ transient *transport* errors (DNS, connection refused/reset, read timeout);
 HTTP error *responses* are returned untouched so the caller decides via
 ``raise_for_status``. Retrying is safe here because a transport error means the
 request did not complete server-side.
+
+``stream_lines`` opens a streaming POST and yields the response body one line
+at a time. Its value is timeout scoping: the ``read`` timeout then bounds the
+*gap between chunks* rather than the whole response, so a long generation
+can't trip the read timeout as long as
+tokens keep arriving.
 """
 
 from __future__ import annotations
 
 import threading
 import time
+from collections.abc import Iterator
 from typing import Any
 
 import httpx
@@ -67,4 +74,49 @@ def post_with_retry(
             time.sleep(sleep_s)
     if last_exc is None:  # unreachable, but keeps the type checker honest
         raise RuntimeError(f"POST {url} failed without an exception")
+    raise last_exc
+
+
+def stream_lines(
+    url: str,
+    *,
+    retries: int = 2,
+    backoff: float = 0.5,
+    **kwargs: Any,
+) -> Iterator[str]:
+    """POST and stream the response body line-by-line via the shared client.
+
+    Transport errors are retried only while no line has been emitted
+    yet; once streaming has started a failure is re-raised, because the partial
+    output already consumed can't be safely replayed. Non-transport HTTP errors
+    (4xx/5xx) surface immediately via ``raise_for_status``.
+    """
+    client = get_client()
+    last_exc: httpx.TransportError | None = None
+    for attempt in range(retries + 1):
+        emitted = False
+        try:
+            with client.stream("POST", url, **kwargs) as resp:
+                resp.raise_for_status()
+                for line in resp.iter_lines():
+                    if line:
+                        emitted = True
+                        yield line
+            return
+        except httpx.TransportError as exc:
+            last_exc = exc
+            if emitted or attempt == retries:
+                break
+            sleep_s = backoff * (2**attempt)
+            logger.warning(
+                "STREAM %s failed (%s); retry %d/%d in %.1fs",
+                url,
+                type(exc).__name__,
+                attempt + 1,
+                retries,
+                sleep_s,
+            )
+            time.sleep(sleep_s)
+    if last_exc is None:  # unreachable, but keeps the type checker honest
+        raise RuntimeError(f"STREAM {url} failed without an exception")
     raise last_exc

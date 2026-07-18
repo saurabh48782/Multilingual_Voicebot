@@ -4,11 +4,16 @@ from __future__ import annotations
 
 from typing import Annotated, Any
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, BackgroundTasks, File, Form, HTTPException, UploadFile
 
-from src.api.deps import DbPoolDep, GraphDep, SessionLocksDep
+from src.api.deps import DbPoolDep, GraphDep, SessionLocksDep, SummarizerDep
 from src.api.schemas import VoiceResponse
-from src.api.services import record_turn, run_graph, state_to_response
+from src.api.services import (
+    record_turn,
+    run_graph,
+    state_to_response,
+    summarize_session,
+)
 from src.api.session_locks import SessionLocks
 from src.translation.base import SUPPORTED_VERNACULARS
 
@@ -30,9 +35,11 @@ async def voice(
     # IndicConformer does not auto-detect language, so the caller must
     # supply the spoken language (the UI mandates a selection).
     language: Annotated[str, Form(min_length=1)],
+    background_tasks: BackgroundTasks,
     graph: Any = GraphDep,
     pool: Any = DbPoolDep,
     locks: SessionLocks = SessionLocksDep,
+    summarizer: Any = SummarizerDep,
 ) -> VoiceResponse:
     # Voice is restricted to the vernaculars the STT model handles. IndicConformer is
     # Indic-only (English is not one of its languages), so `en` audio cannot be transcribed.
@@ -58,4 +65,7 @@ async def voice(
         state = await run_graph(graph, inputs, session_id=session_id)
         title_hint = state.get("transcript", "")
         await record_turn(pool, session_id, title_hint, state)
+    # Compress old history AFTER the response ships - never on the user's clock.
+    if summarizer is not None:
+        background_tasks.add_task(summarize_session, graph, summarizer, session_id, locks)
     return state_to_response(state, session_id=session_id)
