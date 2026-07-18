@@ -234,6 +234,8 @@ def _ingest_file(
             "text_en": c.text_en,
             "source": c.source,
             "page_num": c.page_num,
+            "headings": c.headings,
+            "content_type": c.content_type,
         }
         for c in chunks
     ]

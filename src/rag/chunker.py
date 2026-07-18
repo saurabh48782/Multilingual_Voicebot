@@ -1,6 +1,12 @@
-"""Split documents into semantically coherent chunks.
+"""Split documents into retrievable chunks.
 
-Strategies (selected via `cfg["rag"]["chunking"]["strategy"]`):
+PDFs are parsed layout-aware with Docling (structure, tables, reading order)
+and chunked with Docling's structure-aware HybridChunker: section headings are
+captured as a metadata breadcrumb, tables are serialised to Markdown and kept
+intact, and chunk sizes respect the embedder's token budget.
+
+Plain-text (.txt) files use the sentence-level chunker selected via
+`cfg["rag"]["chunking"]["strategy"]`:
   - "semantic": embed each sentence with the same e5 model used downstream,
                 split at large adjacent-sentence cosine-distance jumps
                 (percentile-based), then enforce min/max chunk size.
@@ -12,12 +18,16 @@ from __future__ import annotations
 import hashlib
 import re
 from dataclasses import dataclass, field
+from importlib import import_module
 from pathlib import Path
+from typing import Any
 
-import fitz  # PyMuPDF
 import numpy as np
 
 from src.utils.config import cfg
+from src.utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 # Paragraph-mode defaults (legacy)
 CHUNK_SIZE = 1200
@@ -31,7 +41,9 @@ class Chunk:
     text: str  # original language
     text_en: str  # filled by ingestor after translation
     source: str  # file path str
-    page_num: int  # 0-indexed, -1 for plain text
+    page_num: int  # 1-indexed page (Docling PDFs), -1 for plain text
+    headings: str = ""  # " > "-joined section-heading breadcrumb (Docling)
+    content_type: str = "text"  # "text" | "table"
     chunk_id: str = field(init=False)
     chunk_id_int: int = field(init=False)
 
@@ -46,10 +58,7 @@ def _make_id(doc_id: str, chunk_index: int, text: str) -> tuple[str, int]:
     return hex16, int(hex16, 16) % (2**63)
 
 
-# ---------------------------------------------------------------------------
 # Language / sentence segmentation
-# ---------------------------------------------------------------------------
-
 _SCRIPT_RANGES: tuple[tuple[str, int, int], ...] = (
     ("hi", 0x0900, 0x097F),  # Devanagari (Hindi)
     ("bn", 0x0980, 0x09FF),  # Bengali
@@ -86,11 +95,7 @@ def _split_sentences(text: str) -> list[str]:
     return [s.strip() for s in sents if s and s.strip()]
 
 
-# ---------------------------------------------------------------------------
 # Semantic chunking
-# ---------------------------------------------------------------------------
-
-
 def _semantic_split(text: str) -> list[str]:
     """Sentence-level semantic chunking.
 
@@ -216,11 +221,7 @@ def _apply_sentence_overlap(chunks: list[str], n: int) -> list[str]:
     return overlapped
 
 
-# ---------------------------------------------------------------------------
 # Paragraph chunking (legacy fallback)
-# ---------------------------------------------------------------------------
-
-
 def _paragraph_split(
     text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVERLAP
 ) -> list[str]:
@@ -273,11 +274,7 @@ def _paragraph_split(
     return chunks
 
 
-# ---------------------------------------------------------------------------
 # Strategy dispatch
-# ---------------------------------------------------------------------------
-
-
 def _split_text(text: str) -> list[str]:
     strategy = cfg["rag"].get("chunking", {}).get("strategy", "semantic")
     if strategy == "paragraph":
@@ -285,71 +282,174 @@ def _split_text(text: str) -> list[str]:
     return _semantic_split(text)
 
 
-# ---------------------------------------------------------------------------
-# File-level entrypoints (unchanged signatures)
-# ---------------------------------------------------------------------------
-
-_WS_RE = re.compile(r"\s+")
+# Docling: layout-aware PDF parse + structure-aware chunking
+_IMAGE_PLACEHOLDER_RE = re.compile(r"<!--\s*image\s*-->", re.IGNORECASE)
 
 
-def _norm_ws(text: str) -> str:
-    return _WS_RE.sub(" ", text).strip()
+def _docling_pipeline_options() -> Any:
+    """Build `PdfPipelineOptions` from `cfg["rag"]["chunking"]["docling"]`."""
+    from docling.datamodel.pipeline_options import PdfPipelineOptions, TableFormerMode
+
+    dcfg = cfg["rag"].get("chunking", {}).get("docling", {})
+    opts = PdfPipelineOptions()
+    opts.do_table_structure = True
+    table_options: Any = opts.table_structure_options
+    table_options.do_cell_matching = True
+    mode = str(dcfg.get("table_mode", "accurate")).lower()
+    table_options.mode = TableFormerMode.FAST if mode == "fast" else TableFormerMode.ACCURATE
+    opts.do_ocr = bool(dcfg.get("do_ocr", False))
+    return opts
 
 
-def _page_starts(page_texts: list[str]) -> list[int]:
-    """Cumulative start offsets of each page in the whitespace-normalised
-    concatenation of all pages (single-space-joined)."""
-    starts: list[int] = []
-    offset = 0
-    for text in page_texts:
-        starts.append(offset)
-        norm = _norm_ws(text)
-        offset += len(norm) + 1  # +1 for the join space
-    return starts
+def _convert_pdf(path: Path) -> Any:
+    """Parse a PDF into a `DoclingDocument` (layout, tables, reading order).
+
+    Isolated as a module-level seam so unit tests can monkeypatch it and skip
+    the heavy model download / conversion.
+    """
+    from docling.datamodel.base_models import InputFormat
+    from docling.document_converter import DocumentConverter, PdfFormatOption
+
+    converter = DocumentConverter(
+        format_options={
+            InputFormat.PDF: PdfFormatOption(pipeline_options=_docling_pipeline_options())
+        }
+    )
+    return converter.convert(str(path)).document
+
+
+def _markdown_serializer_provider() -> Any:
+    """Serializer that emits tables as Markdown pipe-tables inside chunks
+    (HybridChunker otherwise flattens them to text). Returns None if the
+    Docling serializer API is unavailable."""
+    try:
+        from docling_core.transforms.chunker.hierarchical_chunker import (
+            ChunkingDocSerializer,
+            ChunkingSerializerProvider,
+        )
+        from docling_core.transforms.serializer.markdown import (
+            MarkdownParams,
+            MarkdownTableSerializer,
+        )
+    except Exception:  # noqa: BLE001 - optional API, degrade to flat tables
+        logger.warning("Docling Markdown table serializer unavailable; tables may be flattened")
+        return None
+
+    def get_serializer(self: object, doc: Any) -> Any:
+        return ChunkingDocSerializer(
+            doc=doc,
+            table_serializer=MarkdownTableSerializer(),
+            params=MarkdownParams(compact_tables=True),
+        )
+
+    markdown_tables_cls = type(
+        "_MarkdownTables",
+        (ChunkingSerializerProvider,),
+        {"get_serializer": get_serializer},
+    )
+    return markdown_tables_cls()
+
+
+def _make_hybrid_chunker() -> Any:
+    """HybridChunker sized to the e5 token budget, emitting Markdown tables."""
+    docling_chunking: Any = import_module("docling.chunking")
+    hybrid_chunker_cls = docling_chunking.HybridChunker
+
+    dcfg = cfg["rag"].get("chunking", {}).get("docling", {})
+    kwargs: dict[str, Any] = {
+        "max_tokens": int(dcfg.get("max_tokens", 400)),
+        "merge_peers": True,
+        "repeat_table_header": True,
+    }
+    # Size chunks against the same tokenizer the embedder uses (512-token e5),
+    # so a chunk never silently overflows and gets truncated at embed time.
+    try:
+        from docling_core.transforms.chunker.tokenizer.huggingface import HuggingFaceTokenizer
+
+        kwargs["tokenizer"] = HuggingFaceTokenizer.from_pretrained(cfg["rag"]["embedding_model"])
+    except Exception:  # noqa: BLE001 - fall back to HybridChunker's default tokenizer
+        logger.warning("Docling e5 tokenizer unavailable; using HybridChunker default")
+    provider = _markdown_serializer_provider()
+    if provider is not None:
+        kwargs["serializer_provider"] = provider
+    return hybrid_chunker_cls(**kwargs)
+
+
+def _chunk_meta(dc: Any, fallback_page: int) -> tuple[str, int]:
+    """Return (content_type, page_num) for a Docling chunk.
+
+    content_type is "table" when any source doc item is a table; page_num is
+    the first (lowest) page the chunk's items appear on (Docling pages are
+    1-indexed), falling back to the previous chunk's page when provenance is
+    absent.
+    """
+    items = getattr(dc.meta, "doc_items", None) or []
+    is_table = False
+    page: int | None = None
+    for it in items:
+        if "table" in str(getattr(it, "label", "")).lower():
+            is_table = True
+        for prov in getattr(it, "prov", None) or []:
+            p = getattr(prov, "page_no", None)
+            if p is not None and (page is None or int(p) < page):
+                page = int(p)
+    return ("table" if is_table else "text"), (page if page is not None else fallback_page)
+
+
+def _is_dot_leader_table(md: str) -> bool:
+    """True for a table-of-contents rendered as a table (cells are mostly dot
+    leaders) - TableFormer over-detects these on dotted TOC lines."""
+    cell_text = md.replace("|", " ").replace("-", " ")
+    non_space = [c for c in cell_text if not c.isspace()]
+    if not non_space:
+        return True
+    dots = sum(1 for c in non_space if c == ".")
+    return dots / len(non_space) > 0.5
+
+
+def _is_noise_chunk(text: str, content_type: str) -> bool:
+    """Drop empty / picture-only chunks and TOC dot-leader tables."""
+    stripped = _IMAGE_PLACEHOLDER_RE.sub("", text).strip()
+    if not stripped:
+        return True
+    return content_type == "table" and _is_dot_leader_table(text)
 
 
 def chunk_pdf(path: Path, doc_id: str | None = None) -> list[Chunk]:
-    """Chunk the whole document at once so passages spanning page breaks stay
-    together; each chunk is attributed to the page where it starts.
-    `sort=True` orders blocks by position, which fixes reading order on the
-    multi-column layouts common in government PDFs."""
+    """Layout-aware PDF chunking via Docling + HybridChunker.
+
+    Tables are preserved as Markdown, section headings are captured as a
+    breadcrumb in chunk metadata, and chunk sizes respect the e5 token budget.
+    Empty/picture-only chunks and table-of-contents dot-leader tables are
+    dropped.
+    """
     doc_id = doc_id or path.name
-
-    with fitz.open(str(path)) as doc:
-        page_texts = [page.get_text(sort=True) for page in doc]
-
-    full_text = "\n\n".join(page_texts)
-    pieces = _split_text(full_text)
-    if not pieces:
-        return []
-
-    norm_full = " ".join(_norm_ws(t) for t in page_texts)
-    starts = _page_starts(page_texts)
+    document = _convert_pdf(path)
+    chunker = _make_hybrid_chunker()
 
     chunks: list[Chunk] = []
-    search_from = 0
-    for chunk_index, piece in enumerate(pieces):
-        # Locate the chunk by a normalised prefix; monotonic search keeps
-        # overlap-duplicated sentences anchored to their true position.
-        probe = _norm_ws(piece)[:60]
-        pos = norm_full.find(probe, search_from) if probe else -1
-        if pos == -1:
-            pos = norm_full.find(probe) if probe else -1
-        if pos >= 0:
-            search_from = pos
-            page_num = max(i for i, s in enumerate(starts) if s <= pos)
-        else:
-            page_num = chunks[-1].page_num if chunks else 0
+    last_page = 1
+    index = 0
+    for dc in chunker.chunk(document):
+        text = chunker.contextualize(dc).strip()
+        content_type, page_num = _chunk_meta(dc, last_page)
+        last_page = page_num
+        if _is_noise_chunk(text, content_type):
+            continue
+        headings = " > ".join(getattr(dc.meta, "headings", None) or [])
         chunks.append(
             Chunk(
                 doc_id=doc_id,
-                chunk_index=chunk_index,
-                text=piece,
+                chunk_index=index,
+                text=text,
                 text_en="",
                 source=str(path),
                 page_num=page_num,
+                headings=headings,
+                content_type=content_type,
             )
         )
+        index += 1
     return chunks
 
 

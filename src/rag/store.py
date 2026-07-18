@@ -30,6 +30,8 @@ class SearchResult:
     source: str
     page_num: int
     score: float
+    headings: str = ""
+    content_type: str = "text"
 
 
 class FAISSStore:
@@ -169,6 +171,8 @@ class FAISSStore:
                     source=row["source"],
                     page_num=int(row["page_num"]),
                     score=float(score),
+                    headings=str(row.get("headings", "") or ""),
+                    content_type=str(row.get("content_type", "text") or "text"),
                 )
             )
         return results
@@ -188,6 +192,8 @@ def _empty_meta() -> pd.DataFrame:
             "text_en",
             "source",
             "page_num",
+            "headings",
+            "content_type",
         ]
     )
 

@@ -186,6 +186,8 @@ def _with_score(sr: SearchResult, score: float) -> SearchResult:
         source=sr.source,
         page_num=sr.page_num,
         score=score,
+        headings=sr.headings,
+        content_type=sr.content_type,
     )
 
 
@@ -206,6 +208,8 @@ def _hydrate_meta(store: FAISSStore, ids: list[int]) -> list[SearchResult]:
                 source=row["source"],
                 page_num=int(row["page_num"]),
                 score=0.0,
+                headings=str(row.get("headings", "") or ""),
+                content_type=str(row.get("content_type", "text") or "text"),
             )
         )
     return out

@@ -22,7 +22,15 @@ logger = get_logger(__name__)
 
 
 def _build_context(docs: list[SearchResult]) -> str:
-    parts = [f"[{i}] {sanitize_untrusted(d.text_en)}" for i, d in enumerate(docs, 1)]
+    parts: list[str] = []
+    for i, d in enumerate(docs, 1):
+        text = sanitize_untrusted(d.text_en)
+        if d.headings:
+            # Prepend the section-heading breadcrumb so the model has the
+            # structural context the chunk came from (esp. for tables).
+            parts.append(f"[{i}] ({sanitize_untrusted(d.headings)})\n{text}")
+        else:
+            parts.append(f"[{i}] {text}")
     return "\n\n---\n\n".join(parts)
 
 

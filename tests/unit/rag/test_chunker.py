@@ -1,19 +1,64 @@
 """Unit tests for text chunking logic."""
 
 from pathlib import Path
+from typing import Any
 
-import fitz
 import pytest
 
+from src.rag import chunker as chunker_mod
 from src.rag.chunker import (
     Chunk,
     _detect_lang,
+    _is_dot_leader_table,
+    _is_noise_chunk,
     _make_id,
     _paragraph_split,
     _split_sentences,
     chunk_pdf,
     chunk_text_file,
 )
+
+# --- Docling test doubles (no models, no downloads) ------------------------
+
+
+class _FakeProv:
+    def __init__(self, page_no: int) -> None:
+        self.page_no = page_no
+
+
+class _FakeItem:
+    def __init__(self, label: str, page_no: int) -> None:
+        self.label = label
+        self.prov = [_FakeProv(page_no)]
+
+
+class _FakeMeta:
+    def __init__(self, headings: list[str], items: list[_FakeItem]) -> None:
+        self.headings = headings
+        self.doc_items = items
+
+
+class _FakeDocChunk:
+    def __init__(self, text: str, headings: list[str], label: str, page_no: int) -> None:
+        self._text = text
+        self.meta = _FakeMeta(headings, [_FakeItem(label, page_no)])
+
+
+class _FakeHybridChunker:
+    def __init__(self, chunks: list[_FakeDocChunk]) -> None:
+        self._chunks = chunks
+
+    def chunk(self, _doc: Any) -> list[_FakeDocChunk]:
+        return self._chunks
+
+    def contextualize(self, ch: _FakeDocChunk) -> str:
+        return ch._text
+
+
+def _patch_docling(monkeypatch: pytest.MonkeyPatch, chunks: list[_FakeDocChunk]) -> None:
+    """Stub the two Docling seams so chunk_pdf runs offline."""
+    monkeypatch.setattr(chunker_mod, "_convert_pdf", lambda _p: object())
+    monkeypatch.setattr(chunker_mod, "_make_hybrid_chunker", lambda: _FakeHybridChunker(chunks))
 
 
 def test_paragraph_split_empty() -> None:
@@ -95,16 +140,64 @@ def test_chunk_text_file_doc_id_is_full_filename(tmp_path: Path) -> None:
     assert chunks[0].doc_id == "a.txt"
 
 
-def test_chunk_pdf_doc_id_is_full_filename(tmp_path: Path) -> None:
+def test_chunk_pdf_doc_id_is_full_filename(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _patch_docling(monkeypatch, [_FakeDocChunk("Hello world.", ["Intro"], "text", 1)])
     path = tmp_path / "a.pdf"
-    doc = fitz.open()
-    page = doc.new_page()
-    page.insert_text((72, 72), "Hello world.")
-    doc.save(str(path))
-    doc.close()
+    path.write_bytes(b"%PDF-1.4")  # never parsed - _convert_pdf is stubbed
 
     chunks = chunk_pdf(path)
     assert chunks[0].doc_id == "a.pdf"
+
+
+def test_chunk_pdf_captures_headings_and_content_type(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _patch_docling(
+        monkeypatch,
+        [
+            _FakeDocChunk(
+                "Some prose about the scheme.", ["2. Benefits", "2.1 Eligibility"], "text", 3
+            ),
+            _FakeDocChunk("| YEAR | SCHEME |\n| - | - |\n| 1952 | CDP |", [], "table", 4),
+        ],
+    )
+    chunks = chunk_pdf(tmp_path / "a.pdf")
+
+    assert len(chunks) == 2
+    prose, table = chunks
+    assert prose.content_type == "text"
+    assert prose.headings == "2. Benefits > 2.1 Eligibility"
+    assert prose.page_num == 3
+    assert table.content_type == "table"
+    assert "| YEAR | SCHEME |" in table.text
+    assert table.page_num == 4
+    # chunk_index is reassigned densely after filtering
+    assert [c.chunk_index for c in chunks] == [0, 1]
+
+
+def test_chunk_pdf_drops_noise_chunks(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    toc = f"| 1 INTRODUCTION {'.' * 40} 5 | 2 SCOPE {'.' * 40} 8 |\n| - | - |"
+    _patch_docling(
+        monkeypatch,
+        [
+            _FakeDocChunk("<!-- image -->", [], "picture", 1),  # picture-only
+            _FakeDocChunk("   ", [], "text", 1),  # empty
+            _FakeDocChunk(toc, [], "table", 1),  # TOC dot-leader table
+            _FakeDocChunk("Real content.", ["Body"], "text", 2),  # kept
+        ],
+    )
+    chunks = chunk_pdf(tmp_path / "a.pdf")
+
+    assert len(chunks) == 1
+    assert chunks[0].text == "Real content."
+
+
+def test_noise_and_dot_leader_helpers() -> None:
+    assert _is_noise_chunk("<!-- image -->", "text") is True
+    assert _is_noise_chunk("   ", "table") is True
+    assert _is_noise_chunk("Real content.", "text") is False
+    assert _is_dot_leader_table("| 1 INTRO ......... 5 |\n| - |") is True
+    assert _is_dot_leader_table("| YEAR | SCHEME |\n| 1952 | CDP |") is False
 
 
 def test_split_sentences_english() -> None:

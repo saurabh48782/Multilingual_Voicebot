@@ -27,6 +27,8 @@ def _meta_row(
     *,
     chunk_index: int = 0,
     text: str = "text",
+    headings: str = "",
+    content_type: str = "text",
 ) -> dict[str, object]:
     return {
         "chunk_id": cid_hex,
@@ -36,6 +38,8 @@ def _meta_row(
         "text_en": text,
         "source": f"{doc_id}.txt",
         "page_num": 1,
+        "headings": headings,
+        "content_type": content_type,
     }
 
 
@@ -180,3 +184,24 @@ def test_persist_and_reload_roundtrip(tmp_path: Path) -> None:
     hits = b.search(_query(0), top_k=1)
     assert hits[0].chunk_id == "a1"
     assert hits[0].text_en == "alpha"
+
+
+def test_headings_and_content_type_survive_roundtrip(tmp_path: Path) -> None:
+    index_path = tmp_path / "faiss.index"
+    metadata_path = tmp_path / "meta.parquet"
+
+    a = FAISSStore(index_path=index_path, metadata_path=metadata_path)
+    a.load()
+    a.upsert(
+        [1],
+        ["a1"],
+        _unit_vec(0).reshape(1, -1),
+        [_meta_row("a1", 1, "d1", headings="2. Benefits > Eligibility", content_type="table")],
+    )
+    a.save()
+
+    b = FAISSStore(index_path=index_path, metadata_path=metadata_path)
+    b.load()
+    hit = b.search(_query(0), top_k=1)[0]
+    assert hit.headings == "2. Benefits > Eligibility"
+    assert hit.content_type == "table"

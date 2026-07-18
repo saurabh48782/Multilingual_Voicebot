@@ -11,12 +11,14 @@ dependencies = [
     "langsmith>=0.1.0",
     # Retrieval / RAG (BM25, vector store, embeddings, reranker, segmentation)
     "bm25s>=0.2.0",
+    "docling>=2.9.0",
     "faiss-cpu>=1.9.0",
     "indic-nlp-library>=0.92",
     "PyStemmer>=2.2.0",
     "sentence-transformers>=3.0.0",
     "soundfile>=0.12.1",
     "torch>=2.4.0",
+    "torchvision>=0.19.0",
     "transformers>=4.46.0",
     # Backend / API
     "fastapi>=0.115.0",
@@ -27,7 +29,6 @@ dependencies = [
     "numpy>=2.0.0",
     "pandas>=3.0.2",
     "pyarrow>=17.0.0",
-    "pymupdf>=1.24.0",
     # Persistence (Postgres checkpointer + session metadata)
     "alembic>=1.18.5",
     "asyncpg>=0.29.0",
@@ -75,8 +76,12 @@ name = "pytorch-cu128"
 url = "https://download.pytorch.org/whl/cu128"
 explicit = true
 
+# torchvision (pulled in by docling) must come from the SAME cu128 index as
+# torch, or its compiled ops ABI-mismatch torch ("operator torchvision::nms
+# does not exist"). Keep it pinned alongside torch.
 [tool.uv.sources]
 torch = { index = "pytorch-cu128" }
+torchvision = { index = "pytorch-cu128" }
 
 [tool.ruff]
 line-length = 100
@@ -97,7 +102,7 @@ plugins = ["pydantic.mypy"]
 disallow_untyped_decorators = false
 
 [[tool.mypy.overrides]]
-module = "fitz"
+module = ["docling.*", "docling_core.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

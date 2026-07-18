@@ -176,3 +176,11 @@ def test_strip_thinking(raw: str, expected: str) -> None:
 )
 def test_build_context(docs: list[Any], expected: str) -> None:
     assert _build_context(docs) == expected
+
+
+def test_build_context_prepends_heading_breadcrumb() -> None:
+    doc = make_doc("| YEAR | SCHEME |\n| 1952 | CDP |")
+    doc.headings = "2. Benefits > Eligibility"
+    assert _build_context([doc]) == (
+        "[1] (2. Benefits > Eligibility)\n| YEAR | SCHEME |\n| 1952 | CDP |"
+    )

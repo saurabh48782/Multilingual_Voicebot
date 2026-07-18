@@ -53,11 +53,16 @@ rag:
     rrf_threshold: 0.5
     rrf_gap_threshold: 0.05
   chunking:
-    strategy: "semantic"          # "semantic" | "paragraph"
+    # .txt uses the sentence-level chunker below; .pdf uses Docling
+    strategy: "semantic"          # "semantic" | "paragraph" (.txt only)
     breakpoint_percentile: 90     # cosine-distance percentile that triggers a split
     min_chunk_size: 300           # chars - smaller chunks get merged
     max_chunk_size: 1500          # chars - bigger semantic groups are sub-split
     overlap_sentences: 2          # trailing sentences prepended to next chunk
+    docling:                      # layout-aware PDF parse + HybridChunker
+      do_ocr: false               # true for scanned / Indic-script PDFs (slower)
+      table_mode: "accurate"      # TableFormer: "accurate" | "fast"
+      max_tokens: 400             # HybridChunker budget under e5's 512-token limit
 
 stt:
   provider: "indic_conformer"
