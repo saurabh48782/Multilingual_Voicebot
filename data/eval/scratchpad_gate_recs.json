@@ -1,0 +1,3002 @@
+[
+  {
+    "lang": "en",
+    "q": "What is the purpose and launch date of the Atal Pension Yojana for social security?",
+    "top": 0.7293059762661257,
+    "second": 0.7110247238785941,
+    "gap": 0.018281252387531643,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What are the benifits from Central Goverment for our women in the APY scheme?",
+    "top": 0.7172465456696367,
+    "second": 0.5865326144522791,
+    "gap": 0.13071393121735764,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What role does the Government play in the Atal Pension Yojana (APY)?",
+    "top": 0.6745148243416247,
+    "second": 0.6410034605277912,
+    "gap": 0.03351136381383346,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Who is ineligible for APY from 1st October, 2022?",
+    "top": 0.7297250211848065,
+    "second": 0.5575990129143211,
+    "gap": 0.1721260082704854,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "where i can find info about how much money pay and pension for people in rural area from Annex - 1?",
+    "top": 0.5371814529024865,
+    "second": 0.512100850518537,
+    "gap": 0.02508060238394949,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "if a person want leave APY early what happen with government money?",
+    "top": 0.6458666690053114,
+    "second": 0.5108190704565879,
+    "gap": 0.1350475985487235,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "Tell me where I can find information about Ministry of Panchayati Raj in the book?",
+    "top": 0.5731162805629569,
+    "second": 0.5714118537936643,
+    "gap": 0.0017044267692926107,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "Could you please provide information regarding the Mahatma Gandhi National Rural Employment Guarantee Act as it relates to rural development initiatives?",
+    "top": 0.7225438551001396,
+    "second": 0.7171023854287967,
+    "gap": 0.005441469671342958,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Tell me about Deendayal Antyodaya Yojana- National Rural Livelihoods Mission.",
+    "top": 0.6859217323541703,
+    "second": 0.6580708751757848,
+    "gap": 0.027850857178385535,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Tell me about Vigyan Jyoti Skeme.",
+    "top": 0.6566661184947662,
+    "second": 0.6374735194069105,
+    "gap": 0.019192599087855644,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "What are the specific details and initiatives listed under the National Technical Textiles Mission within the Ministry of Textiles framework for rural development?",
+    "top": 0.7148158328472365,
+    "second": 0.637406599275742,
+    "gap": 0.07740923357149454,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Namaste, I am trying to help the women in our village understand the government programs for children, can you tell me about the details of Mision Vatsalyaa?",
+    "top": 0.6722167399862575,
+    "second": 0.5894243139453363,
+    "gap": 0.08279242604092119,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What is PM-SHRI Yojana mean?",
+    "top": 0.7204338780207177,
+    "second": 0.5348855849506854,
+    "gap": 0.1855482930700323,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "i need know about the Government Schemes in Headlines for my rural work, can you tell me what is inside that document and other study materials?",
+    "top": 0.6970040470447585,
+    "second": 0.510975482530791,
+    "gap": 0.18602856451396754,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Could you please clarify the copyright restrictions regarding the distribution and reproduction of materials from Vision IAS?",
+    "top": 0.6999440809389151,
+    "second": 0.698967097301364,
+    "gap": 0.0009769836375511654,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Tell me about this scheme for India?",
+    "top": 0.6219248386412863,
+    "second": 0.621299766304644,
+    "gap": 0.0006250723366423294,
+    "passed": false,
+    "recall": 0.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "Namaste, I am trying to help the women in our village understand how they can get better access to doctors and teleconsultations; could you tell me about the Unifed Health Interfase (UHI) and what it does for them?",
+    "top": 0.5774769170239419,
+    "second": 0.5047009738729321,
+    "gap": 0.07277594315100977,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "Could you explain what the DHIS initiative provides for our community's healthcare infrastructure?",
+    "top": 0.553206375601359,
+    "second": 0.5036846477342309,
+    "gap": 0.04952172786712805,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "Tell me about Pradhan Mantri - Jan Arogya Yojana (PM-JAY) for my village?",
+    "top": 0.6861475839026914,
+    "second": 0.6366630812301216,
+    "gap": 0.04948450267256976,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What specific objectives are identified regarding the healthcare system at the tertiary level?",
+    "top": 0.7275076552090133,
+    "second": 0.6960668435060826,
+    "gap": 0.03144081170293067,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Could you provide details regarding the scope and beneficiary criteria of the Pradhan Mantri Jan Arogya Yojana (PM-JAY) for our rural development initiatives?",
+    "top": 0.7049817130743142,
+    "second": 0.7042411265290366,
+    "gap": 0.0007405865452776439,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "How is Aadhar used for verification?",
+    "top": 0.5388675479567628,
+    "second": 0.5357104050323144,
+    "gap": 0.003157142924448464,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "What are the specific objectives and features of the Ayushman - Aapke Dwar 3.0 initiative for expanding healthcare coverage?",
+    "top": 0.730735703685861,
+    "second": 0.6752243582868712,
+    "gap": 0.05551134539898983,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "what is CSS part of this plan?",
+    "top": 0.6245932522815342,
+    "second": 0.5639421425672749,
+    "gap": 0.060651109714259244,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "Tell me about how we can make our village safe from public health emergencies and what is being done to help with these problems?",
+    "top": 0.5117974779253652,
+    "second": 0.5005283494026814,
+    "gap": 0.011269128522683802,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "Could you please provide the key details regarding the PMABHIY scheme for our community's awareness?",
+    "top": 0.6195647462313609,
+    "second": 0.5295159139845518,
+    "gap": 0.09004883224680915,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "i need know about how many district hospitals and lab for the rural area we got?",
+    "top": 0.5269356527310932,
+    "second": 0.5008164673073104,
+    "gap": 0.026119185423782776,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "What are the main features and infrastructure developments being established for the WHO South East Asia region to improve bio-security and research?",
+    "top": 0.7306328613087079,
+    "second": 0.6343549449610835,
+    "gap": 0.09627791634762439,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What is the Centrel Minstry of Health and Famly Welfare?",
+    "top": 0.727243664023242,
+    "second": 0.6316001293593466,
+    "gap": 0.09564353466389541,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What are the goals regarding AYUSH?",
+    "top": 0.7262281623739886,
+    "second": 0.60282722587886,
+    "gap": 0.12340093649512862,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Tell me about what happen in 2005 for health mission?",
+    "top": 0.6168035398361724,
+    "second": 0.6026657890098802,
+    "gap": 0.014137750826292206,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "How does the e-VIN system help in managing vaccines?",
+    "top": 0.7148395381822984,
+    "second": 0.5002815753098473,
+    "gap": 0.2145579628724511,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Can you tell me about the JSSK scheme and how it helps our mothers in the village during childbirth?",
+    "top": 0.6937599956974624,
+    "second": 0.5034654686832651,
+    "gap": 0.19029452701419725,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What is the objective of Rashtriya Kishor Swasthya Karyakram for adolescents?",
+    "top": 0.7309469641056805,
+    "second": 0.5893533218071191,
+    "gap": 0.14159364229856142,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Tell me about Maternal Health Scheme (MHS) for rural girls?",
+    "top": 0.717342104061497,
+    "second": 0.5267043927882699,
+    "gap": 0.19063771127322715,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "As a policy advisor focused on rural infrastructure and community well-being, could you provide a detailed overview of the objectives associated with the National Tuberculosis Elimination Program (NTEP) as outlined in the current health initiatives?",
+    "top": 0.7234643144586461,
+    "second": 0.5398794411260815,
+    "gap": 0.18358487333256457,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Tell me about the Natinal Progrum for Prevenstion and Managment of Burns (NPPMBI).",
+    "top": 0.6456096185629201,
+    "second": 0.5029830571689746,
+    "gap": 0.14262656139394547,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "How is ABHA integrated with e-Sanjivani?",
+    "top": 0.7298759131787756,
+    "second": 0.5131415514620199,
+    "gap": 0.21673436171675575,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Tell me about what is this Pradhan Mantri Surakshit Matritva Abhiyan for our women and babies?",
+    "top": 0.7018281682287353,
+    "second": 0.5289239655679002,
+    "gap": 0.17290420266083506,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "Can you tell me about the Natinal Deworming Day program for our children?",
+    "top": 0.6381862223118518,
+    "second": 0.5003018293279539,
+    "gap": 0.13788439298389799,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "What are the health interventions available in Bihar?",
+    "top": 0.6203423146025091,
+    "second": 0.5852529455618474,
+    "gap": 0.03508936904066173,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "Is Assam included in the Mission Parivar Vikas?",
+    "top": 0.7221047832724252,
+    "second": 0.7208262817380986,
+    "gap": 0.001278501534326626,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What specific interventions are planned for the state of Chhattisgarh under the Mission Parivar Vikas initiative?",
+    "top": 0.7265600800949096,
+    "second": 0.7255576519641408,
+    "gap": 0.0010024281307687843,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What is the goal of Nikshay Poshan Yojana regarding Hepatitis C?",
+    "top": 0.7309844378759757,
+    "second": 0.6973887326038414,
+    "gap": 0.03359570527213429,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Can you tell me about the Natinal AIDS Program and what services are offered?",
+    "top": 0.7250884587362667,
+    "second": 0.5020922221132299,
+    "gap": 0.2229962366230368,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "where Raipur be for health?",
+    "top": 0.575018928547818,
+    "second": 0.5001468863878054,
+    "gap": 0.07487204216001264,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "Tell me about NHM and what money they give for TB patient?",
+    "top": 0.7077584793724284,
+    "second": 0.6981209592633717,
+    "gap": 0.009637520109056719,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Tell me about this Food Safety Mitra thing for our small food shops in village, how they help people follow laws?",
+    "top": 0.6725693262517903,
+    "second": 0.5003732119110201,
+    "gap": 0.1721961143407702,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What are the specific initiatives and objectives of the NHM regarding maternal and newborn care?",
+    "top": 0.7285191947655519,
+    "second": 0.728369159523824,
+    "gap": 0.00015003524172796379,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Could you provide a detailed overview of the objectives and components associated with the Ministry of Heavy Industries (MHI) initiatives regarding electric vehicle adoption?",
+    "top": 0.7304039457213893,
+    "second": 0.7215021900672385,
+    "gap": 0.008901755654150856,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Tell me what Government do for poor people in 2015-16 budget?",
+    "top": 0.7168186864594107,
+    "second": 0.504729198818623,
+    "gap": 0.21208948764078772,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What is benefit for people from Central Government in this APY system?",
+    "top": 0.7281416435379303,
+    "second": 0.6194145432167908,
+    "gap": 0.10872710032113952,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What happen with APY if woman die before 60?",
+    "top": 0.7151863923139129,
+    "second": 0.689701133626669,
+    "gap": 0.02548525868724394,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What eligibility change occurred regarding income-tax payers on 1st October, 2022?",
+    "top": 0.7189865406110791,
+    "second": 0.6225737781266074,
+    "gap": 0.09641276248447173,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Where can I find the detals regarding age-wise, pension-wise, and contribution-frequency-wise amounts in Annex - 1?",
+    "top": 0.7263775498925485,
+    "second": 0.6037742367586323,
+    "gap": 0.12260331313391626,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What happens if a subscriber voluntarily exits APY before age 60?",
+    "top": 0.7306359464715841,
+    "second": 0.7035477122533554,
+    "gap": 0.0270882342182287,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What is the page number for Bharatmala Pariyojana Programme?",
+    "top": 0.61942118239067,
+    "second": 0.5984208957984974,
+    "gap": 0.021000286592172568,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "Can you provide details regarding the Minstry of Rural Develpment and its specific programs for rural infrastructure and employment?",
+    "top": 0.6827142775413843,
+    "second": 0.6481518776344671,
+    "gap": 0.03456239990691712,
+    "passed": true,
+    "recall": 0.5,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Tell me about Pradhan Mantri Awas Yojana (Gramin) 2.0 for my village women, what is it in the list?",
+    "top": 0.606263651921704,
+    "second": 0.597553956737194,
+    "gap": 0.008709695184509925,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "What schemes are under the Ministry of Social Justice and Empowerment?",
+    "top": 0.7283948549058371,
+    "second": 0.727997473381055,
+    "gap": 0.0003973815247820811,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Could you please provide information regarding the National Technical Textiles Mission as it relates to current ministry initiatives?",
+    "top": 0.7080272893778792,
+    "second": 0.5972673812876788,
+    "gap": 0.11075990809020042,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Sister, tell me please what is this Pradhan Mantri Vanbandhu Kalyan Yojana thing for our people and where it is in the book list?",
+    "top": 0.5451071420026887,
+    "second": 0.5341083698743531,
+    "gap": 0.010998772128335665,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "What is the full name of PM-SHRI Yojana?",
+    "top": 0.7022665898347672,
+    "second": 0.5591554893099148,
+    "gap": 0.14311110052485243,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Can you tell me about the Goverment Shemes Comprehenisve: Part 2 material for our village women?",
+    "top": 0.6153321632451153,
+    "second": 0.6134516524111927,
+    "gap": 0.0018805108339225995,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "What are the copyright restrictions for materials from Vision IAS?",
+    "top": 0.7182304163867552,
+    "second": 0.7174869393449894,
+    "gap": 0.0007434770417658054,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What are the specific objectives and details regarding the NHA implementation of the digital health scheme for our community?",
+    "top": 0.7269885750150655,
+    "second": 0.5406881110436208,
+    "gap": 0.18630046397144473,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Could you explain the role and functionality of the Ayushman Bharat Health Account (ABHA) within the digital health infrastructure?",
+    "top": 0.7074408599100003,
+    "second": 0.6920961554898936,
+    "gap": 0.015344704420106714,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What are the specific details and incentive amounts provided by the Digital Health Incentive Scheme (DHIS) for promoting digital health solutions?",
+    "top": 0.7303460197487545,
+    "second": 0.6018046227908357,
+    "gap": 0.12854139695791877,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Can you tell me about the Pradhan Mantri - Jan Arogya Yojna (PM-JAY) and what its main goals are for our village families?",
+    "top": 0.7255224242565826,
+    "second": 0.7153992638865486,
+    "gap": 0.010123160370034023,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What are the specific objectives regarding the healthcare system at the tertiary level for improving care for vulnerable populations?",
+    "top": 0.728934470763738,
+    "second": 0.63500810499832,
+    "gap": 0.09392636576541791,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "i need know for my rural area how the National Health Mission (NHM) help people and what is it do for health center?",
+    "top": 0.6363325888525803,
+    "second": 0.6221828781071893,
+    "gap": 0.014149710745390953,
+    "passed": false,
+    "recall": 0.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "Could you please explain how the e-KYC process functions as a method for ensuring transparency and accountability when verifying beneficiaries within our local healthcare programs?",
+    "top": 0.6714341307776245,
+    "second": 0.5013555818551229,
+    "gap": 0.17007854892250163,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "Tell me about Ayushman Bhava Abhiyan for rural area?",
+    "top": 0.6919454929438301,
+    "second": 0.5044161367168276,
+    "gap": 0.1875293562270025,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "Tell me about this Centrally Sponsored Scheme for our village women health, what is it do and how long it stay?",
+    "top": 0.7080382925780268,
+    "second": 0.6965298287450602,
+    "gap": 0.011508463832966553,
+    "passed": true,
+    "recall": 0.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "How can we strengthen our community against global/local pandemics?",
+    "top": 0.6491796416301748,
+    "second": 0.5060420927410829,
+    "gap": 0.14313754888909191,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "What are the specific healthcare benefits and quality standards for pregnant women and newborns under the Pradhan Mantri Surakshit Matritva Abhiyan?",
+    "top": 0.7305792134466292,
+    "second": 0.6920524599409682,
+    "gap": 0.03852675350566104,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "As a community advocate, I am looking into various government initiatives launched in 2013; could you explain what the National Electric Mobility Mission Plan (NEMMP) aimed to achieve regarding fuel security and what specific health-related integration occurred during that same year?",
+    "top": 0.7297145585640638,
+    "second": 0.5804066070080847,
+    "gap": 0.1493079515559791,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "how help woman get Aadhar for government program?",
+    "top": 0.6594695987684893,
+    "second": 0.5487077483392724,
+    "gap": 0.11076185042921693,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "what is need for PMUs in DMF with more than 50 crore?",
+    "top": 0.7203099585828233,
+    "second": 0.5159907215635732,
+    "gap": 0.20431923701925014,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What is the purpuse of submmitting Form 2-A for a beneficiary who needs to link her Bank Account with her Aadhaar?",
+    "top": 0.7263580854739607,
+    "second": 0.7198431434892637,
+    "gap": 0.0065149419846970424,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What specific initiative is listed under the category of other schemes involving the Sustainable Action for Transforming Human Capital (SATH) Programme?",
+    "top": 0.725914031826978,
+    "second": 0.725801498216796,
+    "gap": 0.00011253361018204178,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Whitch minstry is resposible for the Kastoorba Gandhi BalikaVidyalaya scheme?",
+    "top": 0.5202524567192564,
+    "second": 0.5144011536070358,
+    "gap": 0.005851303112220596,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "Tell me about the special focus for children in this scheme and what is the main goal of it?",
+    "top": 0.7267791675695455,
+    "second": 0.7075751714811602,
+    "gap": 0.0192039960883853,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Namaste, I am trying to help a woman in our village who wants to get her bank account linked with her Aadhaar for the scheme. Can you tell me what form she needs to fill out and what should happen if she doesn't have an Aadhaar card yet?",
+    "top": 0.7211513748509287,
+    "second": 0.6736878435198538,
+    "gap": 0.04746353133107495,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "In the context of rural development initiatives, how does the Pradhan Mantri Adarsh Gram Yojana compare to previous schemes like the Special Central Assistance to Sub-Plan for Scheduled Castes and the Babu Jagjivan Ram Charitable Trust Scheme?",
+    "top": 0.7295859768267511,
+    "second": 0.6902532573517892,
+    "gap": 0.039332719474961864,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "i need know how many ways for insurance and what is role of State Health Agency (SHA) when it be at state level for the program?",
+    "top": 0.7187256195242975,
+    "second": 0.5049356393097599,
+    "gap": 0.21378998021453754,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "how many poor families from Socio-Economic Caste Census 2011 get to be Priority One and what they do during village visits?",
+    "top": 0.7258278432419794,
+    "second": 0.5262909064726562,
+    "gap": 0.19953693676932316,
+    "passed": true,
+    "recall": null,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "Namaste, I am trying to help some women in our village who are looking for support under the Pradhan Mantri Matru Vandana Yojana. Can you tell me which department at the State/UT level has the option to implement this scheme besides the Health Department, and what specific software is used as an effective tool for monitoring it?",
+    "top": 0.7309571035651542,
+    "second": 0.6996795901631848,
+    "gap": 0.03127751340196938,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Can u tell me about the Intensified Diarrhea Control Fortnight (IDCF) and what kind of support is given to patients for this?",
+    "top": 0.7066837524886532,
+    "second": 0.6984133748463982,
+    "gap": 0.008270377642255022,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What are the specific qualifications required for Para Legal Personnel to provide legal counseling within the One Stop Centre?",
+    "top": 0.7290203535002957,
+    "second": 0.611433117080887,
+    "gap": 0.11758723641940871,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "if someone have problem with the program and it not fix in 15 days, how MIS help them?",
+    "top": 0.6882645842942648,
+    "second": 0.5027888186245383,
+    "gap": 0.18547576566972657,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What is the purpuse of the Emploment Assurane Scheme (EAS) for village workers?",
+    "top": 0.629317866809679,
+    "second": 0.5748053957368108,
+    "gap": 0.054512471072868274,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "en",
+    "q": "What are the objectives of the Khelo India - National Programme for Development of Sports?",
+    "top": 0.7310133526656379,
+    "second": 0.7310016322742214,
+    "gap": 1.1720391416503162e-05,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "In what way does the partnership with the Ministry of Agriculture & Farmers Welfare support sustainable agricultural practices in the Ganga villages?",
+    "top": 0.7304777532780578,
+    "second": 0.5319110709254563,
+    "gap": 0.19856668235260144,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What are the requirements for a facility to be designated as LaQshya compliant?",
+    "top": 0.7263929976056229,
+    "second": 0.5035209762916334,
+    "gap": 0.22287202131398953,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Who are the priority one (POP) familes for DAY-NRLM based on the Socio-Economic Caste Census?",
+    "top": 0.7225035845115455,
+    "second": 0.5302995033558312,
+    "gap": 0.1922040811557143,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "What are the specific roles of States/UTs in implementing Nari Adalat for women's grievances and managing Palna cr\u00e8che facilities?",
+    "top": 0.715063240681646,
+    "second": 0.6586923903387762,
+    "gap": 0.056370850342869705,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "As a community advocate, could you explain how the integration of e-Sanjivani with the Ayushman Bharat Digital Mission helps mothers in our village by facilitating their Ayushman Bharat Health Account?",
+    "top": 0.7195289426928329,
+    "second": 0.5200056750124158,
+    "gap": 0.19952326768041706,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "How does the incentive structure for Advanced Chemistry Cell (ACC) manufacturing relate to the FAME-II scheme regarding electric vehicle incentives?",
+    "top": 0.7300463579627116,
+    "second": 0.6966548088260361,
+    "gap": 0.033391549136675414,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "en",
+    "q": "Tell me about what urban local bodies do for rural areas and how they help with solar stuff like making villages self-sufficient in electricity?",
+    "top": 0.7210746698311312,
+    "second": 0.616240611365765,
+    "gap": 0.1048340584653662,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What is the social security objective of the Atal Pension Yojana scheme, and what is its launch date?",
+    "top": 0.7296335763098393,
+    "second": 0.7276746311148476,
+    "gap": 0.0019589451949916237,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What benefits are provided by the central government to women under the APY (Atal Pension Yojana) scheme?",
+    "top": 0.7130020342492472,
+    "second": 0.6764791614513564,
+    "gap": 0.03652287279789079,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What is the role of the government in the Atal Pension Yojana (APY)?",
+    "top": 0.6761535696340939,
+    "second": 0.6537020634395695,
+    "gap": 0.022451506194524407,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Who is ineligible for Atal Pension Yojana (APY) from October 1, 2022?",
+    "top": 0.7276923125868022,
+    "second": 0.5353596058099759,
+    "gap": 0.19233270677682635,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Where can I find information about salaries and pensions for people living in rural areas in \"Annex-1\"?",
+    "top": 0.5031135692596588,
+    "second": 0.5017518622825312,
+    "gap": 0.0013617069771275636,
+    "passed": false,
+    "recall": 0.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "If a person wants to withdraw from Atal Pension Yojana (APY) prematurely, what happens to the government's contribution?",
+    "top": 0.6776934547436556,
+    "second": 0.587969920506575,
+    "gap": 0.08972353423708057,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Please tell me where I can find information about \"Ministry of Panchayati Raj\" in the book.",
+    "top": 0.5652207904972962,
+    "second": 0.558902864448766,
+    "gap": 0.006317926048530209,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "Can you provide information about the Mahatma Gandhi National Rural Employment Guarantee Act, specifically how it relates to rural development initiatives?",
+    "top": 0.7196242597561113,
+    "second": 0.7147958324481472,
+    "gap": 0.004828427307964178,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Please provide information about the \u0926\u0940\u0928\u0926\u092f\u093e\u0932 Antyodaya Yojana - National Rural Livelihoods Mission.",
+    "top": 0.6731485812649678,
+    "second": 0.6235961050218143,
+    "gap": 0.04955247624315351,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Tell me about the Vigyan Jyoti scheme.",
+    "top": 0.6998602641774861,
+    "second": 0.6479208996275646,
+    "gap": 0.05193936454992154,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What are the specific details and initiatives being run by the Ministry of Textiles under the National Technical Textiles Mission for rural development?",
+    "top": 0.7024140515473495,
+    "second": 0.6661867036656236,
+    "gap": 0.03622734788172588,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Hello, I am trying to help the women in our village understand government schemes. Can you provide me with information about Mission Vatsalya?",
+    "top": 0.6691477809685403,
+    "second": 0.6434893498074564,
+    "gap": 0.025658431161083906,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "What does the PM-SHRADHA scheme mean?",
+    "top": 0.5051045786268772,
+    "second": 0.5047798772758628,
+    "gap": 0.00032470135101436703,
+    "passed": false,
+    "recall": 0.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "I need information about government schemes for my rural work. Can you tell me what is included in the document called \"Government Schemes in Headlines\" and other study materials?",
+    "top": 0.7190764073778781,
+    "second": 0.5212499308243284,
+    "gap": 0.1978264765535498,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Could you please clarify the copyright restrictions regarding the distribution and reproduction of materials obtained from Vision IAS?",
+    "top": 0.6943122983890349,
+    "second": 0.694077882125464,
+    "gap": 0.0002344162635709024,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Please tell me about this scheme for India.",
+    "top": 0.5696312325679338,
+    "second": 0.5565022231299918,
+    "gap": 0.01312900943794204,
+    "passed": false,
+    "recall": 0.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "Hello, I am trying to help the women in our village understand how they can access better healthcare and tele-consultations. Can you tell me about the Unified Health Interface (UHI) and what it does for them?",
+    "top": 0.6851900640329809,
+    "second": 0.5060624815266952,
+    "gap": 0.1791275825062857,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Can you explain what features the DHIS initiative provides for the health infrastructure of our community?",
+    "top": 0.6690923298076317,
+    "second": 0.5145382467256003,
+    "gap": 0.15455408308203133,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Please tell me about the Pradhan Mantri \u2013 Jan Arogya Yojana (PM-JAY) scheme that is available for my village.",
+    "top": 0.6407639559623207,
+    "second": 0.5998753216016748,
+    "gap": 0.04088863436064594,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "What specific objectives have been set for the health system at the tertiary level?",
+    "top": 0.723858729671277,
+    "second": 0.6754151278258869,
+    "gap": 0.048443601845390094,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Can you provide information about the scope of the Pradhan Mantri Jan Arogya Yojana (PM-JAY) and the eligibility criteria for beneficiaries, so that we can incorporate it into our rural development programs?",
+    "top": 0.70484763720319,
+    "second": 0.6907284341467228,
+    "gap": 0.014119203056467189,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "How is Aadhaar card used for verification?",
+    "top": 0.516709897456636,
+    "second": 0.5133815566229964,
+    "gap": 0.0033283408336395315,
+    "passed": false,
+    "recall": 0.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "What are the specific goals and features of the Ayushman-Aapki Dwar 3.0 initiative, aimed at increasing health service coverage?",
+    "top": 0.7298762657229346,
+    "second": 0.5859576636262956,
+    "gap": 0.14391860209663898,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What role does CSS play in this scheme?",
+    "top": 0.6002722640904291,
+    "second": 0.5895693086619544,
+    "gap": 0.010702955428474659,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "How can we protect our village from public health emergencies, and what efforts are being made to address these problems?",
+    "top": 0.5162717328772692,
+    "second": 0.5006550706783848,
+    "gap": 0.015616662198884468,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "Could you please provide the key details related to the PMAVHIY scheme for raising awareness within our community?",
+    "top": 0.638223973326036,
+    "second": 0.556486567026981,
+    "gap": 0.08173740629905502,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "I would like to know how many district hospitals and laboratories we have in rural areas.",
+    "top": 0.5546400679645942,
+    "second": 0.5041662477551571,
+    "gap": 0.05047382020943714,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "What key features and infrastructure developments are being established by WHO in the Southeast Asia region to improve biosafety and research?",
+    "top": 0.7282407659159069,
+    "second": 0.5144302658140978,
+    "gap": 0.21381050010180913,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What is the Ministry of Health and Family Welfare?",
+    "top": 0.7289959552622722,
+    "second": 0.7169658008085404,
+    "gap": 0.01203015445373179,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "What are the goals related to Ayurveda, Yoga and Naturopathy, Unani, Siddha and Homoeopathy (AYUSH)?",
+    "top": 0.6907000390531594,
+    "second": 0.5281639898493052,
+    "gap": 0.16253604920385412,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Please tell me what happened in 2005 regarding the Health Mission.",
+    "top": 0.5888632499432508,
+    "second": 0.5634978530158004,
+    "gap": 0.025365396927450434,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "How does the e-VIN system help in vaccine management?",
+    "top": 0.7112977159800601,
+    "second": 0.500250038175257,
+    "gap": 0.21104767780480305,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Can you tell me about the JSSK scheme and how this scheme helps mothers in our village during childbirth?",
+    "top": 0.7094535585302191,
+    "second": 0.5067596288987273,
+    "gap": 0.2026939296314918,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What are the objectives of the National Adolescent Health Programme for adolescents?",
+    "top": 0.7257952705493425,
+    "second": 0.7248117756313235,
+    "gap": 0.0009834949180189678,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "Please tell me about the \"Maternal Health Scheme\" for rural girls.",
+    "top": 0.6467309701035456,
+    "second": 0.5446586135755815,
+    "gap": 0.10207235652796409,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "As a policy advisor focused on rural infrastructure and community welfare, could you provide a detailed explanation of the objectives associated with the National Tuberculosis Elimination Program (NTEP), as mentioned in current health initiatives?",
+    "top": 0.7249663971747073,
+    "second": 0.536524217430678,
+    "gap": 0.18844217974402933,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Please tell me about the \"National Programme for Prevention and Management of Burns\" (NPPMBI).",
+    "top": 0.6390451403556356,
+    "second": 0.501009447991268,
+    "gap": 0.13803569236436763,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "How is ABHA integrated with e-Sanjivani?",
+    "top": 0.7298759131787756,
+    "second": 0.5131415514620199,
+    "gap": 0.21673436171675575,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Please explain what the Pradhan Mantri Surakshit Matritva Abhiyan is and how it benefits women and infants.",
+    "top": 0.7206387198042388,
+    "second": 0.6484411616915088,
+    "gap": 0.07219755811272999,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "Can you provide information about the \"National Deworming Day\" program for our children?",
+    "top": 0.6680993941139098,
+    "second": 0.5003999808124613,
+    "gap": 0.16769941330144855,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What are the health-related interventions available in Bihar?",
+    "top": 0.6125727161848046,
+    "second": 0.5758519537145331,
+    "gap": 0.03672076247027145,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "Is Assam included in the \"Mission Family Welfare\" scheme?",
+    "top": 0.6669823909112169,
+    "second": 0.6330675104294973,
+    "gap": 0.033914880481719645,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "What specific plans have been created for the state of Chhattisgarh under the Mission Parivar Vikas initiative?",
+    "top": 0.715064442967344,
+    "second": 0.7061881234445548,
+    "gap": 0.008876319522789111,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What are the goals of the Nikshay Poshan Yojana program with respect to Hepatitis C?",
+    "top": 0.7309380200814545,
+    "second": 0.7140331605375021,
+    "gap": 0.016904859543952377,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Can you tell me more about the National AIDS Program and the services available through it?",
+    "top": 0.7206341119649141,
+    "second": 0.5110465945520493,
+    "gap": 0.20958751741286485,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What health-related facilities are available in Raipur?",
+    "top": 0.6032703110405491,
+    "second": 0.5029428815568444,
+    "gap": 0.10032742948370466,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "Please provide information about NHM and how much money they give to TB patients.",
+    "top": 0.6958500496577638,
+    "second": 0.6811219557284333,
+    "gap": 0.014728093929330499,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Tell me about the \"Food Safety Mitra\" program for small food businesses in our village. How do these individuals help them comply with regulations?",
+    "top": 0.7276921117992365,
+    "second": 0.5006681598703829,
+    "gap": 0.2270239519288536,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What are the specific initiatives and objectives of the National Health Mission (NHM) regarding maternal and newborn health care?",
+    "top": 0.73036184306326,
+    "second": 0.7276961039110933,
+    "gap": 0.002665739152166724,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Can you provide a detailed description of the objectives and components of initiatives related to electric vehicle adoption by the Ministry of Heavy Industries (MHI)?",
+    "top": 0.729875748658069,
+    "second": 0.7183756746017738,
+    "gap": 0.011500074056295273,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Please tell me what the government did for poor people in the budget of 2015-16.",
+    "top": 0.7158380565173331,
+    "second": 0.5098389304223678,
+    "gap": 0.2059991260949653,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What benefits does the central government provide to people under this APY scheme?",
+    "top": 0.7287093375759357,
+    "second": 0.7034245993560875,
+    "gap": 0.025284738219848224,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What happens to the Atal Pension Yojana (APY) if a woman dies before the age of 60?",
+    "top": 0.7297335321623503,
+    "second": 0.7027218732281235,
+    "gap": 0.027011658934226745,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What changes were made regarding eligibility criteria for income tax payers on October 1, 2022?",
+    "top": 0.6991162453115319,
+    "second": 0.5801597021105159,
+    "gap": 0.11895654320101601,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Where can I find details of amounts based on age, pension, and contribution frequency in Annex - 1?",
+    "top": 0.7207763455423079,
+    "second": 0.5619181727616883,
+    "gap": 0.15885817278061953,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What happens if a subscriber voluntarily exits the Atal Pension Yojana (APY) scheme before the age of 60?",
+    "top": 0.7304618169013143,
+    "second": 0.7208012843360756,
+    "gap": 0.009660532565238689,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What is the page number for the Bharat Mala project program?",
+    "top": 0.5359212011735829,
+    "second": 0.5108147371790204,
+    "gap": 0.02510646399456251,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "Can you provide information about the Ministry of Rural Development and its specific programs related to rural infrastructure and employment?",
+    "top": 0.6841539124484524,
+    "second": 0.6836074901062325,
+    "gap": 0.0005464223422199099,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Please tell me about Pradhan Mantri Awas Yojana (Gramin) 2.0 and what it includes, so I can inform the women in my village.",
+    "top": 0.6126457414214658,
+    "second": 0.5609915454472175,
+    "gap": 0.05165419597424825,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "What are the schemes under the Ministry of Social Justice and Empowerment?",
+    "top": 0.7285573879679985,
+    "second": 0.7278241863742425,
+    "gap": 0.0007332015937560055,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Could you please provide information about the National Technical Textiles Mission, specifically how it relates to current initiatives of the ministry?",
+    "top": 0.7116096136217626,
+    "second": 0.6254169930326402,
+    "gap": 0.08619262058912236,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Sister, please tell me what this \"Pradhan Mantri Vanbandhu Kalyan Yojana\" is that is meant for our people, and in which book list does it appear?",
+    "top": 0.5350454376153534,
+    "second": 0.5268963422322167,
+    "gap": 0.008149095383136684,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "What is the full name of the PM-SHRI scheme?",
+    "top": 0.7123500582896464,
+    "second": 0.5053491781987036,
+    "gap": 0.20700088009094275,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Can you provide information about the content of \"Government Schemes Comprehensive: Part 2\" for women in our village?",
+    "top": 0.5533679441675549,
+    "second": 0.5403497815627444,
+    "gap": 0.01301816260481048,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "What are the copyright restrictions for content obtained from Vision IAS?",
+    "top": 0.7189824219502382,
+    "second": 0.7184802602913934,
+    "gap": 0.0005021616588447575,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What are the specific objectives and details related to the implementation of the digital health scheme by NHA for our community?",
+    "top": 0.7265766107774484,
+    "second": 0.5363105492788335,
+    "gap": 0.1902660614986149,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Can you explain the role of the Ayushman Bharat Health Account (ABHA) and its functionality within the digital health infrastructure?",
+    "top": 0.7002957650923871,
+    "second": 0.680899052011244,
+    "gap": 0.019396713081143102,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What are the specific details and incentive amounts offered by the Digital Health Incentive Scheme (DHIS) to promote digital health solutions?",
+    "top": 0.7306549144542459,
+    "second": 0.6071801146675211,
+    "gap": 0.12347479978672482,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Can you tell me about the Pradhan Mantri \u2013 Jan Arogya Yojana (PM-JAY) and what its main goals are for families in our village?",
+    "top": 0.7264337347874901,
+    "second": 0.7151488017986729,
+    "gap": 0.011284932988817165,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What are the specific objectives related to the healthcare system at the tertiary level that aim to provide better care for vulnerable populations?",
+    "top": 0.7280031150550889,
+    "second": 0.6173624592412282,
+    "gap": 0.11064065581386062,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "I would like to know how the National Health Mission (NHM) helps people in rural areas and what it does for health centers.",
+    "top": 0.657127827942157,
+    "second": 0.6482069133189383,
+    "gap": 0.008920914623218645,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "Could you please explain how the e-KYC process works as a means of ensuring transparency and accountability when verifying beneficiaries in local health programs?",
+    "top": 0.6529748079899608,
+    "second": 0.5023536457058934,
+    "gap": 0.1506211622840674,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Please provide information related to the \"Ayushman Bhava Abhiyan\" specifically for rural areas.",
+    "top": 0.6358820073377328,
+    "second": 0.5213897191812535,
+    "gap": 0.11449228815647927,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "Please tell me about this centrally sponsored scheme that is for the health of women in our village. What does this scheme do, and what is its duration?",
+    "top": 0.7234120691866409,
+    "second": 0.7163616369196333,
+    "gap": 0.007050432267007634,
+    "passed": true,
+    "recall": 0.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "How can we strengthen our community against global/local pandemics?",
+    "top": 0.6491796416301748,
+    "second": 0.5060420927410829,
+    "gap": 0.14313754888909191,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "What are the specific health benefits and quality standards for pregnant women and newborns under the Prime Minister Surakshit Matritva Abhiyan?",
+    "top": 0.7299125644684878,
+    "second": 0.6670390257876556,
+    "gap": 0.06287353868083223,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "As a community advocate, I am researching various government initiatives launched in 2013. Could you please tell me what the objective of the National Electric Mobility Mission Plan (NEMMP) was with respect to fuel security, and which specific health-related integration was implemented that year?",
+    "top": 0.7305357435266644,
+    "second": 0.6493495234827061,
+    "gap": 0.08118622004395826,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "How can women be assisted in obtaining Aadhaar cards for government programs?",
+    "top": 0.5934312180974207,
+    "second": 0.5328088815328558,
+    "gap": 0.06062233656456495,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "Why is a Project Management Unit (PMU) required for DMF projects exceeding 50 crore?",
+    "top": 0.7240017011138075,
+    "second": 0.5391607686763555,
+    "gap": 0.18484093243745192,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Why is Form 2-A required to be submitted by a beneficiary who needs to link their bank account with their Aadhaar card?",
+    "top": 0.7232119400213223,
+    "second": 0.7160912674688426,
+    "gap": 0.007120672552479723,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Which specific initiative is listed under the category of other schemes related to the \"Sustainable Action for Transforming Human Capital (SATH)\" program?",
+    "top": 0.7228390229185759,
+    "second": 0.7223605649658742,
+    "gap": 0.0004784579527017385,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Which ministry is responsible for the ' Kasturba Gandhi Balika Vidyalaya' scheme?",
+    "top": 0.7199034819711244,
+    "second": 0.7128520620803445,
+    "gap": 0.007051419890779953,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What special provisions are there for children in this scheme, and what is its main objective?",
+    "top": 0.7179189541362268,
+    "second": 0.6840118180762906,
+    "gap": 0.033907136059936116,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Hello, I am trying to help a woman from our village who wants to link her bank account to her Aadhaar card under a specific scheme. Could you please tell me which form she needs to fill out, and what she should do if she doesn't have an Aadhaar card yet?",
+    "top": 0.7210196174058776,
+    "second": 0.6896853284766182,
+    "gap": 0.03133428892925938,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "In the context of rural development initiatives, how does the Pradhan Mantri Adarsh Gram Yojana differ from previous schemes such as the Special Central Assistance Sub-Plan for Scheduled Castes and the Babu Jagjivan Ram Charitable Trust Scheme?",
+    "top": 0.7269564432757201,
+    "second": 0.6811535297547112,
+    "gap": 0.04580291352100885,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "I would like to know how many types of insurance there are and what role the State Health Agency (SHA) plays at the state level for the program.",
+    "top": 0.6858943294091745,
+    "second": 0.5067586772609944,
+    "gap": 0.17913565214818006,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "According to the Socio-Economic Caste Census 2011, how many poor families were categorized in the 'Priority One' category, and what activities do they engage in during village visits?",
+    "top": 0.7214318450704135,
+    "second": 0.5105242996501795,
+    "gap": 0.21090754542023393,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "Hello, I am trying to help some women in our village who want to avail assistance under the Pradhan Mantri Matru Vandana Yojana. Could you please tell me which departments, besides the Health Department, at the state/union territory level have the option of implementing this scheme, and what specific software is used for its monitoring as an effective tool?",
+    "top": 0.7307555350555169,
+    "second": 0.5910696132602615,
+    "gap": 0.1396859217952554,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "Can you tell me about the \"Intensified Diarrhea Control Fortnight\" (IDCF) and what kind of assistance is provided to patients under this program?",
+    "top": 0.7132793361869089,
+    "second": 0.7067515272161338,
+    "gap": 0.006527808970775095,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What are the specific qualifications required for paralegal staff who provide legal counseling at a one-stop center?",
+    "top": 0.7263596729877738,
+    "second": 0.5901214367847791,
+    "gap": 0.1362382362029947,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "If a person has a problem with the program and it doesn't get resolved within 15 days, how does MIS help them?",
+    "top": 0.7151120340275179,
+    "second": 0.5059641932508393,
+    "gap": 0.20914784077667858,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What is the purpose of the 'Employment Assurance Scheme' (EAS) for village workers?",
+    "top": 0.6786763801790464,
+    "second": 0.616210897005651,
+    "gap": 0.0624654831733954,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What are the objectives of the \"Khelo India\" National Sports Development Program?",
+    "top": 0.7308630258983198,
+    "second": 0.7308068272938135,
+    "gap": 5.6198604506230154e-05,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "How does a partnership with the Ministry of Agriculture & Farmers Welfare support sustainable agricultural practices in villages along the Ganges River?",
+    "top": 0.7304823181541832,
+    "second": 0.5674191618235258,
+    "gap": 0.16306315633065738,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What requirements must be met to be designated as a \"Lakshya Compliant Facility\"?",
+    "top": 0.7186432530226418,
+    "second": 0.5025814304800051,
+    "gap": 0.21606182254263662,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "Under the DAY-NRLM scheme, which families are categorized as Priority One (POP) based on the socioeconomic caste census?",
+    "top": 0.7034456383142669,
+    "second": 0.512993572319196,
+    "gap": 0.19045206599507092,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What specific roles do \"Nari Adalats\" (women's courts) play in addressing women's grievances at the state/union territory level, and how are \"Palna\" daycare facilities managed?",
+    "top": 0.6458027551400004,
+    "second": 0.5872324657610561,
+    "gap": 0.05857028937894426,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "As a community worker, can you explain how the integration of e-Sanjivani with the Ayushman Bharat Digital Mission helps mothers in our village, particularly by facilitating their Ayushman Bharat Health Account?",
+    "top": 0.7208270733800598,
+    "second": 0.5156528913763139,
+    "gap": 0.20517418200374593,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "hi",
+    "q": "How does the incentive structure for the production of Advanced Chemistry Cell (ACC) relate to the FAME-II scheme concerning electric vehicle incentives?",
+    "top": 0.7298704604588762,
+    "second": 0.6888726622549065,
+    "gap": 0.04099779820396965,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "hi",
+    "q": "What functions are performed by urban local bodies for rural areas, and how do they assist in initiatives like solar energy to help villages become self-reliant in terms of electricity?",
+    "top": 0.7070148424807187,
+    "second": 0.6323112475253262,
+    "gap": 0.07470359495539247,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What is the purpose of the Atal Pension Yojana for social security, and when was it launched?",
+    "top": 0.7303805649970855,
+    "second": 0.7180136022632073,
+    "gap": 0.012366962733878162,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What benefits does the central government provide to women under the APY scheme?",
+    "top": 0.714323962783997,
+    "second": 0.6023590952045952,
+    "gap": 0.11196486757940183,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What is the role of the government in the Atal Pension Yojana (APY)?",
+    "top": 0.6761535696340939,
+    "second": 0.6537020634395695,
+    "gap": 0.022451506194524407,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "From October 1, 2022, who or what will be considered ineligible for APY?",
+    "top": 0.7293295333068899,
+    "second": 0.5798306630947075,
+    "gap": 0.14949887021218233,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Where can I find information about the salaries and pensions of people in rural areas from \"Annex-1\"?",
+    "top": 0.5033782849088022,
+    "second": 0.5022680534018592,
+    "gap": 0.0011102315069430047,
+    "passed": false,
+    "recall": 0.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "If an individual wants to exit the APY (Annual Percentage Yield) scheme prematurely, what will be the government's financial impact?",
+    "top": 0.5805776080318686,
+    "second": 0.5392419806221458,
+    "gap": 0.04133562740972285,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "Could you please tell me where I can find information about the \"Ministry of Panchayati Raj\" in this book?",
+    "top": 0.5817075101211402,
+    "second": 0.5718672768483771,
+    "gap": 0.009840233272763066,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "Please provide information about the Mahatma Gandhi National Rural Employment Guarantee Act, specifically how it relates to rural development initiatives.",
+    "top": 0.7168184323776872,
+    "second": 0.7082735523931097,
+    "gap": 0.008544879984577425,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Tell me about the Deen Dayal Antyodaya Yojana - National Rural Livelihoods Mission.",
+    "top": 0.6637693886516359,
+    "second": 0.6563531149186771,
+    "gap": 0.0074162737329588335,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Tell me about the Bijon Jyoti scheme.",
+    "top": 0.533169043708891,
+    "second": 0.5106992572950277,
+    "gap": 0.022469786413863213,
+    "passed": false,
+    "recall": 0.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "What are the specific details and initiatives listed under the National Technical Textiles Mission, within the framework of the Ministry of Textiles, for rural development?",
+    "top": 0.7146868968894377,
+    "second": 0.626262678435927,
+    "gap": 0.08842421845351067,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Hello, I am trying to help women in our village learn about the various government programs available for children. Can you please provide detailed information about Mission Vatsalya?",
+    "top": 0.6983331194357026,
+    "second": 0.6489483754251663,
+    "gap": 0.049384744010536386,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What does the PM-Shree Yojana mean?",
+    "top": 0.7002837053920683,
+    "second": 0.5264000627785037,
+    "gap": 0.1738836426135646,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "I need a summary of government projects for my rural work. Can you tell me what is included in the document titled \"Government Schemes in Headlines\" and what other informative materials are available?",
+    "top": 0.7091424582234599,
+    "second": 0.5064794481824078,
+    "gap": 0.20266301004105214,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Could you please clarify the copyright restrictions regarding the distribution and reproduction of materials obtained from Vision IAS?",
+    "top": 0.6943122983890349,
+    "second": 0.694077882125464,
+    "gap": 0.0002344162635709024,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Tell me about this scheme for India.",
+    "top": 0.6190277993607315,
+    "second": 0.6092570325303988,
+    "gap": 0.009770766830332733,
+    "passed": false,
+    "recall": 0.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "Hello, I am trying to explain to the women in our village how they can access better healthcare services and teleconsultations. Can you tell me about the \"Unified Health Interface\" and what it does for them?",
+    "top": 0.6844108727222445,
+    "second": 0.5050590854251071,
+    "gap": 0.1793517872971374,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Can you explain what benefits the DHIS initiative provides for the healthcare infrastructure of our community?",
+    "top": 0.5518009634415866,
+    "second": 0.5034410847946469,
+    "gap": 0.04835987864693969,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "Please provide some information about the Pradhan Mantri - Jan Arogya Yojana (PM-JAY) for my village.",
+    "top": 0.6928335691662534,
+    "second": 0.6510862679295752,
+    "gap": 0.041747301236678136,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What specific goals have been identified for a high-level healthcare system?",
+    "top": 0.5619682131885412,
+    "second": 0.5215506375814002,
+    "gap": 0.04041757560714099,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "Could you please provide detailed information about the scope of the Pradhan Mantri Jan Arogya Yojana (PM-JAY) and the eligibility criteria for benefiting from it, especially in relation to our rural development initiatives?",
+    "top": 0.7048193024171823,
+    "second": 0.654907378299196,
+    "gap": 0.049911924117986284,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "How is an Aadhaar card used for verification?",
+    "top": 0.5159246538496095,
+    "second": 0.5133885812080787,
+    "gap": 0.0025360726415307733,
+    "passed": false,
+    "recall": 0.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "What are the specific goals and features of the \"Ayushman - Apke Dwar 3.0\" initiative to increase healthcare coverage?",
+    "top": 0.7300800347266863,
+    "second": 0.6429312171426192,
+    "gap": 0.087148817584067,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What is the CSS part of this plan?",
+    "top": 0.6274095416134957,
+    "second": 0.5588509008730809,
+    "gap": 0.06855864074041484,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "Please tell me how we can protect our village from public health emergencies and what measures are being taken to address these issues.",
+    "top": 0.5120400491887167,
+    "second": 0.5005581998275547,
+    "gap": 0.011481849361162033,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "Please provide information about the key aspects of the PMABHI schemes to raise awareness within our community.",
+    "top": 0.5312147428632971,
+    "second": 0.5202269616985469,
+    "gap": 0.010987781164750188,
+    "passed": false,
+    "recall": null,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "I want to know how many district hospitals and laboratories we have for rural areas.",
+    "top": 0.5550993963309026,
+    "second": 0.5030986370097787,
+    "gap": 0.0520007593211238,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "What are the main features and infrastructural developments currently being implemented by WHO to improve biosafety and research in the South-East Asia region?",
+    "top": 0.7299473209567165,
+    "second": 0.6243725191597091,
+    "gap": 0.1055748017970074,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What is the Central Ministry of Health and Family Welfare?",
+    "top": 0.728278063661584,
+    "second": 0.6679550366833574,
+    "gap": 0.06032302697822656,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What are the goals related to Ayush?",
+    "top": 0.7069770969032023,
+    "second": 0.5199588373587247,
+    "gap": 0.1870182595444776,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Please tell me about what happened regarding the Health Mission in 2005.",
+    "top": 0.5529163165846344,
+    "second": 0.5393165338349322,
+    "gap": 0.013599782749702194,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "How does the e-Vin system help in vaccine management?",
+    "top": 0.7114368282420344,
+    "second": 0.5004256780511431,
+    "gap": 0.21101115019089123,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Can you tell me about the JSS scheme? How does it help mothers in our village during childbirth?",
+    "top": 0.6002641119997865,
+    "second": 0.5632108459081419,
+    "gap": 0.03705326609164461,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "What is the main objective of the \"National Adolescent Health Program,\" which is designed for adolescents?",
+    "top": 0.7122130651647514,
+    "second": 0.7008847382085281,
+    "gap": 0.011328326956223211,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "Tell me about the \"maternal health scheme\" for girls in rural areas.",
+    "top": 0.6953287278409708,
+    "second": 0.55612665174001,
+    "gap": 0.1392020761009608,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "As a policy advisor focusing on rural infrastructure and social welfare, could you provide a detailed description of the objectives of the National Tuberculosis Elimination Program (NTEP) as outlined in current health initiatives?",
+    "top": 0.725501746846862,
+    "second": 0.5291634601755187,
+    "gap": 0.19633828667134323,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Tell me about the National Programme for Prevention and Management of Burns (NPPMB).",
+    "top": 0.5842679247547613,
+    "second": 0.5009121238031166,
+    "gap": 0.08335580095164474,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "How is ABHA linked with e-Sanjivani?",
+    "top": 0.7285751985216835,
+    "second": 0.5079524348303464,
+    "gap": 0.22062276369133715,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Please tell me about what the \"Pradhan Mantri Suraksha Matritva Abhiyan\" (Prime Minister Maternal and Child Health Program) is for women and children.",
+    "top": 0.6793749354022366,
+    "second": 0.6637323932836177,
+    "gap": 0.01564254211861893,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "Could you please provide me with some information about the National Deworming Day program for our children?",
+    "top": 0.6547709190939245,
+    "second": 0.5002596856850929,
+    "gap": 0.15451123340883155,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What health-related programs are available in the state of Bihar?",
+    "top": 0.5638396182192228,
+    "second": 0.5348533177230421,
+    "gap": 0.028986300496180673,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "Is Assam included in the Mission Parivar Vikas project?",
+    "top": 0.7204625208290769,
+    "second": 0.7174279037965696,
+    "gap": 0.003034617032507292,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What specific activities have been planned for the state of Chhattisgarh under the Mission Parivar Vikas initiative?",
+    "top": 0.7191777047416583,
+    "second": 0.708035162913197,
+    "gap": 0.011142541828461305,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "According to the Nikshay Poshan Yojana scheme, what is the goal for Hepatitis C cases?",
+    "top": 0.7308531186917175,
+    "second": 0.6704739440453544,
+    "gap": 0.06037917464636311,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Do you want to know about the National AIDS Program and the services it provides?",
+    "top": 0.7262908359612125,
+    "second": 0.5067263620541841,
+    "gap": 0.21956447390702838,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "How does Raipur perform in the healthcare sector?",
+    "top": 0.5720128388800003,
+    "second": 0.5005883034514235,
+    "gap": 0.07142453542857685,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "Please tell me about the National Health Mission (NHM) and how much money they provide for tuberculosis (TB) patients.",
+    "top": 0.7206347359458803,
+    "second": 0.6527525008860859,
+    "gap": 0.0678822350597944,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Please tell me what \"Food Safety Mitra\" is for the small food shops in our village, and how it helps people comply with the law.",
+    "top": 0.6986192437700017,
+    "second": 0.500419250241945,
+    "gap": 0.19819999352805673,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What are the specific initiatives and objectives related to maternal and newborn health services under the National Health Mission (NHM)?",
+    "top": 0.7301603690139944,
+    "second": 0.7282812837149365,
+    "gap": 0.0018790852990578921,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Could you provide a detailed description of the objectives and components of the initiatives related to the promotion of electric vehicles by the Ministry of Heavy Industries (MHI)?",
+    "top": 0.7298838806060276,
+    "second": 0.7278644124954068,
+    "gap": 0.0020194681106208145,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "According to the budget of 2015-16, what steps did the government take for the poor?",
+    "top": 0.7226039077522651,
+    "second": 0.5047441405482782,
+    "gap": 0.21785976720398692,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What benefits are available to the general public through this APY (Atal Pension Yojana) system, as provided by the central government?",
+    "top": 0.7208111083346916,
+    "second": 0.6860106096495289,
+    "gap": 0.03480049868516277,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What happens to a woman's APY if she dies before the age of 60?",
+    "top": 0.7212949686732365,
+    "second": 0.6884298652488158,
+    "gap": 0.03286510342442073,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What changes were made for income tax payers on October 1, 2022?",
+    "top": 0.6820268054264437,
+    "second": 0.6572462132796223,
+    "gap": 0.02478059214682138,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Where can I find detailed information in Annex-1 regarding amounts based on age, pension, and contribution frequency?",
+    "top": 0.7198259900453852,
+    "second": 0.6061739614649194,
+    "gap": 0.11365202858046575,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What happens if a customer voluntarily exits the APY scheme before reaching the age of 60?",
+    "top": 0.7295540958645688,
+    "second": 0.7191072299448401,
+    "gap": 0.010446865919728654,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What is the page number for the Bharat Mala project program?",
+    "top": 0.5359212011735829,
+    "second": 0.5108147371790204,
+    "gap": 0.02510646399456251,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "Can you provide detailed information about the Ministry of Rural Development and its specific programs related to rural infrastructure and employment?",
+    "top": 0.6917296922969596,
+    "second": 0.6799442610153136,
+    "gap": 0.011785431281645997,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Please provide some information about the Pradhan Mantri Awas Yojana (Gramin) 2.0 for the women in my village. What benefits does it offer?",
+    "top": 0.6226973699394224,
+    "second": 0.579850673321341,
+    "gap": 0.04284669661808138,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "What projects are under the Ministry of Social Welfare and Empowerment?",
+    "top": 0.637660655341771,
+    "second": 0.5884763499284338,
+    "gap": 0.04918430541333718,
+    "passed": false,
+    "recall": 0.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "Please provide information about the National Technical Textiles Mission, specifically how it relates to the current ministry's initiatives.",
+    "top": 0.7105696378102682,
+    "second": 0.6322178554796221,
+    "gap": 0.0783517823306461,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Sister, please tell me what this \"Prime Minister Bangabandhu Kalyan Yojana\" is for the people and where it is listed in the syllabus.",
+    "top": 0.514526480100004,
+    "second": 0.513875361308159,
+    "gap": 0.0006511187918449846,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "What is the full name of the PM-Shree Yojana project?",
+    "top": 0.6821742108946642,
+    "second": 0.5909443256451837,
+    "gap": 0.0912298852494805,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Can you provide some information about the \"Government Schemes Comprehensive: Part 2\" program for women in our village?",
+    "top": 0.6046850645968495,
+    "second": 0.5517478686561633,
+    "gap": 0.05293719594068613,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "What are the copyright restrictions for materials obtained from Vision IAS?",
+    "top": 0.7193914588744159,
+    "second": 0.7190350585577361,
+    "gap": 0.00035640031667982797,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What are the specific objectives and detailed descriptions of the digital health project being implemented by NHA for our community?",
+    "top": 0.7160420904754476,
+    "second": 0.5570784048623195,
+    "gap": 0.15896368561312813,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "Can you explain the role of the \"Health Account\" (Ayushman Bharat Health Account - ABHA) and its functionality within the digital health infrastructure?",
+    "top": 0.6944678918920456,
+    "second": 0.6494167409648253,
+    "gap": 0.04505115092722034,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What specific details and incentives does the Digital Health Incentive Scheme (DHIS) provide to promote digital health solutions?",
+    "top": 0.73005875066198,
+    "second": 0.6199422706763505,
+    "gap": 0.11011647998562946,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Can you tell me about the \"Pradhan Mantri \u2013 Jan Arogya Yojana\" (PM-JAY) and what are the main objectives of this scheme for families in our village?",
+    "top": 0.729508828126527,
+    "second": 0.7235103176865524,
+    "gap": 0.005998510439974569,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What specific goals are there for improving the quality of services for vulnerable populations within a high-level healthcare system?",
+    "top": 0.6974504784962212,
+    "second": 0.5598043592430184,
+    "gap": 0.1376461192532028,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "I would like to know how the National Health Mission (NHM) helps people in rural areas and what it does for health centers.",
+    "top": 0.657127827942157,
+    "second": 0.6482069133189383,
+    "gap": 0.008920914623218645,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "Please explain how the e-KYC process can serve as a means of ensuring transparency and accountability when verifying beneficiaries in our local healthcare programs.",
+    "top": 0.6306319127356932,
+    "second": 0.5011320302012447,
+    "gap": 0.12949988253444844,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "Please provide some information about the \"Ayushman Bhavan Abhiyan\" for rural areas.",
+    "top": 0.6869408434015322,
+    "second": 0.5195808652191808,
+    "gap": 0.16735997818235138,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What is this centrally sponsored scheme for the health of women in our village, what does it do, and how long will it run?",
+    "top": 0.7174639833071755,
+    "second": 0.7071668331299135,
+    "gap": 0.010297150177262071,
+    "passed": true,
+    "recall": 0.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "How can we protect our community from global/local pandemics?",
+    "top": 0.5471222649862469,
+    "second": 0.500738679650666,
+    "gap": 0.04638358533558096,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "What are the specific healthcare services and quality standards for pregnant women and newborns under the Pradhan Mantri Surakshit Matritva Abhiyan scheme?",
+    "top": 0.7301828810506148,
+    "second": 0.6893419451855465,
+    "gap": 0.04084093586506832,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "As a social worker, I am working with various government initiatives launched in 2013. Could you please explain the goals of the National Electric Mobility Mission Plan (NEMMP), particularly what it aimed to achieve regarding energy security, and also what health-related programs were included in that same year?",
+    "top": 0.7303500695400621,
+    "second": 0.6614595319336148,
+    "gap": 0.06889053760644726,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "How can we help women obtain Aadhaar cards for government schemes?",
+    "top": 0.5830160660992106,
+    "second": 0.5785380712711181,
+    "gap": 0.004477994828092524,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "What is the necessity of having a Project Management Unit (PMU) in DMF projects with a value exceeding 50 crore rupees?",
+    "top": 0.7264914758395914,
+    "second": 0.5267568324039684,
+    "gap": 0.19973464343562297,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What is the purpose of submitting Form 2 for a beneficiary who wants to link their bank account with their Aadhaar card?",
+    "top": 0.7233418427019784,
+    "second": 0.718345225285736,
+    "gap": 0.004996617416242466,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "Are there any specific initiatives listed among the other schemes associated with the Sustainable Action for Transforming Human Capital (SATH) program?",
+    "top": 0.7294896564082093,
+    "second": 0.7293001868259933,
+    "gap": 0.0001894695822159953,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Which ministry is responsible for the scheme at Kasturba Gandhi Balika Vidyalaya?",
+    "top": 0.7237778129424308,
+    "second": 0.7155162496274274,
+    "gap": 0.008261563315003384,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What special provisions are there for children under this scheme, and what are its main objectives?",
+    "top": 0.7175050375712647,
+    "second": 0.6896108125195172,
+    "gap": 0.027894225051747545,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "Hello, I am trying to help a woman from our village who wants to link her bank account to her Aadhaar card for the \"\u09b8\u09cd\u0995\u09bf\u09ae\" scheme. Could you please tell me which form she needs to fill out, and what should she do if she doesn't have an Aadhaar card yet?",
+    "top": 0.7097597718673121,
+    "second": 0.6453024030817239,
+    "gap": 0.06445736878558816,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "In the context of rural development initiatives, how does the Pradhan Mantri Adarsh Gram Yojana compare to previous projects, such as the Special Central Assistance for Scheduled Tribe Sub-Plan and the Babu Jagjivan Ram Charitable Trust Project?",
+    "top": 0.7289327630630765,
+    "second": 0.6870122105152443,
+    "gap": 0.041920552547832224,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "I would like to know about the various options available in insurance and what role the State Health Agency (SHA) will play when it is involved with a program at the state level.",
+    "top": 0.6877116076099202,
+    "second": 0.5139224907625309,
+    "gap": 0.1737891168473893,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "According to the Socio-Economic Caste Census 2011, how many poor families have been included in the \"Priority One\" list, and what activities do they undertake during village visits?",
+    "top": 0.7268849073689438,
+    "second": 0.5140773422716378,
+    "gap": 0.21280756509730603,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "Hello, I am trying to help some women in our village who are interested in receiving assistance under the Prime Minister Matru Vandana Yojana scheme. Besides the Health Department, which other departments at the state/central government level have the opportunity to implement this project? And what specific software is used for monitoring it?",
+    "top": 0.730083264831697,
+    "second": 0.5623538767816932,
+    "gap": 0.1677293880500038,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Can you tell me about the \"Intensified Diarrhea Control Fortnight\" (IDCF) and what kind of support is provided to patients under this program?",
+    "top": 0.7131556784896276,
+    "second": 0.6994179863058532,
+    "gap": 0.013737692183774408,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What specific qualifications are required for para legal staff working at a One Stop Center to provide legal advice?",
+    "top": 0.7275352802362508,
+    "second": 0.5888259033425342,
+    "gap": 0.13870937689371665,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "If a user encounters a problem with their program and it remains unresolved for 15 days, how will the MIS system assist them?",
+    "top": 0.6688524580451972,
+    "second": 0.5019170469962944,
+    "gap": 0.16693541104890286,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What is the purpose of the Employment Assurance Scheme (EAS) for rural workers?",
+    "top": 0.6782592663619063,
+    "second": 0.6598023074533136,
+    "gap": 0.01845695890859267,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What are the objectives of Khelo India - National Sports Development Programme?",
+    "top": 0.7309821757118947,
+    "second": 0.7309561306563948,
+    "gap": 2.604505549996805e-05,
+    "passed": true,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "How does partnership with the Ministry of Agriculture and Farmers' Welfare support the promotion of sustainable agricultural practices in villages within the Ganga region?",
+    "top": 0.7304206236591582,
+    "second": 0.5442117683623308,
+    "gap": 0.1862088552968274,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What conditions must a health center fulfill to receive accreditation under the LaQshya program?",
+    "top": 0.5247273858643807,
+    "second": 0.5010453995683826,
+    "gap": 0.02368198629599816,
+    "passed": false,
+    "recall": 1.0,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "According to the socio-economic caste census, who are the families prioritized under Priority 1 (POP) as per the DAY-NRLM scheme?",
+    "top": 0.6917380173357762,
+    "second": 0.5473547563509478,
+    "gap": 0.14438326098482845,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "What are the specific roles of state/union territory governments in implementing \"Women's Courts\" for resolving complaints against women and in managing \"Palna\" daycare centers?",
+    "top": 0.5621788555372957,
+    "second": 0.5429897194490031,
+    "gap": 0.019189136088292646,
+    "passed": false,
+    "recall": 0.75,
+    "answered": false
+  },
+  {
+    "lang": "bn",
+    "q": "As a social worker, can you explain how integrating e-Sanjivani with the Ayushman Bharat Digital Mission helps mothers in our village, especially in creating their Ayushman Bharat Health Accounts?",
+    "top": 0.7214607485660803,
+    "second": 0.5145105465092867,
+    "gap": 0.2069502020567936,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "How does the Advanced Chemistry Cell (ACC) production incentive framework relate to the FAME-II scheme regarding incentives for electric vehicles?",
+    "top": 0.7297362241353117,
+    "second": 0.7018703134219589,
+    "gap": 0.02786591071335276,
+    "passed": true,
+    "recall": 1.0,
+    "answered": true
+  },
+  {
+    "lang": "bn",
+    "q": "Please provide information about what urban local organizations do for rural areas and how they use solar power to help villages become self-sufficient in terms of electricity.",
+    "top": 0.7120555147338152,
+    "second": 0.5322704718141271,
+    "gap": 0.1797850429196881,
+    "passed": true,
+    "recall": 0.5,
+    "answered": true
+  }
+]

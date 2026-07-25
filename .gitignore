@@ -52,8 +52,12 @@ logs/
 *.png
 output/
 reports/
-/data/
+/data/*
 /docs/
+
+# ...but keep the RAGAS evaluation artifacts (testset + reports) tracked
+!/data/eval/
+!/data/eval/reports/
 # OS
 .DS_Store
 .DS_Store?
