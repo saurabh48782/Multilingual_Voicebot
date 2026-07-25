@@ -8,6 +8,7 @@ response is treated as ungrounded rather than waving the answer through.
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Callable
 from typing import Any
 
@@ -28,17 +29,57 @@ from src.utils.logger import get_logger
 logger = get_logger(__name__)
 
 
+_THINK_TAGS = re.compile(r"<\|?think\|?>.*?</\|?think\|?>", re.DOTALL | re.IGNORECASE)
+
+
 class GroundednessVerdict(BaseModel):
     grounded: bool
     reasoning: str = ""
+
+
+def _strip_thinking(content: str) -> str:
+    return _THINK_TAGS.sub("", content).strip()
+
+
+def _parse_json_object(content: str) -> Any:
+    """Parse a JSON object even if the model wrapped it in extra text."""
+    content = _strip_thinking(content)
+    try:
+        return parse_json_markdown(content, parser=json.loads)
+    except json.JSONDecodeError as original_error:
+        decoder = json.JSONDecoder()
+        candidates: list[dict[str, Any]] = []
+        for index, char in enumerate(content):
+            if char != "{":
+                continue
+            try:
+                data, _ = decoder.raw_decode(content[index:])
+            except json.JSONDecodeError:
+                continue
+            if isinstance(data, dict):
+                candidates.append(data)
+
+        if candidates:
+            # If the model rambles before the answer, the final valid object is
+            # most likely the actual verdict rather than an example/schema echo.
+            return candidates[-1]
+        raise original_error
+
+
+def _preview(content: Any, limit: int = 240) -> str:
+    text = "" if content is None else str(content)
+    text = text.replace("\n", "\\n")
+    if len(text) <= limit:
+        return text
+    return f"{text[:limit]}..."
 
 
 def parse_verdict(content: str) -> bool:
     """Parse the verifier's JSON verdict. Raises on anything malformed -
     callers must treat that as ungrounded (fail closed).
     """
-    data = parse_json_markdown(content.strip(), parser=json.loads)
-    return GroundednessVerdict.model_validate(data).grounded
+    data = _parse_json_object(content)
+    return bool(GroundednessVerdict.model_validate(data).grounded)
 
 
 def make_verify_groundedness(deps: Deps) -> Callable[[VoicebotState], dict[str, Any]]:
@@ -72,11 +113,21 @@ def make_verify_groundedness(deps: Deps) -> Callable[[VoicebotState], dict[str, 
                 json_mode=True,
                 temperature=0.0,  # deterministic safety gate
             )
-            grounded = parse_verdict(resp.content)
         except Exception:
-            logger.exception("Groundedness verifier failed - failing closed")
+            logger.exception("Groundedness verifier call failed - failing closed")
             grounded = False
             reason = "verifier_error"
+        else:
+            try:
+                grounded = parse_verdict(resp.content)
+            except Exception as exc:
+                logger.warning(
+                    "Groundedness verifier returned unparseable verdict - failing closed",
+                    error=f"{type(exc).__name__}: {exc}",
+                    response_preview=_preview(resp.content),
+                )
+                grounded = False
+                reason = "verifier_error"
 
         if not grounded:
             return {

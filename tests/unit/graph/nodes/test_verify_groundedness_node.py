@@ -41,6 +41,13 @@ def _node(
         ('{"grounded": false, "reasoning": "claim not in context"}', False),
         ('```json\n{"grounded": true}\n```', True),
         ('```\n{"grounded": false}\n```', False),
+        ('<think>checking each claim</think>\n{"grounded": true}', True),
+        ('Verdict:\n{"grounded": false, "reasoning": "unsupported"}\nDone.', False),
+        (
+            'Example: {"grounded": false, "reasoning": "schema"}\n'
+            'Final: {"grounded": true, "reasoning": "supported"}',
+            True,
+        ),
     ],
     ids=[
         "true",
@@ -49,6 +56,9 @@ def _node(
         "false-with-reasoning",
         "json-fenced",
         "plain-fenced",
+        "thinking-prefix",
+        "text-wrapped",
+        "uses-final-json-object",
     ],
 )
 def test_parse_verdict_valid_json(content: str, expected: bool) -> None:

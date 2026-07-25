@@ -21,11 +21,17 @@ vernacular language.
     - [Running the Dev Server](#running-the-dev-server)
     - [Running Tests](#running-tests)
     - [Developer Commands](#developer-commands)
-  - [7. CI/CD](#7-cicd)
+  - [7. Evaluation](#7-evaluation)
+    - [How the pipeline is measured](#how-the-pipeline-is-measured)
+    - [The metrics](#the-metrics)
+    - [Latest results](#latest-results)
+    - [Running an evaluation](#running-an-evaluation)
+    - [How to read these numbers](#how-to-read-these-numbers)
+  - [8. CI/CD](#8-cicd)
     - [Docker Build Targets](#docker-build-targets)
     - [Pipeline Flow](#pipeline-flow)
     - [What Each Stage Validates](#what-each-stage-validates)
-  - [8. Project Structure](#8-project-structure)
+  - [9. Project Structure](#9-project-structure)
 
 ## 1. Project Overview
 
@@ -221,7 +227,133 @@ Pre-commit hooks (`ruff`, `mypy`, `bandit`, `detect-secrets`, `hadolint`) run
 automatically on commit once installed (`uv run pre-commit install`); run them
 across the tree with `./scripts/precommit_check.sh`.
 
-## 7. CI/CD
+## 7. Evaluation
+
+Retrieval and generation quality are measured offline with
+[RAGAS](https://docs.ragas.io/). The harness lives in `src/evaluation/` and is
+internal-only -- no HTTP surface, never imported from the request path. It runs
+entirely against the local Ollama server, so there is no hosted judge and no API
+key involved.
+
+**[`src/evaluation/README.md`](src/evaluation/README.md) is the design doc** --
+per-metric formulas, judge configuration rationale, and known limitations.
+
+### How the pipeline is measured
+
+Two phases, deliberately separated:
+
+1. **`generate`** -- synthesizes a testset *once* from the already-ingested index
+   (`metadata.parquet`, not the raw PDFs, so every question is answerable from
+   text the retriever can actually return). RAGAS builds a knowledge graph over
+   the chunks and emits questions + reference answers. Questions are synthesized
+   in English and machine-translated to `hi`/`bn`, so all three languages share
+   one semantic testset -- a vernacular score gap is attributable to the
+   translation + retrieval path, not to different questions.
+2. **`run`** -- replays the *real* production retrieval + generation path over
+   that fixed testset (same prompts, same confidence gate, same reranker, same
+   `INSUFFICIENT_CONTEXT` refusal behaviour) and has the judge score the output.
+   Because the testset is a committed artifact, scores are comparable across
+   retrieval and prompt changes.
+
+The judge is `gemma4:12b` on Ollama with `temperature=0.0` and `format=json`;
+embeddings are the same `multilingual-e5-large` model the index is built with, so
+similarity metrics are measured in the index's own embedding space.
+
+### The metrics
+
+All scored 0.0--1.0, higher is better.
+
+| Metric | Question it answers | Denominator |
+|---|---|---|
+| `context_precision` | Are the *useful* chunks ranked first? (rank-aware average precision) | all rows |
+| `context_recall` | Did retrieval bring back every claim the reference answer needs? | all rows |
+| `faithfulness` | Is every statement in the answer inferable from the retrieved context? (the hallucination metric) | answered rows |
+| `answer_relevancy` | Does the answer actually address the question, without hedging or drift? | answered rows |
+| `answer_correctness` | Composite: `0.75 × claim-F1 + 0.25 × answer_similarity` | answered rows |
+| `answer_similarity` | Embedding cosine vs. the reference answer (no LLM) | answered rows |
+| `answered_rate` | Fraction of rows that produced a grounded answer rather than a refusal | all rows |
+
+Answer-quality metrics are averaged over **answered rows only**. An empty
+fallback is a *non-answer*, not a wrong answer; folding refusals in conflates two
+independent axes (it dragged `answer_correctness` from 0.74 to 0.56 on one run).
+`answered_rate` is therefore a first-class metric with its own threshold -- a bot
+that refuses everything would otherwise score perfectly.
+
+### Latest results
+
+100-row testset, all three languages, judged 2026-07-22
+(`data/eval/reports/report-20260722T230459Z.json`; `retrieval_threshold=0.55`,
+`retrieval_gap_threshold=0.03`, generator and judge both `gemma4:12b`).
+
+| Metric | Threshold | en | hi | bn |
+|---|---|---|---|---|
+| `context_precision` | 0.70 | **0.908** | 0.858 | 0.853 |
+| `context_recall` | 0.70 | **0.970** | 0.943 | 0.923 |
+| `faithfulness` | 0.80 | **0.996** | 0.994 | 0.989 |
+| `answer_relevancy` | 0.75 | **0.892** | 0.889 | 0.887 |
+| `answer_correctness` | 0.60 | **0.738** | 0.747 | 0.738 |
+| `answer_similarity` | -- | **0.951** | 0.947 | 0.952 |
+| `answered_rate` | 0.70 | **0.84** | 0.79 | 0.74 |
+
+Every metric clears its threshold in all three languages. The visible pattern is
+the expected one: quality metrics are near-flat across languages (the pipeline
+translates to English before retrieving and generating), while **coverage**
+degrades down the language ladder -- 0.84 → 0.79 → 0.74 -- because translation
+noise in the vernacular query costs retrieval confidence and trips the gate more
+often. `context_precision` shows the same ~5-point vernacular drop for the same
+reason.
+
+Wall-clock for the full 300-row (100 × 3 languages) run was ~11.5 h on a single
+24 GB GPU co-hosting the RAG, STT and TTS models; the run is dominated by
+serialized Ollama judge calls, not by retrieval.
+
+### Running an evaluation
+
+```bash
+uv run python -m src.evaluation generate                  # synth testset -> data/eval/testset.jsonl
+uv run python -m src.evaluation generate --size 30 --languages en,hi
+uv run python -m src.evaluation run                       # score all languages from params.yaml
+uv run python -m src.evaluation run --languages en --sample-size 10
+uv run pytest -m eval                                     # regression gate (manual)
+```
+
+Prerequisites: an ingested corpus (`data/index/metadata.parquet`) and a running
+Ollama with `evaluation.judge_model`, `llm.model` and `translation.ollama_model`
+pulled. All tuning -- judge options, metric list, thresholds, sampling -- lives
+under `evaluation:` in `params.yaml`. Reports land in `data/eval/reports/` with
+per-language aggregates, every per-row score, and a `config_snapshot` so an old
+report stays interpretable after config drift.
+
+`tests/integration/test_ragas_regression.py` asserts the thresholds against a
+fresh English-only run. It is marked `eval` and excluded from the default
+`pytest` invocation (`addopts = "-m 'not eval'"`) -- it needs a live Ollama and
+burns hundreds of local LLM calls, so it is run deliberately, not in CI.
+
+### How to read these numbers
+
+Points an external reviewer should weigh:
+
+- **The judge shares a model family with the generator.** A same-family judge
+  tends to rate the generator's own hallucinations as faithful, so
+  `faithfulness` (0.99) is optimistic and should be read as "no gross
+  ungrounded output" rather than a precise figure. The harness logs a warning
+  when `judge_model == llm.model`. The constraint is GPU budget, not preference
+  -- see the README's judge section for the alternatives that were tried.
+- **Reference answers are LLM-synthesized**, so exact claim overlap is noisy.
+  That is why `answer_correctness` carries the lowest quality floor (0.60)
+  despite being the closest single number to "was the citizen served correctly".
+- **`answer_similarity` is a smoke signal, not correctness.** It is pure cosine:
+  a fluent answer that inverts one eligibility number still scores high. It
+  intentionally carries no threshold.
+- **Read `answered_rate` first.** Quality metrics exclude refusals by design, so
+  they are only meaningful next to coverage.
+- **`hi`/`bn` scores fold in translation quality.** There is no ablation that
+  isolates retrieval from translation.
+- **Thresholds are floors we intend to hold, not measured baselines**, and scores
+  are not comparable across testset regenerations -- regenerate deliberately and
+  keep the old report for the diff.
+
+## 8. CI/CD
 
 ### Docker Build Targets
 
@@ -271,7 +403,7 @@ runtime dependencies -- no dev tools or test frameworks are included.
 - **Integration tests**: Tavern YAML flows driving a live stubbed API server
   (booted by the test conftest) to exercise the router + graph wiring end to end.
 
-## 8. Project Structure
+## 9. Project Structure
 
 ```
 ├── src/

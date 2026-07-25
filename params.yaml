@@ -38,7 +38,7 @@ translation:
 rag:
   embedding_model: "intfloat/multilingual-e5-large"
   reranker_model: "BAAI/bge-reranker-v2-m3"
-  retrieval_threshold: 0.65
+  retrieval_threshold: 0.55
   retrieval_gap_threshold: 0.03
   top_k: 5
   retrieval:
@@ -78,28 +78,35 @@ audio:
   cache_ttl_seconds: 3600
   cache_max_files: 1000
 
+# Rationale for every choice here lives in src/evaluation/README.md.
 evaluation:
-  # Decorrelate the judge from the generator: ideally a DIFFERENT model family
-  # than llm.model so the judge doesn't share the generator's failure modes
-  # (a hallucination the generator makes, a same-family judge tends to rate as
-  # faithful). ragas_eval warns when this equals llm.model. GPU budget is
-  # committed to Gemma by default, so this stays gemma4:12b until a second
-  # family can be co-hosted; override to e.g. qwen2.5:14b when it can.
-  judge_model: "gemma4:12b"          # Ollama judge (shares llm.ollama_base_url)
+  judge_model: "gemma4:12b"          # Ollama eval LLM (shares llm.ollama_base_url)
   embedding_model: "intfloat/multilingual-e5-large"
   judge_temperature: 0.0
-  # Eval generation mirrors the production `generate` node (temp 0.3 + native
-  # thinking when llm.think_on_generate) so reported metrics reflect real traffic.
+  judge_num_predict: 2048
+  judge_reasoning: false             # reasoning judge returns empty content -> invalid JSON
+  judge_num_ctx: 8192                # falls back to llm.num_ctx
   sample_strategy: "random"          # "random" | "head" — how --sample-size picks rows
   sample_seed: 42
+  run_config:                        # metrics phase (ragas.evaluate)
+    timeout: 300                     # per-metric-call timeout (s)
+    max_retries: 10                  # retries on a failed/parse judge call
+    max_wait: 60                     # max backoff between retries (s)
+    max_workers: 4
   testset:
     path: "data/eval/testset.jsonl"
-    size: 50
+    size: 100
     languages: ["en", "hi", "bn"]    # synthesize Qs in English then translate to vernaculars
     query_distribution:
       simple: 0.5
       reasoning: 0.25
       multi_context: 0.25
+    run_config:                        # testset-generation phase (TestsetGenerator)
+      timeout: 300
+      max_retries: 10
+      max_wait: 60
+      max_workers: 4
+      raise_exceptions: false          # skip+log an unrecoverable node instead of aborting the run
   metrics:
     - context_precision
     - context_recall

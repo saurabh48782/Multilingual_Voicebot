@@ -43,6 +43,7 @@ dependencies = [
     "langchain-ollama>=0.2.0",
     "ragas>=0.2.0",
     "tqdm>=4.67.3",
+    "rapidfuzz>=3.14.5",
 ]
 
 [dependency-groups]
