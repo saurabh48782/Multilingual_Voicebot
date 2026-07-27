@@ -17,6 +17,7 @@ from typing import Any
 from tqdm import tqdm
 
 from src.evaluation.adapters import ragas_embeddings_wrapper, ragas_llm_wrapper
+from src.evaluation.pretranslate import load_translation_cache
 from src.graph.prompts import (
     GENERATE_PROMPT,
     GENERATE_SYSTEM,
@@ -107,6 +108,7 @@ def _run_pipeline_per_row(
     retriever: Retriever,
     llm: OllamaLLM,
     translator: OllamaTranslator | None,
+    translation_cache: dict[tuple[str, str], str] | None = None,
 ) -> list[EvalRow]:
     """Execute retrieve+generate for each testset row in the requested language.
 
@@ -125,13 +127,23 @@ def _run_pipeline_per_row(
                 logger.debug("row missing %s translation, skipping", language)
                 continue
             question_vernac = translations[language]["question"]
-            if translator is None:
-                raise RuntimeError("translator required for vernacular eval")
-            try:
-                question_en = translator.to_english(question_vernac, language).text
-            except Exception:
-                logger.warning("row translation failed (%s) - skipping row", language)
-                continue
+            cached = (translation_cache or {}).get((language, question_vernac))
+            if cached is not None:
+                question_en = cached
+            else:
+                if translator is None:
+                    if translation_cache is not None:
+                        logger.warning(
+                            "translation cache miss (%s) and no live translator - skipping row",
+                            language,
+                        )
+                        continue
+                    raise RuntimeError("translator required for vernacular eval")
+                try:
+                    question_en = translator.to_english(question_vernac, language).text
+                except Exception:
+                    logger.warning("row translation failed (%s) - skipping row", language)
+                    continue
 
         result = retriever.search(question_en)
         contexts = [d.text_en for d in result.docs]
@@ -181,6 +193,8 @@ def evaluate_testset(
     sample_size: int | None = None,
     languages: list[str] | None = None,
     output_dir: str | Path | None = None,
+    translation_model: str | None = None,
+    translation_cache: str | Path | None = None,
 ) -> dict[str, Any]:
     """Run RAGAS evaluation and write a JSON+CSV report.
 
@@ -217,8 +231,18 @@ def evaluate_testset(
 
     retriever = Retriever.load()
     llm = OllamaLLM()
+    # Eval-time (vernacular -> English) translator only. The English -> vernacular
+    # leg is baked into the testset at generate time, so overriding this ablates
+    # one leg while leaving the testset byte-identical. See README.
+    translation_model = (
+        translation_model or eval_cfg.get("translation_model") or cfg["translation"]["ollama_model"]
+    )
+    # A cache (see pretranslate.py) lets a large translation model run in its own
+    # pass, so it is never co-resident with the RAG + generation models on one GPU.
+    cache = load_translation_cache(translation_cache) if translation_cache else None
+    needs_translator = any(lng in SUPPORTED_VERNACULARS for lng in languages)
     translator = (
-        OllamaTranslator() if any(lng in SUPPORTED_VERNACULARS for lng in languages) else None
+        OllamaTranslator(model=translation_model) if needs_translator and not cache else None
     )
 
     judge = ragas_llm_wrapper()
@@ -247,6 +271,7 @@ def evaluate_testset(
             retriever=retriever,
             llm=llm,
             translator=translator,
+            translation_cache=cache,
         )
         if not eval_rows:
             logger.warning("no evaluable rows for language=%s - skipping", language)
@@ -301,6 +326,8 @@ def evaluate_testset(
         "config_snapshot": {
             "judge_model": eval_cfg["judge_model"],
             "llm_model": cfg["llm"]["model"],
+            "translation_model": translation_model,
+            "translation_cache": str(translation_cache) if translation_cache else None,
             "embedding_model": eval_cfg["embedding_model"],
             "retrieval_threshold": cfg["rag"]["retrieval_threshold"],
             "retrieval_gap_threshold": cfg["rag"]["retrieval_gap_threshold"],

@@ -16,7 +16,10 @@ over HTTP. The conflicting pin lives only in this image - `pyproject.toml` /
 | Method | Path | Body | Returns |
 |---|---|---|---|
 | `GET` | `/healthz` | – | `{"status":"ok","model_loaded":bool}` |
-| `POST` | `/tts` | `{"text": str, "description": str?}` | `audio/wav` bytes |
+| `POST` | `/tts` | `{"text": str, "description": str?, "language": str?}` | `audio/wav` bytes |
+
+`language` (`hi`/`bn`/`en`) only selects the language numerals are spelled out
+in; the voice comes from `description`. Omit it and the text's script is used.
 
 The 0.9B model loads lazily on the first `/tts` request into **page-locked CPU
 RAM** - it is *not* pinned to the GPU for the container's lifetime.

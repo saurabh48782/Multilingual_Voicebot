@@ -10,6 +10,8 @@ is free for the co-hosted Ollama LLM / TTS sidecar between calls. See _GpuSwap.
 from __future__ import annotations
 
 import os
+import shutil
+import subprocess
 import tempfile
 import threading
 from collections.abc import Iterator
@@ -94,12 +96,57 @@ class Transcriber:
             self._model, self._device = model, device
             self._swap = _GpuSwap(model, device)
 
+    @staticmethod
+    def _decode_with_ffmpeg(path: str) -> Any:
+        """Decode any container/codec ffmpeg understands to 16 kHz mono float32.
+
+        Needed because torchaudio only registers the `soundfile` backend here
+        (libsndfile reads wav/flac/ogg but not webm/opus or mp4/aac, which is
+        what browser MediaRecorder produces), and torchaudio 2.4's own ffmpeg
+        backend refuses the image's ffmpeg 7 (it supports 4-6 only). The ffmpeg
+        CLI is installed in the image, so shell out to it instead.
+        """
+        ffmpeg_path = shutil.which("ffmpeg")
+        if not ffmpeg_path:
+            msg = "ffmpeg not found in PATH"
+            raise RuntimeError(msg)
+        proc = subprocess.run(  # noqa: S603
+            [
+                ffmpeg_path,
+                "-hide_banner",
+                "-loglevel",
+                "error",
+                "-i",
+                path,
+                "-f",
+                "f32le",  # raw little-endian float32 samples on stdout
+                "-ac",
+                "1",  # downmix to mono
+                "-ar",
+                str(TARGET_SR),  # resample to the model's rate
+                "-",
+            ],
+            capture_output=True,
+            check=False,
+        )
+        if proc.returncode != 0 or not proc.stdout:
+            detail = proc.stderr.decode("utf-8", "replace").strip()[-500:]
+            msg = f"ffmpeg could not decode the uploaded audio: {detail}"
+            raise ValueError(msg)
+        samples = torch.frombuffer(bytearray(proc.stdout), dtype=torch.float32)
+        return samples.unsqueeze(0)  # (1, num_samples)
+
     def _load_waveform(self, audio: bytes) -> Any:
         with tempfile.NamedTemporaryFile(suffix="", delete=False) as f:
             f.write(audio)
             path = f.name
         try:
-            wav, sr = torchaudio.load(path)
+            try:
+                wav, sr = torchaudio.load(path)
+            except Exception:
+                # Compressed browser upload (webm/opus, mp4/aac, ...) - libsndfile
+                # can't read it. ffmpeg already returns mono at TARGET_SR.
+                return self._decode_with_ffmpeg(path)
         finally:
             if os.path.exists(path):
                 os.unlink(path)

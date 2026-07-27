@@ -112,6 +112,7 @@ def make_verify_groundedness(deps: Deps) -> Callable[[VoicebotState], dict[str, 
                 model=cfg["llm"].get("verifier_model"),
                 json_mode=True,
                 temperature=0.0,  # deterministic safety gate
+                num_ctx=cfg["llm"].get("verifier_num_ctx") or cfg["llm"].get("num_ctx"),
             )
         except Exception:
             logger.exception("Groundedness verifier call failed - failing closed")

@@ -32,6 +32,20 @@ def _cmd_generate(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_pretranslate(args: argparse.Namespace) -> int:
+    from src.evaluation.pretranslate import pretranslate_testset
+
+    languages = args.languages.split(",") if args.languages else None
+    path = pretranslate_testset(
+        testset_path=args.testset,
+        languages=languages,
+        model=args.translation_model,
+        output_path=args.output,
+    )
+    print(f"translation cache → {path}")
+    return 0
+
+
 def _cmd_run(args: argparse.Namespace) -> int:
     from src.evaluation.ragas_eval import evaluate_testset
 
@@ -43,6 +57,8 @@ def _cmd_run(args: argparse.Namespace) -> int:
         sample_size=args.sample_size,
         languages=languages,
         output_dir=args.output_dir,
+        translation_model=args.translation_model,
+        translation_cache=args.translation_cache,
     )
     summary = {
         lang: payload.get("metrics", {}) for lang, payload in (report.get("results") or {}).items()
@@ -73,7 +89,37 @@ def _build_parser() -> argparse.ArgumentParser:
     r.add_argument("--languages", type=str, default=None, help="Comma-separated languages to score")
     r.add_argument("--sample-size", type=int, default=None)
     r.add_argument("--output-dir", type=Path, default=None)
+    r.add_argument(
+        "--translation-model",
+        type=str,
+        default=None,
+        help=(
+            "Ollama model for the eval-time vernacular->English leg "
+            "(default: evaluation.translation_model, else translation.ollama_model). "
+            "Leaves the testset untouched."
+        ),
+    )
+    r.add_argument(
+        "--translation-cache",
+        type=Path,
+        default=None,
+        help=(
+            "JSONL from `pretranslate`; uses cached vernacular->English questions and "
+            "loads no translation model (required when the translator does not fit on "
+            "the GPU alongside the RAG + generation models)."
+        ),
+    )
     r.set_defaults(func=_cmd_run)
+
+    t = sub.add_parser(
+        "pretranslate",
+        help="Cache the vernacular->English leg so a large translator runs in its own pass",
+    )
+    t.add_argument("--testset", type=Path, default=None)
+    t.add_argument("--languages", type=str, default=None, help="Comma-separated vernaculars")
+    t.add_argument("--translation-model", type=str, default=None)
+    t.add_argument("--output", type=Path, default=None)
+    t.set_defaults(func=_cmd_pretranslate)
 
     return p
 

@@ -27,6 +27,9 @@ llm:
   ollama_base_url: "http://localhost:11434"
   think_on_generate: true
   num_ctx: 8192
+  # The verifier sees the same retrieved context as generate PLUS
+  # the full answer, so its prompt is strictly larger.
+  verifier_num_ctx: 16384
 
 intent:
   enabled: true
@@ -72,6 +75,10 @@ stt:
 tts:
   provider: "indic_parler"
   description: "A clear, calm voice speaks at a natural, moderate pace in a quiet environment. The recording is very high quality, with the voice sounding close-up and natural, with no background noise."
+  descriptions:
+    hi: "Divya speaks in a clear, calm voice at a natural, moderate pace with natural Hindi intonation. The recording is very high quality, with her voice sounding close-up and natural, with no background noise."
+    bn: "Aditi speaks in a clear, calm voice at a natural, moderate pace with natural Bengali intonation. The recording is very high quality, with her voice sounding close-up and natural, with no background noise."
+    en: "Mary speaks in a clear, calm voice at a natural, moderate pace. The recording is very high quality, with her voice sounding close-up and natural, with no background noise."
   remote_url: "${TTS_REMOTE_URL:-http://tts:8001}"   # tts_parler sidecar URL
 
 audio:
@@ -86,6 +93,8 @@ evaluation:
   judge_num_predict: 2048
   judge_reasoning: false             # reasoning judge returns empty content -> invalid JSON
   judge_num_ctx: 8192                # falls back to llm.num_ctx
+  translation_model: null            # eval-time vernacular->English leg only;
+                                     # null -> translation.ollama_model. Testset unaffected.
   sample_strategy: "random"          # "random" | "head" — how --sample-size picks rows
   sample_seed: 42
   run_config:                        # metrics phase (ragas.evaluate)

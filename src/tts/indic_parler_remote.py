@@ -45,7 +45,12 @@ class IndicParlerRemoteTts:
     def synthesize(self, text: str, language: str) -> bytes:
         resp = post_with_retry(
             f"{self._base_url}/tts",
-            json={"text": text, "description": _description_for(language)},
+            json={
+                "text": text,
+                "description": _description_for(language),
+                # Used sidecar-side to spell numerals out in the right language.
+                "language": language,
+            },
         )
         resp.raise_for_status()
         return resp.content  # type: ignore[no-any-return, unused-ignore]

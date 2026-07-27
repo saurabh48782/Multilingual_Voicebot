@@ -55,10 +55,7 @@ class OllamaLLM:
         }
         if json_mode:
             payload["format"] = "json"
-        if think:
-            # Native Ollama thinking: reasoning is returned in message.thinking,
-            # keeping message.content as the clean final answer.
-            payload["think"] = True
+        payload["think"] = think
 
         endpoint = f"{self._base_url}/api/chat"
         if stream:
