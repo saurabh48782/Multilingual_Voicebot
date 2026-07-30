@@ -1,5 +1,51 @@
 # Multilingual Vernacular Voicebot
 
+<div align="center">
+
+[![CI](https://github.com/saurabh48782/Multilingual_Voicebot/actions/workflows/ci.yml/badge.svg)](https://github.com/saurabh48782/Multilingual_Voicebot/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/Python-3.13-3776AB?style=flat-square&logo=python&logoColor=white)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
+
+**Core**
+
+![LangGraph](https://img.shields.io/badge/LangGraph-StateGraph-1C3C3C?style=flat-square&logo=langgraph&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-checkpointer-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-compose%20sidecars-2496ED?style=flat-square&logo=docker&logoColor=white)
+![LangSmith](https://img.shields.io/badge/LangSmith-tracing-1C3C3C?style=flat-square&logo=langchain&logoColor=white)
+
+**Models & Speech**
+
+![PyTorch](https://img.shields.io/badge/PyTorch-CUDA%2012.8-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
+![Hugging Face](https://img.shields.io/badge/Hugging%20Face-Transformers-FFD21E?style=flat-square&logo=huggingface&logoColor=black)
+![Ollama](https://img.shields.io/badge/Ollama-Gemma-000000?style=flat-square&logo=ollama&logoColor=white)
+![IndicConformer](https://img.shields.io/badge/AI4Bharat-IndicConformer%20STT-FF9933?style=flat-square)
+![Indic Parler TTS](https://img.shields.io/badge/Indic%20Parler--TTS-138808?style=flat-square)
+
+**Retrieval & Evaluation**
+
+![FAISS](https://img.shields.io/badge/FAISS-vector%20search-0467DF?style=flat-square&logo=meta&logoColor=white)
+![Hybrid retrieval](https://img.shields.io/badge/BM25%20%2B%20RRF-hybrid-4B8BBE?style=flat-square)
+![Reranker](https://img.shields.io/badge/Reranker-bge--v2--m3-FF6F00?style=flat-square)
+![Docling](https://img.shields.io/badge/Docling-layout--aware%20PDF-1F6FEB?style=flat-square)
+![RAGAS](https://img.shields.io/badge/RAGAS-offline%20eval-8A2BE2?style=flat-square)
+
+**Quality Gates**
+
+![uv](https://img.shields.io/badge/uv-DE5FE9?style=flat-square&logo=uv&logoColor=white)
+![Ruff](https://img.shields.io/badge/Ruff-lint%20%26%20format-D7FF64?style=flat-square&logo=ruff&logoColor=black)
+![mypy](https://img.shields.io/badge/mypy-strict-2A6DB2?style=flat-square)
+![pytest](https://img.shields.io/badge/pytest-0A9EDC?style=flat-square&logo=pytest&logoColor=white)
+![pre-commit](https://img.shields.io/badge/pre--commit-enabled-FAB040?style=flat-square&logo=precommit&logoColor=black)
+
+**Languages**
+
+![Hindi](https://img.shields.io/badge/हिन्दी-Hindi-FF9933?style=flat-square)
+![Bengali](https://img.shields.io/badge/বাংলা-Bengali-006A4E?style=flat-square)
+![English](https://img.shields.io/badge/English-en-012169?style=flat-square)
+
+</div>
+
 Voice + text RAG bot for rural / semi-urban India. It accepts spoken or typed
 questions in **Hindi, Bengali, or English** about Indian government
 schemes / banking / agriculture, runs a grounded retrieval-augmented generation
@@ -32,6 +78,8 @@ vernacular language.
     - [Pipeline Flow](#pipeline-flow)
     - [What Each Stage Validates](#what-each-stage-validates)
   - [9. Project Structure](#9-project-structure)
+  - [10. License](#10-license)
+    - [Model licenses](#model-licenses)
 
 ## 1. Project Overview
 
@@ -445,3 +493,34 @@ runtime dependencies -- no dev tools or test frameworks are included.
 ├── Dockerfile                 # Multi-stage build (api, unit_test, integration_test, precommit_check)
 └── docker-compose.yml         # Profiled service stack (all / dev / CI targets)
 ```
+
+## 10. License
+
+This project's **source code** is released under the [MIT License](LICENSE) —
+free to use, modify, and distribute, with attribution and no warranty.
+
+### Model licenses
+
+The MIT license covers this repository's code only. It does **not** relicense
+the pretrained models the pipeline downloads at runtime, each of which carries
+its own terms. Anyone deploying this stack is bound by the terms below, not by
+this repository's license.
+
+| Model | Role | License |
+|---|---|---|
+| [`intfloat/multilingual-e5-large`](https://huggingface.co/intfloat/multilingual-e5-large) | Dense embeddings (FAISS index) | MIT |
+| [`BAAI/bge-reranker-v2-m3`](https://huggingface.co/BAAI/bge-reranker-v2-m3) | Cross-encoder reranker | Apache-2.0 |
+| [`ai4bharat/indic-conformer-600m-multilingual`](https://huggingface.co/ai4bharat/indic-conformer-600m-multilingual) | Speech-to-text (STT sidecar) | MIT |
+| [`ai4bharat/indic-parler-tts`](https://huggingface.co/ai4bharat/indic-parler-tts) | Text-to-speech (TTS sidecar) | Apache-2.0 |
+| `gemma4:12b`, `translategemma:4b` (via Ollama) | Generation, query rewrite, groundedness verification, translation, RAGAS judge | [Gemma Terms of Use](https://ai.google.dev/gemma/terms) |
+
+> **Note on the Gemma models.** The Gemma Terms of Use are *not* an OSI-approved
+> open-source licence. They permit commercial use but impose a use-restriction
+> policy and require those restrictions to be passed downstream. If that is
+> unacceptable for your deployment, `llm.provider` / `translation.provider` in
+> `params.yaml` point at Ollama, so any other Ollama-served model can be
+> substituted by changing `llm.model` and `translation.ollama_model` — no code
+> change required.
+
+The corpus in `data/corpus/` is **not** distributed with this repository; the
+licensing of any documents you ingest is yours to verify.
